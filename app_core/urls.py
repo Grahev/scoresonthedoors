@@ -20,5 +20,4 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('predicts/', include('predicts.urls', namespace='predicts')),
     path('', include('authentication.urls')),
-    # path('', include('django.contrib.auth.urls')), # check this
 ]

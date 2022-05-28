@@ -1,14 +1,23 @@
 {% extends "base.html" %}
 
 {% block content %}
-        {% for f in fixtures %}
-                <p>{{f.teams.home.name}} VS {{f.teams.away.name}}</p>
-        <p>{{f.goals}}</p>
-        <p>{{f.fixture.status}}</p>
-        <p>{{f.fixture.date}}</p>
-        <p>ID: {{f.fixture.id}}</p>
-        <a href="/predicts/fixtures/39/2021/"></a>
-        {% comment %} <a href="{% url 'predicts:predicts-home'|add:section match_id=f.fixture.id %}"> hmmm</a> {% endcomment %}
-        <hr>
-    {% endfor %}
+
+<main>
+        <h2> Upcoming Matches</h2>
+</main>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 {% endblock content %}

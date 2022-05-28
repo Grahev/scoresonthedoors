@@ -32,6 +32,7 @@ def get_teams():
         team = Team.objects.create(id=id,name=name,country=country,founded=founded,logo=logo)
         team.save()
         print(f'{name} created and saved in database')
+        
 
 
 get_teams()

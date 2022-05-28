@@ -1,4 +1,5 @@
 config.py
+old_db.sqlite3
 
 # Django #
 *.log
@@ -137,3 +138,4 @@ GitHub.sublime-settings
 !.vscode/launch.json 
 !.vscode/extensions.json 
 .history
+

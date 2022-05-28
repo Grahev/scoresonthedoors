@@ -9,7 +9,7 @@ class Team(models.Model):
     id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=50)
     country = models.CharField(max_length=50)
-    founded = models.IntegerField()
+    founded = models.IntegerField(blank=True, null=True)
     logo = models.CharField(max_length=250)
 
     class Meta:
