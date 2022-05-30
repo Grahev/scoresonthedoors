@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+<h1>user predictions</h1>>
+
+{% block content %}
+
+
+<div class="predictions-container container mt-3">
+
+    {% for prediction in user_predictions %}
+    
+        
+        {% if prediction.match.is_active %}
+        <!-- ACTIVE PREDICTIONS-->
+
+
+        <a href="#" class="text-decoration-none">
+            <div class="fixture row shadow-sm p-3 mb-2 ">
+                <div class="fs-6 fw-light text-center mb-3 text-secondary">{{prediction.match.date|date}}</div>
+                <div class="home col-6 text-end p-0">
+                    <span class="fw-bold">{{prediction.match.hTeam.name}}</span>
+                    <span class="border px-3 py-2 bg-light">{{prediction.homeTeamScore}}</span>
+                </div>
+
+                <div class="away col-6 text-left p-0">
+                    <span class="border px-3 py-2 bg-light text-left">{{prediction.awayTeamScore}}</span>
+                    <span class="fw-bold">{{ prediction.match.aTeam.name}}</span>
+                </div>
+
+                <div class="fs-6 fw-light text-center mb-1 mt-1 text-secondary">{{prediction.goalScorer.name}}</div>
+            </div>
+        </a>
+            
+        <!--END OF ACTIVE PREDICTIONS-->        
+        {% else %}
+        <!--INACTIVE PREDICTIONS-->
+
+        <div class="fixture row shadow-sm p-3 mb-2 text-secondary">
+            <div class="fs-6 fw-light text-center mb-3 text-secondary">{{prediction.match.date|date}}</div>
+            <div class="home col-6 text-end p-0">
+                <span class="fw-bold">{{prediction.match.hTeam.name}}</span>
+                <span class="border px-3 py-2 bg-light">{{prediction.homeTeamScore}}</span>
+            </div>
+
+            <div class="away col-6 text-left p-0">
+                <span class="border px-3 py-2 bg-light text-left">{{prediction.awayTeamScore}}</span>
+                <span class="fw-bold">{{ prediction.match.aTeam.name}}</span>
+            </div>
+
+            <div class="fs-6 fw-light text-center mb-1 mt-1 text-secondary">Points: {% if prediction.points %} {{prediction.points}}{% endif %} </div>
+        </div>
+            {{prediction}}
+        <!--END OF INACTIVE PREDICTIONS-->
+        {% endif %}
+    {% endfor %}
+</div>
+
+{% endblock content %}

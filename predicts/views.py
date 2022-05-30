@@ -3,7 +3,8 @@ from django.views.decorators.cache import cache_page
 import requests
 import config
 from .forms import MatchPredictionForm
-from .models import Match
+from .models import Match, MatchPrediction
+from django.contrib.auth.models import User
 
 
 
@@ -23,3 +24,17 @@ def predicts_list(request,league,year):
 def match_prediction(request):
 
     return render(request, 'prediction_create.html')
+
+
+def user_predictions(request,pk):
+    user = User.objects.get(pk=pk)
+
+    user_predictions = MatchPrediction.objects.filter(user=user)
+
+    context = {
+        'user':user,
+        'user_predictions':user_predictions,
+
+    }
+
+    return render(request, 'user_predictions.html', context)

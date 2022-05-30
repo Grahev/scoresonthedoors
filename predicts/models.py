@@ -31,6 +31,10 @@ class Match(models.Model):
         return timezone.now() > self.date
 
     @property
+    def is_active(self):
+        return timezone.now() < self.date
+
+    @property
     def md(self):
         day = self.matchday.split('-')[-1]
         return day
