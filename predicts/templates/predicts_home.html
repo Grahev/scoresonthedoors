@@ -9,7 +9,7 @@
         
         {% if fixture.league == 'Premier League' %}
         
-        
+        <!--//TODO change to show only active games change .is_past_due to .is_active-->
             {% if fixture.is_past_due %}
            
                 <div class="fixture row shadow-sm p-3 mb-2  past_due">
@@ -56,7 +56,7 @@
             
             {% if fixture.league != 'Premier League' %}
             
-            
+                <!--//TODO change to show only active games change .is_past_due to .is_active-->
                 {% if fixture.is_past_due %}
                
                     <div class="fixture row shadow-sm p-3 mb-2  past_due">
