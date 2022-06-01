@@ -12,8 +12,10 @@ def get_all_games():
     # champions league id = 2
     #serie a id = 135
     #la liga id = 140
+    # UEFA Natons League id: 5
 
-    url = 'https://v3.football.api-sports.io/fixtures?league=39&season=2021'
+    # url = 'https://v3.football.api-sports.io/fixtures?league=39&season=2021'
+    url = 'https://v3.football.api-sports.io/fixtures?league=5&season=2022' # UEFA Natons League
     
     payload={}
     headers = {

@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<!-- //TODO layout form-->
+<div class="container">
+    <h2>{{match.hTeam}} vs {{match.aTeam}}</h2>
+<form action="" method="post">
+{% csrf_token %}
+    {{form|crispy}}
+    <button class="btn btn-primary mt-2" type="submit">Save</button>
+</form>
+
+<div id="wg-api-football-fixture"
+    data-host="v3.football.api-sports.io"
+    data-refresh="600"
+    data-id='{{match.match_id}}'
+    data-key="{{key}}"
+    data-theme=""
+    data-show-errors="false"
+    class="api_football_loader">
+</div>
+<script
+    type="module"
+    src="https://widgets.api-sports.io/football/1.1.8/widget.js">
+</script>
+
+
+<div class="">
+        {% if messages %}
+        {% for message in messages %}
+        <div class="my-3">
+            <p class=" text-center text-danger">{{message}}</p>
+        </div>
+            
+        {% endfor %}
+    {% endif %}
+</div>
+
+{% endblock content %}
