@@ -10,10 +10,15 @@ from django.utils import timezone
 import datetime
 from django.contrib import messages
 
+#import for current week
+from datetime import date
+current_week = date.today().isocalendar()[1]  # return current week :)
+
 
 
 def predicts_home(request):
-    fixtures = Match.objects.all()
+    # fixtures = Match.objects.all()
+    fixtures = Match.objects.filter(date__week=current_week) #query and display only current week games from monday to sunday
     context={
         'fixtures':fixtures
     }

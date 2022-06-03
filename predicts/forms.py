@@ -4,6 +4,9 @@ from .models import MatchPrediction
 from django.contrib.auth.models import User
 from teams_and_players.models import Player
 
+#crispy form import
+from crispy_forms.helper import FormHelper
+
 
 class MatchPredictionForm(forms.ModelForm):
 
@@ -18,3 +21,5 @@ class MatchPredictionForm(forms.ModelForm):
         self.fields['goalScorer'].queryset= Player.objects.filter(team__in=[ht,at])
         self.fields['homeTeamScore'].label = ht
         self.fields['awayTeamScore'].label = at
+        self.helper = FormHelper()
+        self.helper.form_show_labels = False

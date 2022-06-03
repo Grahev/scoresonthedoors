@@ -3,39 +3,74 @@
 
 {% block content %}
 
-<!-- //TODO layout form-->
+
+<!--NEW LAYOUT-->
 <div class="container">
-    <h2>{{match.hTeam}} vs {{match.aTeam}}</h2>
-<form action="" method="post">
-{% csrf_token %}
-    {{form|crispy}}
-    <button class="btn btn-primary mt-2" type="submit">Save</button>
-</form>
+    <hr>
+        <div class="form-wrapper">
+            <form action="" method="post">
+                {% csrf_token %}
+                <div class="form-group row">
+                    <div class="col-4">
+                      <div class="h4 text-end my-auto">{{match.hTeam}}</div>
+                    </div>
+                    <div class="col-2">
+                      {{form.homeTeamScore|as_crispy_field}}
+                    </div>
+      
+                    <div class="col-2">
+                        {{form.awayTeamScore|as_crispy_field}}
+                    </div>
+                    <div class="col-4">
+                        <div class=" h4 test-start">{{match.aTeam}}</div>
+                    </div>
+                </div>
 
-<div id="wg-api-football-fixture"
-    data-host="v3.football.api-sports.io"
-    data-refresh="600"
-    data-id='{{match.match_id}}'
-    data-key="{{key}}"
-    data-theme=""
-    data-show-errors="false"
-    class="api_football_loader">
-</div>
-<script
-    type="module"
-    src="https://widgets.api-sports.io/football/1.1.8/widget.js">
-</script>
+                <div class="form-group mt-2">
+                    
+                    <div class="col-10 col-md-6 col-xl-4 mx-auto">
+                        {{form.goalScorer|as_crispy_field}}
+                    </div>
+                    <div class="col-6 mx-auto text-center">
+                        <label for="goal" class="form-label font-monospace">First goal scorer</label>
+                    </div>
 
+                </div>
 
-<div class="">
-        {% if messages %}
-        {% for message in messages %}
-        <div class="my-3">
-            <p class=" text-center text-danger">{{message}}</p>
+                <div class="d-grid mt-2 col-8 col-md-4 col-xl-2 mx-auto">
+                  <button class="btn btn-primary">Save</button>
+                </div>
+                
+              </form>
         </div>
-            
-        {% endfor %}
-    {% endif %}
+        <hr>
+
+        <div class="">
+            {% if messages %}
+            {% for message in messages %}
+            <div class="my-3">
+                <p class=" text-center text-danger">{{message}}</p>
+            </div>
+                
+            {% endfor %}
+            {% endif %}
+        </div>
+
+
+        <!--LINEUP SCRIPT-->
+        {% comment %} <div id="wg-api-football-fixture"
+            data-host="v3.football.api-sports.io"
+            data-refresh="600"
+            data-id='{{match.match_id}}'
+            data-key="{{key}}"
+            data-theme=""
+            data-show-errors="false"
+            class="api_football_loader">
+        </div>
+        <script
+            type="module"
+            src="https://widgets.api-sports.io/football/1.1.8/widget.js">
+        </script> {% endcomment %}
 </div>
 
 {% endblock content %}
