@@ -1,13 +1,12 @@
 from django.contrib import admin
 from django.urls import path
-from predicts.views import predicts_list, match_prediction, predicts_home,user_predictions, match_prediction,match_prediction_update
+from predicts.views import  match_prediction, predicts_home,user_predictions, match_prediction,match_prediction_update,delete_view
 
 app_name = 'predicts'
 urlpatterns = [
     path('', predicts_home, name='predicts-home'),
-    path('fixtures/<int:league>/<int:year>', predicts_list, name='predicts-list'),
-    path('fixtures/<int:league>/<int:year>/<int:match_id>', match_prediction, name='predicts-create'),
     path('fixtures/',user_predictions, name='user_predictions'),
     path('<int:pk>/', match_prediction, name='match_prediction'),
-    path('edit/<int:pk>', match_prediction_update, name='match_prediction_update')
+    path('edit/<int:pk>', match_prediction_update, name='match_prediction_update'),
+    path('<int:pk>/delete',delete_view, name='match_prediction_delete'),
 ]

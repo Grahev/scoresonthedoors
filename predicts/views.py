@@ -13,6 +13,9 @@ from django.contrib import messages
 #import for current week
 from datetime import date
 current_week = date.today().isocalendar()[1]  # return current week :)
+# delete view import
+from django.urls import reverse_lazy
+from django.views.generic.edit import DeleteView
 
 
 
@@ -25,9 +28,6 @@ def predicts_home(request):
     return render(request, 'predicts_home.html', context)
 
 
-def predicts_list(request,league,year):
-    
-    return render(request,'test.html')
 
 
 def match_prediction(request):
@@ -129,6 +129,27 @@ def match_prediction_update(request, pk):
     # add form dictionary to context
     context["form"] = form
     context["match"] = match
-    return render(request, 'match_prediction.html', context)
+    context["prediction"] = pred
+    return render(request, 'match_prediction_update.html', context)
 
     #//TODO create delete view
+
+def delete_view(request, pk):
+    # dictionary for initial data with
+    # field names as keys
+    context ={}
+ 
+    # fetch the object related to passed id
+    obj = get_object_or_404(MatchPrediction, id = pk)
+ 
+ 
+    if request.method =="POST":
+        # delete object
+        obj.delete()
+        # after deleting redirect to
+        # home page
+        return redirect("predicts:user_predictions")
+    
+    context["prediction"] = obj
+ 
+    return render(request, "prediction_delete.html", context)
