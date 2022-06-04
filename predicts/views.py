@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.cache import cache_page
 import requests
 import config
@@ -35,9 +35,10 @@ def match_prediction(request):
     return render(request, 'prediction_create.html')
 
 
-def user_predictions(request,pk):
+def user_predictions(request):
     """this view list all existings user predictions"""
-    user = User.objects.get(pk=pk)
+    # user = User.objects.get(pk=pk)
+    user = request.user
 
     user_predictions = MatchPrediction.objects.filter(user=user)
 
@@ -49,7 +50,6 @@ def user_predictions(request,pk):
 
     return render(request, 'user_predictions.html', context)
 
-#//TODO add create prediction view
 
 def match_prediction(request,pk):
     match = Match.objects.get(id=pk)
@@ -61,15 +61,6 @@ def match_prediction(request,pk):
     m_id = match.match_id
     key = config.key
     # key = os.environ.get('key')
-    print(m_id)
-
-
-    print(match.date)
-    print(timezone.now())
-    if match.date < timezone.now():
-        print('matchday is smaller')
-    else:
-        print('time now is bigger')
 
 
     if request.method == 'POST':
@@ -81,9 +72,7 @@ def match_prediction(request,pk):
             if pred == True:
                 messages.error(request,'Prediction for this match alerady exists, please make prediction for other match.')
                 return HttpResponseRedirect(request.path_info)
-            if MatchPrediction.objects.filter(user = request.user).filter(match__in=Match.objects.filter(matchday=md)).count() >= 3:
-                print('if statment')
-                # print(MatchPrediction.objects.filter(user = request.user).filter(match__in=Match.objects.filter(matchday=md)).count())
+            if MatchPrediction.objects.filter(user = request.user).filter(match__in=Match.objects.filter(date__week=current_week)).count() >= 3:
                 messages.error(request,'You predict 3 games already, delete your prediction to make new for this matchday.')
                 return HttpResponseRedirect(request.path_info)
             if match.date < timezone.now():
@@ -116,4 +105,30 @@ def match_prediction(request,pk):
     return render(request, 'match_prediction.html', context)
 
 
-#//TODO create match_prediction edid view
+
+def match_prediction_update(request, pk):
+    """this is update view"""
+    context ={}
+    pred = MatchPrediction.objects.get(id=pk)
+ 
+    # fetch the object related to passed id
+    obj = get_object_or_404(MatchPrediction, id = pk)
+    match = Match.objects.get(id=pred.match.id)
+    hteam = match.hTeam
+    ateam = match.aTeam
+ 
+    # pass the object as instance in form
+    form = MatchPredictionForm(request.POST or None, instance = obj,ht=hteam,at=ateam)
+ 
+    # save the data from the form and
+    # redirect
+    if form.is_valid():
+        form.save()
+        return redirect("predicts:user_predictions")
+ 
+    # add form dictionary to context
+    context["form"] = form
+    context["match"] = match
+    return render(request, 'match_prediction.html', context)
+
+    #//TODO create delete view
