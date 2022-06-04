@@ -40,7 +40,7 @@ def user_predictions(request):
     # user = User.objects.get(pk=pk)
     user = request.user
 
-    user_predictions = MatchPrediction.objects.filter(user=user)
+    user_predictions = MatchPrediction.objects.filter(user=user).order_by('-match__date')
 
     context = {
         'user':user,
@@ -132,7 +132,6 @@ def match_prediction_update(request, pk):
     context["prediction"] = pred
     return render(request, 'match_prediction_update.html', context)
 
-    #//TODO create delete view
 
 def delete_view(request, pk):
     # dictionary for initial data with
