@@ -50,11 +50,11 @@ class Match(models.Model):
 
 
 class MatchPrediction(models.Model):
-    match = models.ForeignKey(Match, on_delete=models.CASCADE)
+    match = models.ForeignKey(Match, on_delete=models.DO_NOTHING)
     homeTeamScore = models.PositiveIntegerField()
     awayTeamScore = models.PositiveIntegerField()
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    goalScorer = models.ForeignKey(Player, on_delete=models.CASCADE)
+    goalScorer = models.ForeignKey(Player, on_delete=models.DO_NOTHING)
     checked = models.BooleanField(default=False)
     points = models.PositiveIntegerField(blank=True, null=True)
     
@@ -72,17 +72,11 @@ class MatchEvents(models.Model):
     player = models.ForeignKey(Player, on_delete=DO_NOTHING)
     type = models.CharField(max_length=50)
 
+class MatchEvents(models.Model):
+    match = models.ForeignKey(Match, on_delete=DO_NOTHING)
+    team = models.ForeignKey(Team, on_delete=DO_NOTHING)
+    time = models.IntegerField()
+    player = models.ForeignKey(Player, on_delete=DO_NOTHING)
+    type = models.CharField(max_length=50)
+    detail = models.CharField(max_length=50)
 
-
-# class League(models.Model):
-#     id = models.AutoField(primary_key=True)
-#     name = models.CharField(max_length=50, unique=True)
-#     pin = models.IntegerField(max_length=6)
-#     admin = models.ForeignKey(User, on_delete=SET_NULL, null=True, related_name='league_admin')
-#     users = models.ManyToManyField(User, related_name='league_users')
-#     create_date = models.DateTimeField(auto_now_add=True)
-#     rules = models.TextField(max_length=500, blank=True)
-    
-
-#     def __str__(self):
-#         return self.name

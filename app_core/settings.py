@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'predicts',
     'teams_and_players',
     'authentication',
+    'leagues',
     'django_extensions',
     'crispy_forms',
     'crispy_bootstrap5',
