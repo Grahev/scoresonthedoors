@@ -16,7 +16,7 @@ class Match(models.Model):
     status = models.CharField(max_length=20)
     hTeamScore = models.IntegerField(blank=True, null=True)
     aTeamScore = models.IntegerField(blank=True, null=True)
-    goalScorers = models.ManyToManyField(Player, related_name='goal_scorers',blank=True,null=True)
+    goalScorers = models.ManyToManyField(Player, related_name='goal_scorers',blank=True)
     match_id = models.IntegerField()
     league = models.CharField(max_length=50, blank=True, null=True)
 
@@ -73,7 +73,7 @@ class MatchEvents(models.Model):
     type = models.CharField(max_length=50)
 
 class MatchEvents(models.Model):
-    match = models.ForeignKey(Match, on_delete=DO_NOTHING)
+    match = models.ForeignKey(Match, on_delete=DO_NOTHING, related_name='events')
     team = models.ForeignKey(Team, on_delete=DO_NOTHING)
     time = models.IntegerField()
     player = models.ForeignKey(Player, on_delete=DO_NOTHING)
