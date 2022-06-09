@@ -1,7 +1,45 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container">
+<div class="container mt-4">
     <h1>Leagues home view</h1>
+        
+        {{object_list}}
+        {{user}}
+        
+
+        <h1 class="text-center mt-5 mb-3">Leagues</h1>
+
+        <a class="btn btn-primary mb-3" href="join">Join new league</a> 
+        <a class="btn btn-primary mb-3" href="create">Create new league</a>
+        
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        
+        <br>
+        <ul class="list-group">
+            {% for league in leagues %}
+        
+            
+        
+                {% if league.name == 'MASTER LEAGUE' %}
+                    <li class="list-group-item">
+                    <a href="/leagues/{{league.id}}">{{league.name}}</a>
+                </li>
+                {% else %}
+                <li class="list-group-item d-flex justify-content-between">
+                    <a href="/leagues/{{league.id}}">{{league.name}}</a>
+                    <a href="leave/{{league.id}}" class="btn btn-danger">Leave</a>
+                </li>
+                {% endif %}
+        
+                
+            {% endfor %}
+        </ul>
 </div>
 {% endblock content %}

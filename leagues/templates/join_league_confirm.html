@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h1>confirm join league with pin</h1>
+
+    {{league}}
+
+    <form action="" method="post">
+        {% csrf_token %}
+        {{form}}
+        <button type="submit">Join</button>
+    </form>
+</div>
+    
+{% endblock content %}

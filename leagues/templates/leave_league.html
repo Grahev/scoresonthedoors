@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Leave League</h1>
+<p>Do you want to leave {{league.name}}?</p>
+
+
+
+<a href="confirm/{{league.pk}}"><button class="btn-success">Leave</button></a>
+
+<button class="btn-danger">Cancle</button>
+{% endblock content %}

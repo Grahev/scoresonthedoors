@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+    <h1 class="text-center mt-5 mb-3">Join league</h1>
+
+    <ul class="list-group">
+        {% for league in leagues %}
+        <li class="list-group-item"><a href="{{league.pk}}">{{league.name}}</a></li>
+        {% endfor %}
+      </ul>
+
+{% endblock content %}
