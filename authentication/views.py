@@ -72,6 +72,7 @@ class Login(LoginView):
 def signin(request):
     return render(request, 'signin.html')
 
-def logout(request):
+def user_logout(request):
+    logout(request)
     return redirect('/')
 

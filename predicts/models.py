@@ -65,12 +65,12 @@ class MatchPrediction(models.Model):
     def is_past_due(self):
         return timezone.now() > self.match.date
 
-class MatchEvents(models.Model):
-    match = models.ForeignKey(Match, on_delete=DO_NOTHING)
-    team = models.ForeignKey(Team, on_delete=DO_NOTHING)
-    time = models.IntegerField()
-    player = models.ForeignKey(Player, on_delete=DO_NOTHING)
-    type = models.CharField(max_length=50)
+# class MatchEvents(models.Model):
+#     match = models.ForeignKey(Match, on_delete=DO_NOTHING)
+#     team = models.ForeignKey(Team, on_delete=DO_NOTHING)
+#     time = models.IntegerField()
+#     player = models.ForeignKey(Player, on_delete=DO_NOTHING)
+#     type = models.CharField(max_length=50)
 
 class MatchEvents(models.Model):
     match = models.ForeignKey(Match, on_delete=DO_NOTHING, related_name='events')
