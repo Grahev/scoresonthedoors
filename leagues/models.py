@@ -1,6 +1,10 @@
+from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.deletion import CASCADE, SET, SET_NULL, DO_NOTHING
+from django.contrib.auth.models import User
+User._meta.get_field('email')._unique = True
+
 
 # Create your models here.
 class League(models.Model):

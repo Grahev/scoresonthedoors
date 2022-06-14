@@ -1,9 +1,12 @@
+from django.conf import settings
 from django.db import models
 from django.db.models.deletion import CASCADE, SET, SET_NULL, DO_NOTHING
 from django.utils import timezone
 from django.contrib.auth.models import User
 from teams_and_players.models import Team, Player
 
+from django.contrib.auth.models import User
+User._meta.get_field('email')._unique = True
 # Create your models here.
 
 

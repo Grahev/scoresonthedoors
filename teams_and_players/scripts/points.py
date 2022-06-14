@@ -33,18 +33,11 @@ def run():
         points = 0
         goal_scorers = MatchEvents.objects.filter(match=prediction.match).filter(type='Goal').order_by('time')
         red_cards = MatchEvents.objects.filter(match=prediction.match).filter(detail='Red Card')
-        print(goal_scorers)
         print(f'number of red cards: {len(red_cards)}')
    
         if prediction.match.status == 'FT':
             print('Match Finished calculate points')
             #red card minus points
-            print(f'goal: {prediction.goalScorer}')
-            print('cards:')
-            for obj in red_cards:
-                
-                print(obj.player)
-            # if red_cards.filter(player__contains = prediction.goalScorer):
             if MatchEvents.objects.filter(match=prediction.match).filter(detail='Red Card').filter(player=prediction.goalScorer).exists():
             #minus points
                 print('minus point for red card')
@@ -92,7 +85,4 @@ def run():
         else:
             print('match status not finished')
 
-    # p = MatchPrediction.objects.filter(pk=prediction.pk)
-    # p.update(points=points, checked=True)
-    # print(f'points: {points} - {p} updated')
-
+ 
