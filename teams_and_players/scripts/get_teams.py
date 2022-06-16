@@ -10,8 +10,8 @@ import json
 def get_teams():
     """get all teams and add them to Team model in database"""
 
-    #url = 'https://v3.football.api-sports.io/teams?league=39&season=2021'
-    url = 'https://v3.football.api-sports.io/teams?league=5&season=2022' #nations league url
+    url = 'https://v3.football.api-sports.io/teams?league=39&season=2022'
+    # url = 'https://v3.football.api-sports.io/teams?league=5&season=2022' #nations league url
     
     payload={}
     headers = {
