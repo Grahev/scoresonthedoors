@@ -31,7 +31,7 @@ PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 SECRET_KEY = 'django-insecure-7=nczksdsr+o@^1yg@1jq9uab1*7enk%i(av1i!@%)_doe5)f3'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['vast-wildwood-19757.herokuapp.com', '127.0.0.1']
 
