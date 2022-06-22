@@ -115,7 +115,7 @@ else:
             'PORT': '5432',
         }
     }
-postgres://woeyaxdjiiamlj:31cfc727994db07e77098135dd6b6c995f6327f3533990ce46db98d144ceda06@ec2-44-197-128-108.compute-1.amazonaws.com:5432/dbhr05b06i5p83
+
 #Cash setup
 #https://www.tutorialspoint.com/django/django_caching.htm
 CACHES = {
