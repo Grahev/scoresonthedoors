@@ -90,26 +90,15 @@ WSGI_APPLICATION = 'app_core.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
-if DEBUG:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': 'dbhr05b06i5p83',
-            'USER': 'woeyaxdjiiamlj',
-            'PASSWORD': os.environ.get('Password','dev default value'),
-            'HOST': 'ec2-44-197-128-108.compute-1.amazonaws.com',
-            'PORT': '5432',
-        }
-    }
-
-# DATABASES = {
+# if DEBUG:
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.db.backends.sqlite3',
+#             'NAME': BASE_DIR / 'db.sqlite3',
+#         }
+#     }
+# else:
+#     DATABASES = {
 #         'default': {
 #             'ENGINE': 'django.db.backends.postgresql_psycopg2',
 #             'NAME': 'dbhr05b06i5p83',
@@ -119,6 +108,17 @@ else:
 #             'PORT': '5432',
 #         }
 #     }
+
+DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'dbhr05b06i5p83',
+            'USER': 'woeyaxdjiiamlj',
+            'PASSWORD': os.environ.get('Password','dev default value'),
+            'HOST': 'ec2-44-197-128-108.compute-1.amazonaws.com',
+            'PORT': '5432',
+        }
+    }
 
 #Cash setup
 #https://www.tutorialspoint.com/django/django_caching.htm
