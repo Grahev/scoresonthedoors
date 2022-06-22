@@ -31,7 +31,7 @@ PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 SECRET_KEY = 'django-insecure-7=nczksdsr+o@^1yg@1jq9uab1*7enk%i(av1i!@%)_doe5)f3'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['vast-wildwood-19757.herokuapp.com', '127.0.0.1']
 
@@ -97,15 +97,26 @@ WSGI_APPLICATION = 'app_core.wsgi.application'
 #     }
 # }
 
-if DEBUG:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
-else:
-    DATABASES = {
+# if DEBUG:
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.db.backends.sqlite3',
+#             'NAME': BASE_DIR / 'db.sqlite3',
+#         }
+#     }
+# else:
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#             'NAME': 'dbhr05b06i5p83',
+#             'USER': 'woeyaxdjiiamlj',
+#             'PASSWORD': os.environ.get('Password','dev default value'),
+#             'HOST': 'ec2-44-197-128-108.compute-1.amazonaws.com',
+#             'PORT': '5432',
+#         }
+#     }
+
+DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
             'NAME': 'dbhr05b06i5p83',
