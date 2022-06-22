@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.cache import cache_page
 import requests
-import config
+import os
 from .forms import MatchPredictionForm
 from .models import Match, MatchPrediction
 from django.contrib.auth.models import User
@@ -59,8 +59,7 @@ def match_prediction(request,pk):
     ateam = match.aTeam
     form = MatchPredictionForm(ht=hteam,at=ateam)
     m_id = match.match_id
-    key = config.key
-    # key = os.environ.get('key')
+    key = os.environ.get('key')
 
 
     if request.method == 'POST':
