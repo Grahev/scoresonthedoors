@@ -14,6 +14,7 @@ from pathlib import Path
 import os
 # import config
 import django_heroku
+import dj_database_url
 
 django_heroku.settings(locals(),staticfiles=False)
 
@@ -30,7 +31,7 @@ PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 SECRET_KEY = 'django-insecure-7=nczksdsr+o@^1yg@1jq9uab1*7enk%i(av1i!@%)_doe5)f3'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['vast-wildwood-19757.herokuapp.com', '127.0.0.1']
 
@@ -96,6 +97,25 @@ DATABASES = {
     }
 }
 
+if DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'dbhr05b06i5p83',
+            'USER': 'woeyaxdjiiamlj',
+            'PASSWORD': os.environ.get('Password','dev default value'),
+            'HOST': 'ec2-44-197-128-108.compute-1.amazonaws.com',
+            'PORT': '5432',
+        }
+    }
+postgres://woeyaxdjiiamlj:31cfc727994db07e77098135dd6b6c995f6327f3533990ce46db98d144ceda06@ec2-44-197-128-108.compute-1.amazonaws.com:5432/dbhr05b06i5p83
 #Cash setup
 #https://www.tutorialspoint.com/django/django_caching.htm
 CACHES = {
