@@ -21,7 +21,9 @@ from django.views.generic.edit import DeleteView
 
 def predicts_home(request):
     # fixtures = Match.objects.all()
-    fixtures = Match.objects.filter(date__week=current_week) #query and display only current week games from monday to sunday
+
+    #fixtures = Match.objects.filter(date__week=current_week) #query and display only current week games from monday to sunday
+    fixtures = Match.objects.filter(matchday='Regular Season - 1') #query and display only current week games from monday to sunday
     context={
         'fixtures':fixtures
     }
@@ -71,9 +73,9 @@ def match_prediction(request,pk):
             if pred == True:
                 messages.error(request,'Prediction for this match alerady exists, please make prediction for other match.')
                 return HttpResponseRedirect(request.path_info)
-            if MatchPrediction.objects.filter(user = request.user).filter(match__in=Match.objects.filter(date__week=current_week)).count() >= 3:
-                messages.error(request,'You predict 3 games already, delete your prediction to make new for this matchday.')
-                return HttpResponseRedirect(request.path_info)
+            # if MatchPrediction.objects.filter(user = request.user).filter(match__in=Match.objects.filter(date__week=current_week)).count() >= 3:
+            #     messages.error(request,'You predict 3 games already, delete your prediction to make new for this matchday.')
+            #     return HttpResponseRedirect(request.path_info)
             if match.date < timezone.now():
                 messages.error(request,'Prediction match alredy started and can NOT be added on or edited. Please do prediction for other match.')
                 return HttpResponseRedirect(request.path_info)
