@@ -1,10 +1,11 @@
 from django.contrib import admin
 from django.urls import path
+from django.contrib.auth.decorators import login_required
 from predicts.views import  match_prediction, predicts_home,user_predictions, match_prediction,match_prediction_update,delete_view
 
 app_name = 'predicts'
 urlpatterns = [
-    path('', predicts_home, name='predicts-home'),
+    path('', login_required(predicts_home), name='predicts-home'),
     path('fixtures/',user_predictions, name='user_predictions'),
     path('<int:pk>/', match_prediction, name='match_prediction'),
     path('edit/<int:pk>', match_prediction_update, name='match_prediction_update'),
