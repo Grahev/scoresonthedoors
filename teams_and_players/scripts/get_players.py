@@ -1,8 +1,9 @@
 import requests
-import config
+#import config
 from teams_and_players.models import Player, Team
 import json
 import time
+import os
 
 
 def get_players(team_id):
@@ -12,8 +13,11 @@ def get_players(team_id):
     
     payload={}
     headers = {
-      'x-rapidapi-key': config.key,
-      'x-rapidapi-host': config.host
+    #   'x-rapidapi-key': config.key,
+    #   'x-rapidapi-host': config.host
+
+      'x-rapidapi-key': os.environ.get('key','dev default value'),
+      'x-rapidapi-host': os.environ.get('host','dev default value'),
     }
 
     r = requests.request("GET", url, headers=headers, data=payload)

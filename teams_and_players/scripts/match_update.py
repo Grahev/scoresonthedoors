@@ -1,5 +1,6 @@
 import requests
-import config
+#import config
+import os
 from teams_and_players.models import Team, Player
 from predicts.models import Match, MatchEvents
 import time
@@ -17,8 +18,11 @@ def match_update(event_id):
 
     payload={}
     headers = {
-      'x-rapidapi-key': config.key,
-      'x-rapidapi-host': config.host
+    #   'x-rapidapi-key': config.key,
+    #   'x-rapidapi-host': config.host
+
+      'x-rapidapi-key': os.environ.get('key','dev default value'),
+      'x-rapidapi-host': os.environ.get('host','dev default value'),
     }
     r = requests.request("GET", url, headers=headers, data=payload)
     print(f'request status code:{r.status_code}')

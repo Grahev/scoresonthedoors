@@ -1,5 +1,6 @@
 import requests
-import config
+#import config
+import os
 from teams_and_players.models import Player, Team
 from predicts.models import Match
 import json
@@ -14,13 +15,16 @@ def get_all_games():
     #la liga id = 140
     # UEFA Natons League id: 5
 
-    # url = 'https://v3.football.api-sports.io/fixtures?league=39&season=2021'
-    url = 'https://v3.football.api-sports.io/fixtures?league=5&season=2022' # UEFA Natons League
+    url = 'https://v3.football.api-sports.io/fixtures?league=39&season=2022'
+    # url = 'https://v3.football.api-sports.io/fixtures?league=5&season=2022' # UEFA Natons League
     
     payload={}
     headers = {
-      'x-rapidapi-key': config.key,
-      'x-rapidapi-host': config.host
+    #   'x-rapidapi-key': config.key,
+    #   'x-rapidapi-host': config.host
+
+      'x-rapidapi-key': os.environ.get('key','dev default value'),
+      'x-rapidapi-host': os.environ.get('host','dev default value'),
     }
 
     r = requests.request("GET", url, headers=headers, data=payload)

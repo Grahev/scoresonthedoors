@@ -1,7 +1,8 @@
-import config
+#import config
 import requests
 from teams_and_players.models import Team
 import json
+import os
 
 # Premier League id: 39
 # UEFA Natons League id: 5
@@ -15,8 +16,13 @@ def get_teams():
     
     payload={}
     headers = {
-      'x-rapidapi-key': config.key,
-      'x-rapidapi-host': config.host
+      # 'x-rapidapi-key': config.key,
+      # 'x-rapidapi-host': config.host
+
+      'x-rapidapi-key': os.environ.get('key','dev default value'),
+      'x-rapidapi-host': os.environ.get('host','dev default value'),
+
+      
     }
 
     r = requests.request("GET", url, headers=headers, data=payload)
