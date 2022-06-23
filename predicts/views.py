@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.cache import cache_page
+from django.contrib.auth.decorators import login_required
 import requests
 import os
 from .forms import MatchPredictionForm
@@ -18,7 +19,7 @@ from django.urls import reverse_lazy
 from django.views.generic.edit import DeleteView
 
 
-
+@login_required
 def predicts_home(request):
     # fixtures = Match.objects.all()
 
@@ -36,7 +37,7 @@ def match_prediction(request):
 
     return render(request, 'prediction_create.html')
 
-
+@login_required
 def user_predictions(request):
     """this view list all existings user predictions"""
     # user = User.objects.get(pk=pk)
@@ -52,7 +53,7 @@ def user_predictions(request):
 
     return render(request, 'user_predictions.html', context)
 
-
+@login_required
 def match_prediction(request,pk):
     match = Match.objects.get(id=pk)
     form = MatchPredictionForm()
@@ -106,7 +107,7 @@ def match_prediction(request,pk):
     return render(request, 'match_prediction.html', context)
 
 
-
+@login_required
 def match_prediction_update(request, pk):
     """this is update view"""
     context ={}
@@ -133,7 +134,7 @@ def match_prediction_update(request, pk):
     context["prediction"] = pred
     return render(request, 'match_prediction_update.html', context)
 
-
+@login_required
 def delete_view(request, pk):
     # dictionary for initial data with
     # field names as keys

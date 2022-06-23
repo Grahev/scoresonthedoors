@@ -11,12 +11,12 @@ from django.contrib import messages
 from django.urls import reverse_lazy
 
 # Create your views here.
-
+@login_required
 def leagues_home(request):
     context = {}
     return render(request, 'leagues_home.html', context)
 
-
+@login_required
 class LeaguesListView(ListView):
     model = League
     template_name = 'leagues_home.html'
@@ -25,7 +25,7 @@ class LeaguesListView(ListView):
     def get_queryset(self):
         return League.objects.filter(users__username = self.request.user)
 
-
+@login_required
 class LeagueCreateView(CreateView):
     form_class = LeagueCreateModelForm
     template_name = 'league_create.html'
@@ -39,7 +39,7 @@ class LeagueCreateView(CreateView):
         # self.request.users.add(self.request.user)
         # form.instance.users.add(self.request.user) 
         return super().form_valid(form)
-
+@login_required
 class LeagueDetailView(DetailView):
 
     model = League
@@ -52,7 +52,7 @@ class LeagueDetailView(DetailView):
         context['p'] = MatchPrediction.objects.filter(user=user)
         return context
         
-
+@login_required
 def league_view(request):
     """view for list of users leagues"""
     user = request.user.username
@@ -62,6 +62,7 @@ def league_view(request):
     }
     return render(request, 'predictor/league.html', context)
 
+@login_required
 def league_details(request,pk):
     league = League.objects.get(id=pk)
     table = []
@@ -96,6 +97,7 @@ def league_details(request,pk):
 
     return render(request,'league_detail.html', context)
 
+@login_required
 def leave_league(request,pk):
     league = League.objects.get(id=pk)
     user = request.user
@@ -105,6 +107,7 @@ def leave_league(request,pk):
 
     return render(request,'leave_league.html', context)
 
+@login_required
 def leave_league_confirm(request,pk):
     league = League.objects.get(id=pk)
     user = request.user
@@ -117,6 +120,7 @@ def leave_league_confirm(request,pk):
         messages.info(request,f'You leave {league.name}.')
         return redirect('leagues:leagues-home')
 
+@login_required
 def join_league(request):
     print(request.POST)
     leagues = League.objects.all()
@@ -134,7 +138,7 @@ def join_league(request):
     }
     return render(request,'join_league.html', context)
 
-
+@login_required
 def join_league_pin(request, pk):
     league = League.objects.get(id=pk)
     form = LeagueJoinPinForm()
