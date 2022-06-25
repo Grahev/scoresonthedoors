@@ -17,6 +17,9 @@ def leagues_home(request):
     context = {}
     return render(request, 'leagues_home.html', context)
 
+def maximum_leagues(request):
+    return render(request,'maximum_leagues.html')
+
 
 class LeaguesListView(ListView):
     model = League
@@ -37,14 +40,16 @@ class LeagueCreateView(CreateView):
     def form_valid(self, form):
         u = self.request.user
         users_admins = League.objects.filter(admin = u)
+        print(f'len of users admins leagues: {len(users_admins)}')
         if len(users_admins) <= 3:
+            form.instance.admin = u
             self.object = form.save(commit=False)
             self.object.save()
             l = League.objects.get(name=form.instance.name)
             l.users.add(u)
             return HttpResponseRedirect(self.get_success_url())
         else:
-            form.add_error('name', 'You reach maximum number of leagues. Delete old leagues before create new.')
+            return redirect('leagues:maximum-leagues')
 
 class LeagueDetailView(DetailView):
 

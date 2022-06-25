@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="continer text-center mt-3">
+    <p>You can create maximum 3 Leagues. Delete old or contact web admin.</p>
+    <div class="mx-auto btn">
+        <a href="{% url 'leagues:leagues-home' %}">Back</a>
+    </div>
+</div>
+{% endblock content %}
+
+{% url 'predicts:match_prediction' fixture.pk %}
