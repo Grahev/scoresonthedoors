@@ -13,6 +13,7 @@ from django.template.loader import render_to_string
 from django.contrib.auth.models import User
 from django.views.generic import View
 from django.contrib.auth.views import LoginView    
+from leagues.models import League
 
 # Create your views here.
 
@@ -59,6 +60,8 @@ class activate(View):
         if user is not None and generate_token.check_token(user,token):
             user.is_active = True
             user.save()
+            l = League.objects.get(name = 'MASTER LEAGUE')
+            l.users.add(user)
            # messages.add_message(request, messages.INFO,'account activated sucesfully')
             return redirect ('authentication:login') #change to login 
         return render(request,'activate_failed.html', status=401) 
