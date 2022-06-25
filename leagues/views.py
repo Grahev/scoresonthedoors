@@ -7,6 +7,7 @@ from leagues.forms import LeagueCreateModelForm, LeagueJoinPinForm
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.http import HttpResponseRedirect
 
 from django.urls import reverse_lazy
 
@@ -32,13 +33,14 @@ class LeagueCreateView(CreateView):
     success_url = reverse_lazy('leagues:leagues-home')
     
 
-    
-    #edit form validation - add current user as league admin
+
     def form_valid(self, form):
-        form.instance.admin = self.request.user
-        # self.request.users.add(self.request.user)
-        # form.instance.users.add(self.request.user) 
-        return super().form_valid(form)
+        u = self.request.user
+        self.object = form.save(commit=False)
+        self.object.save()
+        l = League.objects.get(name=form.instance.name)
+        l.users.add(u)
+        return HttpResponseRedirect(self.get_success_url())
 
 class LeagueDetailView(DetailView):
 
