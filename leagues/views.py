@@ -36,11 +36,15 @@ class LeagueCreateView(CreateView):
 
     def form_valid(self, form):
         u = self.request.user
-        self.object = form.save(commit=False)
-        self.object.save()
-        l = League.objects.get(name=form.instance.name)
-        l.users.add(u)
-        return HttpResponseRedirect(self.get_success_url())
+        users_admins = League.objects.filter(admin = u)
+        if len(users_admins) <= 3:
+            self.object = form.save(commit=False)
+            self.object.save()
+            l = League.objects.get(name=form.instance.name)
+            l.users.add(u)
+            return HttpResponseRedirect(self.get_success_url())
+        else:
+            form.add_error('name', 'You reach maximum number of leagues. Delete old leagues before create new.')
 
 class LeagueDetailView(DetailView):
 
