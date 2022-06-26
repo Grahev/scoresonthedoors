@@ -112,4 +112,11 @@ def create_match():
     m.save()
     print(f'match {m.hTeam.name}:{m.aTeam.name} created.')
 
-create_match()
+
+
+def main():
+    create_teams()
+    create_players()
+    create_match()
+
+main()
