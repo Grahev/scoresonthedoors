@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 from pathlib import Path
 import os
-# import config
 import django_heroku
 import dj_database_url
 
@@ -31,7 +30,7 @@ PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['vast-wildwood-19757.herokuapp.com', '127.0.0.1']
 
@@ -108,17 +107,6 @@ else:
             'PORT': '5432',
         }
     }
-
-# DATABASES = {
-#         'default': {
-#             'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#             'NAME': 'dbhr05b06i5p83',
-#             'USER': 'woeyaxdjiiamlj',
-#             'PASSWORD': os.environ.get('Password','dev default value'),
-#             'HOST': 'ec2-44-197-128-108.compute-1.amazonaws.com',
-#             'PORT': '5432',
-#         }
-#     }
 
 #Cash setup
 #https://www.tutorialspoint.com/django/django_caching.htm
@@ -198,8 +186,6 @@ LOGOUT_REDIRECT_URL = '/'
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'assafootball2021@gmail.com'
-# EMAIL_HOST_USER = config.EMAIL_HOST_USER
-# EMAIL_HOST_PASSWORD = config.EMAIL_HOST_PASSWORD
 EMAIL_HOST_USER = 'assafootball2021@gmail.com'
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD','dev default value')
 EMAIL_PORT = 587

@@ -2,9 +2,74 @@
 {% load static %}
 
 {% block content %}
-    <div class="container bg-light">
-        <h1 class="text-center mt-5 ">Scores on the doors</h1>
+
+
+{% if user.is_authenticated  %}
+    <!--IF USER IS LOGEDIN-->
+
+	<!--HERO SECTION START-->
+	<div class="container px-4 py-5 my-5 text-center my_hero">
+		<div class="content overlay">
+			
+		
+			<div class="lc-block d-grid gap-2 d-sm-flex justify-content-sm-center"> 
+				<a class="btn btn-primary btn-lg px-4 gap-3" href="{% url 'predicts:predicts-home'%}" role="button">Current Games</a>
+				<a class="btn btn-primary btn-lg px-4" href="{% url 'predicts:user_predictions'%}" role="button">My Predictions</a>
+				<a class="btn btn-primary btn-lg px-4" href="{% url 'leagues:leagues-home' %}" role="button">Leagues</a>
+			</div>
+		</div>
+		
+	</div>
+	<!--HERO SECTION END-->
+
+	<!--RULE SECTION START-->
+
+	<section id="reules">
+		<div class="container">
+			<div class="text-center fs-2 fw-bold">
+				RULES:
+			</div>
+			<div class="text-center">
+				<ul class="list-group">
+					<li class="list-group-item">
+						Game week will run from Monday to Sunday. You can select any 3 matches played that week. If any teams play twice in the week both matches can be selected, if a team plays on a Saturday and Wednesday, you can select both matches as two of your picks.
+					</li>
+					<li class="list-group-item">
+						On champions league weeks 1 extra result can be made (4 results to be made on the champions league weeks, 3 prem, 1 champions league) same rules will apply.
+					</li>
+					<li class="list-group-item">
+						3 points for correct score.
+					</li>
+					<li class="list-group-item">
+						3 points for 1st goal scorer
+					</li>
+					<li class="list-group-item">1 point if the selected team wins but its is the wrong result.</li>
+					<li class="list-group-item">1 point if goal scorer scores any time after the 1st goal.</li>
+					<li class="list-group-item">Own goals will count as 1st goal scorer, For Andy Watson</li>
+					<li class="list-group-item">First goal scorer red card will get <span class="text-danger">penalty -1 point</span></li>
+				</ul>
+			</div>
+		</div>
+		
+	</section>
+
+	<!--RULE SECTION END-->
+
+
+    {% comment %} <div class="container bg-light">
+        <h1 class="text-center mt-5 ">scoresonthedoor.uk</h1>
         <h2 class="text-center mt-3">Welcome</h2>
         <img src="{% static 'images/nets1.jpg' %}" alt="" class="img-fluid ">
+    </div> {% endcomment %}
+{% else %}
+    <!--IF USER IS NOT LOGEDIN-->
+    <div class="container text-center mt-3">
+        <h2>scoresonthedoors.uk</h2>
+        <p>If you have an account login <a href="{% url 'authentication:login' %}">here</a></p>
+        <p>else register <a href="{% url 'authentication:signup' %}">here</a></p>
     </div>
+{% endif %}
+
+
+
 {% endblock content %}
