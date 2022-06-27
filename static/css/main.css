@@ -1,5 +1,4 @@
-.my_hero{
-    background-image: url('../images/nets1.jpg'); 
+.my_hero{ 
     background-size: cover;
     background-position: center; 
 }
