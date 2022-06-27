@@ -1,5 +1,5 @@
 from re import L
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, CreateView, DetailView
 from leagues.models import League
 from predicts.models import MatchPrediction
@@ -172,3 +172,19 @@ def join_league_pin(request, pk):
         'form': form
     }
     return render(request,'join_league_confirm.html',context)
+
+
+def league_delete(request, pk):
+    league = get_object_or_404(League, id=pk)
+    user = request.user
+    context = {}
+
+    if request.method == 'POST':
+        if user.id == league.admin.id:
+            league.delete()
+            return redirect('leagues:leagues-home')
+        else:
+            messages.info(request,f'You must be administrator to delete {league.name}.')
+            return redirect('leagues:leagues-home')
+
+    return render(request, 'delete_league.html', context)

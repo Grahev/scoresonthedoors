@@ -30,7 +30,14 @@
                 {% else %}
                 <li class="list-group-item d-flex justify-content-between">
                     <a href="/leagues/{{league.id}}">{{league.name}}</a>
-                    <a href="leave/{{league.id}}" class="btn btn-danger">Leave</a>
+                    <div class="buttons">
+                        {% if league.admin == user %}
+                            <a href="{{league.id}}/delete" class="btn btn-danger">Delete</a>
+                        {% endif %}
+                        <a href="leave/{{league.id}}" class="btn btn-warning">Leave</a>
+                    </div>
+                    
+                    
                 </li>
                 {% endif %}
         
