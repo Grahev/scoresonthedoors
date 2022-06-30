@@ -38,7 +38,8 @@ def run():
         if prediction.match.status == 'FT':
             print('Match Finished calculate points')
             #red card minus points
-            if MatchEvents.objects.filter(match=prediction.match).filter(detail='Red Card').filter(player=prediction.goalScorer).exists():
+            # if MatchEvents.objects.filter(match=prediction.match).filter(detail='Red Card').filter(player=prediction.goalScorer).exists():
+            if MatchEvents.objects.filter(match=prediction.match).filter(detail='Red Card').filter(team=prediction.goalScorer.team).exists():
             #minus points
                 print('minus point for red card')
                 points -= 1

@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+    <h1 class="text-center mt-5 mb-3">{{league.name}}</h1>
+
+
+    <div class="container-sm">
+        <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Name</th>
+                <th scope="col">Points</th>
+              </tr>
+            </thead>
+            <tbody>
+                {% for user in table %}
+              <tr>
+                <th scope="row">{{forloop.counter}}</th>
+                {% comment %} <td>{{user.name}}</td> {% endcomment %}
+                {% comment %} <td><a href="../../predictions/{{user.name}}">{{user.name}}</a></td> {% endcomment %}
+                <td><a href="{% url 'predicts:user_prediction_list' user.name %}">{{user.name}}</a></td>
+                <td>{{user.points}}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          <div class="d-flex justify-content-between">
+              <small>Created: {{league.create_date}}</small>
+              <small>Admin: {{league.admin}}</small>
+              <small>PIN: {{league.pin}}</small>
+          </div>
+          <div class="info mt-3">
+            <p class="">League info/rules:</p>
+            <small>{{league.rules|linebreaks}}</small>
+          </div>
+    </div>
+{% endblock content %}

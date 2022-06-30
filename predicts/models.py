@@ -27,7 +27,7 @@ class Match(models.Model):
         ordering = ['date']
 
     def __str__(self):
-        return f'MD{self.matchday} - {self.hTeam} : {self.aTeam} - {self.status}'
+        return f'Match | {self.matchday} - {self.hTeam} : {self.aTeam} - {self.status}'
 
     @property
     def is_past_due(self):
@@ -62,7 +62,7 @@ class MatchPrediction(models.Model):
     points = models.PositiveIntegerField(blank=True, null=True)
     
     def __str__(self):
-        return f'MD:{self.pk}- ID: {self.match_id}-{self.user}- {self.homeTeamScore} : {self.awayTeamScore}'
+        return f'Match Prediction | {self.user} - {self.homeTeamScore} : {self.awayTeamScore} - {self.match}'
 
     @property
     def is_past_due(self):
@@ -82,4 +82,7 @@ class MatchEvents(models.Model):
     player = models.ForeignKey(Player, on_delete=DO_NOTHING)
     type = models.CharField(max_length=50)
     detail = models.CharField(max_length=50)
+
+    def __str__(self):
+        return f'Event | {self.type} - {self.team} - {self.player}'
 
