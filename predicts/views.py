@@ -153,3 +153,11 @@ def delete_view(request, pk):
     context["prediction"] = obj
  
     return render(request, "prediction_delete.html", context)
+
+def user_predictions_list(request, user):
+    predictions = MatchPrediction.objects.filter(user__username = user).order_by('-match__status','-match__date')
+    context = {
+        'predictions': predictions
+    }
+       
+    return render(request, 'user_predictions_list.html', context)

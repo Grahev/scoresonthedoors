@@ -19,9 +19,7 @@
                 {% for user in table %}
               <tr>
                 <th scope="row">{{forloop.counter}}</th>
-                {% comment %} <td>{{user.name}}</td> {% endcomment %}
-                {% comment %} <td><a href="../../predictions/{{user.name}}">{{user.name}}</a></td> {% endcomment %}
-                <td><a href="{% url 'predicts:user_prediction_list' user.name %}">{{user.name}}</a></td>
+                <td>{{user.name}}</td>
                 <td>{{user.points}}</td>
               </tr>
               {% endfor %}
