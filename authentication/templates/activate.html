@@ -1,5 +1,11 @@
 {% autoescape off %}  
-Hi {{ user.username }},  
-Please click on the link to confirm your registration,  
-http://{{ domain }}{% url 'authentication:activate' uidb64=uid token=token %}  
+Hi {{ user.username }},
+ <br>  
+  
+<a href="http://{{ domain }}{% url 'authentication:activate' uidb64=uid token=token %}">PLEASE CLICL HERE TO CONFIRM YOR EMAIL</a>
+<br>
+<p>Welcome in scores on the doors!</p>
+
+
+
 {% endautoescape %}  
