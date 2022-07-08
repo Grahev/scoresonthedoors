@@ -1,7 +1,7 @@
 {% autoescape off %}  
 Hi {{ user.username }},
 PLEASE CLICL HERE TO CONFIRM YOR EMAIL
-http://{{ domain }}{% url 'authentication:activate' uidb64=uid token=token %}
+https://{{ domain }}{% url 'authentication:activate' uidb64=uid token=token %}
 
 
 
