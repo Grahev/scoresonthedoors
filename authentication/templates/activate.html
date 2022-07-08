@@ -1,6 +1,5 @@
 {% autoescape off %}  
 Hi {{ user.username }},
- <br>  
   
 <a href="http://{{ domain }}{% url 'authentication:activate' uidb64=uid token=token %}">PLEASE CLICL HERE TO CONFIRM YOR EMAIL</a>
 <br>
