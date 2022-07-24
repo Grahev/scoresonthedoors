@@ -133,21 +133,24 @@ def transfer_out(player_id):
     r = requests.request("GET", url, headers=headers, data=payload)
     print(f'request status code:{r.status_code}')
     data = r.json()
-    response = data['response']
-    stats = response[0]['statistics']
-    team = stats[0]['team']
-    team_id = team['id']
-
+    try:
+        response = data['response']
+        stats = response[0]['statistics']
+        team = stats[0]['team']
+        team_id = team['id']
+    except:
+        team_id = 999999999
     
     try:
-        Player.objects.filter(player_id=player_id).update(
+        p = Player.objects.filter(player_id=player_id)
+        p.update(
             team = Team.objects.get(id=team_id)
             )
         print(f'\nPlayer updated. and transfer has been done :) \n')
     except:
-        # Player.objects.filter(player_id=player_id).update(
-        #     team = Team.objects.get(id=999999999)
-        #     )
+        Player.objects.filter(player_id=player_id).update(
+            team = Team.objects.get(id=999999999)
+            )
         print(f'\nPlayer transfered out to N/A team \n')
 
     print('sleep for 20 sec')
