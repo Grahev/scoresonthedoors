@@ -29,6 +29,8 @@ def get_players(team_id):
     players= response[0]['players']
     team = response[0]['team']
 
+    all_teams = Team.objects.all()
+
     for i in players:
         id = i['id']
         name = i['name']
@@ -39,9 +41,17 @@ def get_players(team_id):
         team_id = team['id']
         print(f'player id: {id}, name: {name}, team id: {team_id}, age: {age}, number: {number}, position: {position}, photo url: {photo}')
 
+
+
         if Player.objects.filter(player_id=id).exists():
 
-            Player.objects.filter(player_id=id).update(
+            p = Player.objects.get(player_id=id)
+            print(f"\n {p.team.name} \n")
+
+            if p.team.id == team_id:
+                print ('\n\nteam match\n\n')
+
+                Player.objects.filter(player_id=id).update(
                 name=name,
                 age=age,
                 number=number,
@@ -50,6 +60,21 @@ def get_players(team_id):
                 team = Team.objects.get(id=team_id)
             )
             print(f'Player {name} updated.')
+            else:
+                Player.objects.filter(player_id=id).update(
+                name=name,
+                age=age,
+                number=number,
+                position = position,
+                photo = photo,
+                team = Team.objects.get(id=999999999)
+            )
+            print(f'Player {name} updated.')
+                print('\n\n team not match and mus be updated \n\n')
+
+
+
+            
         else:
             player = Player.objects.create(
             player_id=id,
