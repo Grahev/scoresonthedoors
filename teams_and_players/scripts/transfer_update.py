@@ -58,9 +58,10 @@ def get_players(team_id):
                 position = position,
                 photo = photo,
                 team = Team.objects.get(id=team_id)
-            )
-            print(f'Player {name} updated.')
+                )
+                print(f'Player {name} updated.')
             else:
+                print('\n\n team not match and mus be updated \n\n')
                 Player.objects.filter(player_id=id).update(
                 name=name,
                 age=age,
@@ -68,9 +69,9 @@ def get_players(team_id):
                 position = position,
                 photo = photo,
                 team = Team.objects.get(id=999999999)
-            )
-            print(f'Player {name} updated.')
-                print('\n\n team not match and mus be updated \n\n')
+                )
+                print(f'Player {name} updated.')
+                
 
 
 
