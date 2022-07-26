@@ -64,7 +64,7 @@ def get_all_games():
             match.save()
             print(f'{hTeam} : {aTeam} status: {status} added to db')
         except:
-            print{f'Error while try create match event {hTeam} vs {aTeam}'}
+            print({f'Error while try create match event {hTeam} vs {aTeam}'})
 
 def run():
     get_all_games()
