@@ -76,6 +76,14 @@ def match_prediction(request,pk):
             # if MatchPrediction.objects.filter(user = request.user).filter(match__in=Match.objects.filter(date__week=current_week)).count() >= 3:
             #     messages.error(request,'You predict 3 games already, delete your prediction to make new for this matchday.')
             #     return HttpResponseRedirect(request.path_info)
+            if match.league == 'Premier League':
+                if MatchPrediction.objects.filter(user = request.user).filter(match__league= 'Premier League').filter(match__in=Match.objects.filter(date__week=current_week)).count() >= 3:
+                    messages.error(request,'You predict 3 games for Premier League already, delete your prediction to make new.')
+                    return HttpResponseRedirect(request.path_info)
+            if match.league != 'Premier League':
+                if MatchPrediction.objects.filter(user = request.user).filter(match__league= 'UEFA Champions League').filter(match__in=Match.objects.filter(date__week=current_week)).count() >= 1:
+                    messages.error(request,'You predict 1 game for Champions League already, delete your prediction to make new.')
+                    return HttpResponseRedirect(request.path_info)
             if match.date < timezone.now():
                 messages.error(request,'Prediction match alredy started and can NOT be added on or edited. Please do prediction for other match.')
                 return HttpResponseRedirect(request.path_info)

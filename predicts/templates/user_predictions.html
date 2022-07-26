@@ -17,7 +17,7 @@
 
         <a href="{% url 'predicts:match_prediction_update' prediction.pk %}" class="text-decoration-none">
             <div class="fixture row shadow-sm p-3 mb-2 ">
-                <div class="fs-6 fw-light text-center mb-3 text-secondary">{{prediction.match.date|date}}</div>
+                <div class="fs-6 fw-light text-center mb-3 text-secondary">{{prediction.match.date|date}} - {{prediction.match.league}}</div>
                 <div class="home col-6 text-end p-0">
                     <span class="fw-bold">{{prediction.match.hTeam.name}}</span>
                     <span class="border px-3 py-2 bg-light">{{prediction.homeTeamScore}}</span>
@@ -40,7 +40,7 @@
 
 
         <div class="fixture row shadow-sm p-3 mb-2 text-secondary">
-            <div class="fs-6 fw-light text-center mb-3 text-secondary">{{prediction.match.date|date}}</div>
+            <div class="fs-6 fw-light text-center mb-3 text-secondary">{{prediction.match.date|date}} - {{prediction.match.league}}</div>
             <div class="home col-6 text-end p-0">
                 <span class="fw-bold">{{prediction.match.hTeam.name}}</span>
                 <span class="border px-3 py-2 bg-light">{{prediction.homeTeamScore}}</span>
