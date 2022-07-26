@@ -29,27 +29,30 @@ def get_players(team_id):
     players= response[0]['players']
     team = response[0]['team']
 
-    for i in players:
-       id = i['id']
-       name = i['name']
-       age = i['age']
-       number = i['number']
-       position = i['position']
-       photo = i['photo']
-       team_id = team['id']
-       print(f'player id: {id}, name: {name}, team id: {team_id}, age: {age}, number: {number}, position: {position}, photo url: {photo}')
-       player = Player.objects.create(
-           player_id=id,
-           name=name,
-           age=age,
-           number=number,
-           position = position,
-           photo = photo,
-           team = Team.objects.get(id=team_id)
-       )
-       player.save()
-       print(f'Player {name} added to db.')
+    if Player.objects.filter(id=team_id).count() > 0:
 
+        for i in players:
+           id = i['id']
+           name = i['name']
+           age = i['age']
+           number = i['number']
+           position = i['position']
+           photo = i['photo']
+           team_id = team['id']
+           print(f'player id: {id}, name: {name}, team id: {team_id}, age: {age}, number: {number}, position: {position}, photo url: {photo}')
+           player = Player.objects.create(
+               player_id=id,
+               name=name,
+               age=age,
+               number=number,
+               position = position,
+               photo = photo,
+               team = Team.objects.get(id=team_id)
+           )
+           player.save()
+           print(f'Player {name} added to db.')
+    else:
+        print(f'{team} have more than 1 player in team players will not be added.')
 
 def get_teams_ids():
     teams = Team.objects.all()
