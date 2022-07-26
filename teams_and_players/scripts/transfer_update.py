@@ -46,21 +46,21 @@ def get_players(team_id):
         position = i['position']
         photo = i['photo']
         team_id = team['id']
-        print(f'player id: {id}, name: {name}, team id: {team_id}, age: {age}, number: {number}, position: {position}, photo url: {photo}')
+        print(f'player id: {id}, name: {name}, team id: {team_id}')
 
        
 
         if Player.objects.filter(player_id=id).exists():
 
-            Player.objects.filter(player_id=id).update(
-            name=name,
-            age=age,
-            number=number,
-            position = position,
-            photo = photo,
-            team = Team.objects.get(id=team_id)
-            )
-            print(f'Player {name} updated.')
+            # Player.objects.filter(player_id=id).update(
+            # name=name,
+            # age=age,
+            # number=number,
+            # position = position,
+            # photo = photo,
+            # team = Team.objects.get(id=team_id)
+            # )
+            print(f'Player {name} is in database.')
         else:
             player = Player.objects.create(
             player_id=id,
@@ -72,7 +72,7 @@ def get_players(team_id):
             team = Team.objects.get(id=team_id)
             )
             player.save()
-            print(f'Player {name} added to db.')
+            print(f'\n NEW Player {name} added to db.\n')
                 
 # section to transfer out old players to new teams
     players_to_transfer_out = return_players_to_transfer_out(db_team_players_ids,api_team_players_ids)
@@ -133,13 +133,12 @@ def transfer_out(player_id):
     r = requests.request("GET", url, headers=headers, data=payload)
     print(f'request status code:{r.status_code}')
     data = r.json()
-    try:
-        response = data['response']
-        stats = response[0]['statistics']
-        team = stats[0]['team']
-        team_id = team['id']
-    except:
-        team_id = 999999999
+
+    response = data['response']
+    stats = response[0]['statistics']
+    team = stats[0]['team']
+    team_id = team['id']
+
     
     try:
         p = Player.objects.filter(player_id=player_id)
