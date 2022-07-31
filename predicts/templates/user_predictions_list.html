@@ -1,38 +1,127 @@
 {% extends 'base.html' %}
 
+<h1>user predictions</h1>>
+
 {% block content %}
 
 
-    <h1 class="text-center mt-5 mb-3">{{league.name}}</h1>
+<div class="predictions-container container mt-3">
+    <h1 class="fs-3 text-center mt-4 mx-3 bg-primary text-light p-1">{{user}}'s predictions</h1>
+
+    {% for prediction in user_predictions %}
+    
+        
+        {% if prediction.match.is_active %}
+        <!-- ACTIVE PREDICTIONS-->
 
 
-    <div class="container-sm">
-        <table class="table">
-            <thead>
-              <tr>
-                <th scope="col">#</th>
-                <th scope="col">Name</th>
-                <th scope="col">Points</th>
-              </tr>
-            </thead>
-            <tbody>
-                {% for user in table %}
-              <tr>
-                <th scope="row">{{forloop.counter}}</th>
-                <td>{{user.name}}</td>
-                <td>{{user.points}}</td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-          <div class="d-flex justify-content-between">
-              <small>Created: {{league.create_date}}</small>
-              <small>Admin: {{league.admin}}</small>
-              <small>PIN: {{league.pin}}</small>
+        {% comment %} <a href="{% url 'predicts:match_prediction_update' prediction.pk %}" class="text-decoration-none">
+            <div class="fixture row shadow-sm p-3 mb-2 ">
+                <div class="fs-6 fw-light text-center mb-3 text-secondary">{{prediction.match.date|date}} - {{prediction.match.league}}</div>
+                <div class="home col-6 text-end p-0">
+                    <span class="fw-bold">{{prediction.match.hTeam.name}}</span>
+                    <span class="border px-3 py-2 bg-light">{{prediction.homeTeamScore}}</span>
+                </div>
+
+                <div class="away col-6 text-left p-0">
+                    <span class="border px-3 py-2 bg-light text-left">{{prediction.awayTeamScore}}</span>
+                    <span class="fw-bold">{{ prediction.match.aTeam.name}}</span>
+                </div>
+
+                <div class="fs-6 fw-light text-center mb-1 mt-1 text-secondary">{{prediction.goalScorer.name}}</div>
+            </div>
+        </a> {% endcomment %}
+            
+        <!--END OF ACTIVE PREDICTIONS-->        
+        {% else %}
+        <!--INACTIVE PREDICTIONS-->
+
+        
+
+
+        <div class="fixture row shadow-sm p-3 mb-2 text-secondary">
+            <div class="fs-6 fw-light text-center mb-3 text-secondary">{{prediction.match.date|date}} - {{prediction.match.league}}</div>
+            <div class="home col-6 text-end p-0">
+                <span class="fw-bold">{{prediction.match.hTeam.name}}</span>
+                <span class="border px-3 py-2 bg-light">{{prediction.homeTeamScore}}</span>
+            </div>
+
+            <div class="away col-6 text-left p-0">
+                <span class="border px-3 py-2 bg-light text-left">{{prediction.awayTeamScore}}</span>
+                <span class="fw-bold">{{ prediction.match.aTeam.name}}</span>
+            </div>
+
+            <div class="fs-6 fw-light text-center mb-1 mt-1 text-secondary">Points: {% if prediction.points %} {{prediction.points}}{% endif %} </div>
+
+            <!-- Button trigger modal -->
+            <button type="button" class="btnbtn-sm btn mb-1" data-bs-toggle="modal" data-bs-target="#exampleModal{{prediction.id}}">
+                More
+              </button>
+        </div>
+
+
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModal{{prediction.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">Points: {% if prediction.points %} {{prediction.points}}{% endif %}</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!--full time-->
+                    <div class="fixture row shadow-sm p-3 text-secondary">
+                        <div class="fs-6 fw-light text-center mb-3 text-secondary">{{prediction.match.status}}</div>
+                        <div class="home col-6 text-end p-0">
+                            <span class="fw-bold">{{prediction.match.hTeam.name}}</span>
+                            <span class="border px-3 py-2 bg-light">{{prediction.match.hTeamScore}}</span>
+                        </div>
+                    
+                        <div class="away col-6 text-left p-0">
+                            <span class="border px-3 py-2 bg-light text-left">{{prediction.match.aTeamScore}}</span>
+                            <span class="fw-bold">{{ prediction.match.aTeam.name}}</span>
+                        </div>
+                        <!--goal scorer-->
+                        <div class="fs-6 fw-light text-center mb-0 text-secondary mt-3"> 1st goal: {{prediction.match.first_goal}}</div>
+
+                    </div>
+
+                <!-- //TODO color coded points in modal section to highlight winner team first goal scorer, anytime goal scorer -->
+                  <!--prediction-->
+                    <div class="fixture row shadow-sm p-3 text-secondary">
+                        <div class="fs-6 fw-light text-center mb-3 text-secondary">Prediction</div>
+                        <div class="home col-6 text-end p-0">
+                            <span class="fw-bold">{{prediction.match.hTeam.name}}</span>
+                            {% if prediction.homeTeamScore == prediction.match.hTeamScore %}
+                            <span class="border px-3 py-2 bg-success text-light">{{prediction.homeTeamScore}}</span>
+                            {% else %}
+                            <span class="border px-3 py-2 bg-light ">{{prediction.homeTeamScore}}</span>
+                            {% endif %}
+                            
+                        </div>
+                    
+                        <div class="away col-6 text-left p-0">
+                            <span class="border px-3 py-2 bg-light text-left">{{prediction.awayTeamScore}}</span>
+                            <span class="fw-bold">{{ prediction.match.aTeam.name}}</span>
+                        </div>
+                        <!--goal scorer-->
+                    
+                        <div class="fs-6 fw-light text-center mb-0 text-secondary mt-3"> 1st goal: {{prediction.goalScorer.name}}</div>
+
+                    </div>
+
+                  
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="info mt-3">
-            <p class="">League info/rules:</p>
-            <small>{{league.rules|linebreaks}}</small>
-          </div>
-    </div>
+            
+        <!--END OF INACTIVE PREDICTIONS-->
+        {% endif %}
+    {% endfor %}
+</div>
+
 {% endblock content %}
