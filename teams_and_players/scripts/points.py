@@ -1,6 +1,5 @@
 import requests
 from predicts.models import MatchEvents, MatchPrediction
-import config
 from predicts.models import Match
 
 
