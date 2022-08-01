@@ -71,7 +71,7 @@
                 <div class="modal-body">
                     <!--full time-->
                     <div class="fixture row shadow-sm p-3 text-secondary">
-                        <div class="fs-6 fw-light text-center mb-3 text-secondary">{{prediction.match.status}}</div>
+                        <div class="fs-6 fw-light text-center mb-3 text-secondary">FULL TIME RESULT</div>
                         <div class="home col-6 text-end p-0">
                             <span class="fw-bold">{{prediction.match.hTeam.name}}</span>
                             <span class="border px-3 py-2 bg-light">{{prediction.match.hTeamScore}}</span>
@@ -89,10 +89,10 @@
                 <!-- //TODO color coded points in modal section to highlight winner team first goal scorer, anytime goal scorer -->
                   <!--prediction-->
                     <div class="fixture row shadow-sm p-3 text-secondary">
-                        <div class="fs-6 fw-light text-center mb-3 text-secondary">Prediction</div>
+                        <div class="fs-6 fw-light text-center mb-3 text-secondary">PREDICTION</div>
                         <div class="home col-6 text-end p-0">
                             <span class="fw-bold">{{prediction.match.hTeam.name}}</span>
-                            {% if prediction.homeTeamScore == prediction.match.hTeamScore %}
+                            {% if prediction.homeTeamScore == prediction.match.hTeamScore and prediction.awayTeamScore == prediction.match.hTeamScore %}
                             <span class="border px-3 py-2 bg-success text-light">{{prediction.homeTeamScore}}</span>
                             {% else %}
                             <span class="border px-3 py-2 bg-light ">{{prediction.homeTeamScore}}</span>
@@ -101,7 +101,15 @@
                         </div>
                     
                         <div class="away col-6 text-left p-0">
-                            <span class="border px-3 py-2 bg-light text-left">{{prediction.awayTeamScore}}</span>
+
+                            {% if prediction.homeTeamScore == prediction.match.hTeamScore and prediction.awayTeamScore == prediction.match.hTeamScore %}
+                            <span class="border px-3 py-2 bg-success text-light">{{prediction.awayTeamScore}}</span>
+                            {% else %}
+                            <span class="border px-3 py-2 bg-light ">{{prediction.awayTeamScore}}</span>
+                            {% endif %}
+
+
+                            {% comment %} <span class="border px-3 py-2 bg-light text-left">{{prediction.awayTeamScore}}</span> {% endcomment %}
                             <span class="fw-bold">{{ prediction.match.aTeam.name}}</span>
                         </div>
                         <!--goal scorer-->
