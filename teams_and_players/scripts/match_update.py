@@ -82,17 +82,32 @@ def match_update(event_id):
                 p = Player.objects.get(player_id=player_id)
             except:
                 p = Player.objects.get(player_id=0)
-            match_event = MatchEvents.objects.create(
-                match = Match.objects.get(match_id=match_id),
-                team = Team.objects.get(id=team_id),
-                time = time,
-                player = p,
-                type = e_type,
-                detail = e_detail,
-            )
-            match_event.save()
-            print('Match event created')
-            print('goal scorer added')
+
+            if e_type == 'Card':
+                match_event = MatchEvents.objects.create(
+                    match = Match.objects.get(match_id=match_id),
+                    team = Team.objects.get(id=team_id),
+                    time = time,
+                    player = p,
+                    type = e_type,
+                    detail = e_detail,
+                )
+                match_event.save()
+                print('Card event created')
+            elif e_type == 'Goal':
+                match_event = MatchEvents.objects.create(
+                    match = Match.objects.get(match_id=match_id),
+                    team = Team.objects.get(id=team_id),
+                    time = time,
+                    player = p,
+                    type = e_type,
+                    detail = e_detail,
+                )
+                match_event.save()
+                print('Goal event created')
+            else:
+                continue
+                
         else:
             continue
         
@@ -100,6 +115,8 @@ def match_update(event_id):
 
 def run():
     all_matches = Match.objects.filter(status='NS').order_by('matchday')
+
+    print(all_matches)
 
     current_matchday = all_matches.filter(date__week=current_week) #get queryset only for last not finished matchday
 
