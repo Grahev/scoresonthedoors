@@ -78,8 +78,9 @@ def get_players(team_id):
     players_to_transfer_out = return_players_to_transfer_out(db_team_players_ids,api_team_players_ids)
 
     print(f'Numbers of players to transfer out: {len(players_to_transfer_out)}')
-    counter = len(players_to_transfer_out)
+    # counter = len(players_to_transfer_out)
     for p in players_to_transfer_out:
+        counter = len(players_to_transfer_out)
         transfer_out(p)
         left = counter - 1
         print(f'{left} to finish this team transfers')
@@ -145,12 +146,12 @@ def transfer_out(player_id):
         p.update(
             team = Team.objects.get(id=team_id)
             )
-        print(f'\nPlayer updated. and transfer has been done :) \n')
+        print(f'\n {p.name} updated. and transfer has been done :) \n')
     except:
         Player.objects.filter(player_id=player_id).update(
             team = Team.objects.get(id=999999999)
             )
-        print(f'\nPlayer transfered out to N/A team \n')
+        print(f'\n {p.name} transfered out to N/A team \n')
 
     print('sleep for 20 sec')
     time.sleep(20)
