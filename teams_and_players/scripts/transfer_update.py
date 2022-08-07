@@ -146,12 +146,12 @@ def transfer_out(player_id):
         p.update(
             team = Team.objects.get(id=team_id)
             )
-        print(f'\n {p.name} updated. and transfer has been done :) \n')
+        print(f'\n {p} updated. and transfer has been done :) \n')
     except:
         Player.objects.filter(player_id=player_id).update(
             team = Team.objects.get(id=999999999)
             )
-        print(f'\n {p.name} transfered out to N/A team \n')
+        print(f'\n {p} transfered out to N/A team \n')
 
     print('sleep for 20 sec')
     time.sleep(20)
