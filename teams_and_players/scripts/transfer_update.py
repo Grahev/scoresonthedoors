@@ -140,6 +140,11 @@ def transfer_out(player_id):
     team = stats[0]['team']
     team_id = team['id']
 
+    player = response[0]['player']
+    p_name = player['name']
+
+    print(p_name)
+
     
     try:
         p = Player.objects.filter(player_id=player_id)
