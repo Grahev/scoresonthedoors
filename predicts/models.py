@@ -44,7 +44,7 @@ class Match(models.Model):
 
     @property
     def first_goal(self):
-        first = MatchEvents.objects.filter(match=self).first()
+        first = MatchEvents.objects.filter(match=self).filter(type='Goal').first()
         try:
             f = first.player.name
         except:
