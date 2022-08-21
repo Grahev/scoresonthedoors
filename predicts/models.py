@@ -59,7 +59,7 @@ class MatchPrediction(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     goalScorer = models.ForeignKey(Player, on_delete=models.DO_NOTHING)
     checked = models.BooleanField(default=False)
-    points = models.PositiveIntegerField(blank=True, null=True)
+    points = models.IntegerField(blank=True, null=True)
     
     def __str__(self):
         return f'Match Prediction | {self.user} - {self.homeTeamScore} : {self.awayTeamScore} - {self.match}'
