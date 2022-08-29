@@ -3,7 +3,7 @@ from django.views.decorators.cache import cache_page
 import requests
 import os
 from .forms import MatchPredictionForm
-from .models import Match, MatchPrediction
+from .models import Match, MatchPrediction, NumberOfGamesToPredict
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.utils import timezone
@@ -62,6 +62,8 @@ def match_prediction(request,pk):
     form = MatchPredictionForm(ht=hteam,at=ateam)
     m_id = match.match_id
     key = os.environ.get('key')
+    number_of_games_to_predict = NumberOfGamesToPredict.objects.get(pk=1)
+    print(f'\n number of EPL games to predict = {number_of_games_to_predict.EPL}')
 
 
     if request.method == 'POST':
@@ -77,12 +79,12 @@ def match_prediction(request,pk):
             #     messages.error(request,'You predict 3 games already, delete your prediction to make new for this matchday.')
             #     return HttpResponseRedirect(request.path_info)
             if match.league == 'Premier League':
-                if MatchPrediction.objects.filter(user = request.user).filter(match__league= 'Premier League').filter(match__in=Match.objects.filter(date__week=current_week)).count() >= 3:
-                    messages.error(request,'You predict 3 games for Premier League already, delete your prediction to make new.')
+                if MatchPrediction.objects.filter(user = request.user).filter(match__league= 'Premier League').filter(match__in=Match.objects.filter(date__week=current_week)).count() >= number_of_games_to_predict.EPL:
+                    messages.error(request,f'You predict {number_of_games_to_predict.EPL} games for Premier League already, delete your prediction to make new.')
                     return HttpResponseRedirect(request.path_info)
             if match.league != 'Premier League':
-                if MatchPrediction.objects.filter(user = request.user).filter(match__league= 'UEFA Champions League').filter(match__in=Match.objects.filter(date__week=current_week)).count() >= 1:
-                    messages.error(request,'You predict 1 game for Champions League already, delete your prediction to make new.')
+                if MatchPrediction.objects.filter(user = request.user).filter(match__league= 'UEFA Champions League').filter(match__in=Match.objects.filter(date__week=current_week)).count() >= number_of_games_to_predict.UCL:
+                    messages.error(request,f'You predict {number_of_games_to_predict.UCL} game for Champions League already, delete your prediction to make new.')
                     return HttpResponseRedirect(request.path_info)
             if match.date < timezone.now():
                 messages.error(request,'Prediction match alredy started and can NOT be added on or edited. Please do prediction for other match.')

@@ -86,3 +86,10 @@ class MatchEvents(models.Model):
     def __str__(self):
         return f'Event | {self.type} - {self.team} - {self.player}'
 
+
+class NumberOfGamesToPredict(models.Model):
+    EPL = models.IntegerField()
+    UCL = models.IntegerField()
+
+    def __str__(self) -> str:
+        return f'Number of games to predict | EPL = {self.EPL}, UCL = {self.UCL}'
