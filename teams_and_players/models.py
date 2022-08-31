@@ -35,3 +35,10 @@ class Player(models.Model):
 
     def __str__(self):
         return f'{self.team} - {self.name}'
+
+class TeamsToTransferUpdate(models.Model):
+    id = models.IntegerField(primary_key=True)
+    team = models.ForeignKey(Team,on_delete=models.CASCADE,blank=True)
+
+    def __str__(self) -> str:
+        return f'Team to update {self.team}'
