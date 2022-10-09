@@ -101,11 +101,11 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': 'dbhr05b06i5p83',
-            'USER': 'woeyaxdjiiamlj',
+            'NAME': 'railway',
+            'USER': 'postgres',
             'PASSWORD': os.environ.get('Password','dev default value'),
-            'HOST': 'ec2-44-197-128-108.compute-1.amazonaws.com',
-            'PORT': '5432',
+            'HOST': 'containers-us-west-94.railway.app',
+            'PORT': '5715',
         }
     }
 
