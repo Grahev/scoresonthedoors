@@ -24,7 +24,7 @@ gunicorn==20.1.0
 idna==3.3
 iniconfig==1.1.1
 multidict==6.0.2
-numpy==1.22.3
+numpy==1.21.6
 packaging==21.3
 pluggy==1.0.0
 psycopg2==2.9.3
