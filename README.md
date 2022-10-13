@@ -1,3 +1,3 @@
 # scoresonthedoors
 
-https://scoresonthedoors.uk
+http://scoresonthedoors.uk
