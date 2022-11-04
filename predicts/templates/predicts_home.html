@@ -1,98 +1,76 @@
 {% extends "base.html" %}
 {% block content %}
+
+{% regroup fixtures by date|date as days_list %}
+
+
+
+
 <div class="container">
-    {% comment %} PREMIERE LEAGUE START {% endcomment %}
-    <h1 class="fs-3 text-center mt-4 mx-3 bg-primary text-light p-1">Premier League</h1>
-    <div id="fixture-list">
-        
-        {% for fixture in fixtures %}
-        
-        {% if fixture.league == 'Premier League' %}
-        
-        <!--//TODO change to show only active games change .is_past_due to .is_active-->
-            {% if fixture.is_past_due %}
-           
-                <div class="fixture row shadow-sm p-3 mb-2  past_due">
-                    <div class="fs-6 fw-light text-center mb-3 text-secondary">{{fixture.date|date}}</div>
-                    <div class="home col-6 text-end p-0">
-                        <span class="fw-bold">{{fixture.hTeam.name}}</span>
-                        <span class="border px-3 py-2 bg-light">{{fixture.hTeamScore}}</span>
+    
+    
+    <ul>
+        {% for day in days_list %}
+
+            <div class="card my-3 ">
+                <div class="card-body shadow rounded-10">
+                    <div class="card-title">
+                        <h5 class="text-center">{{day.grouper}}</h5>
                     </div>
+                    
 
-                    <div class="away col-6 text-left p-0">
-                        <span class="border px-3 py-2 bg-light text-left">{{fixture.aTeamScore}}</span>
-                        <span class="fw-bold">{{ fixture.aTeam.name}}</span>
-                    </div>
-                </div>
-            {% else %}
-            <a href="{% url 'predicts:match_prediction' fixture.pk %}" class="text-decoration-none text-dark">
-            <div class="fixture row shadow-sm p-3 mb-2 not_start">
-                <div class="fs-6 fw-light text-center mb-3 text-secondary">{{fixture.date|date}}</div>
-                <div class="home col-6 text-end p-0">
-                    <span class="fw-bold">{{fixture.hTeam.name}}</span>
-                    <span class=" "><img src="{{fixture.hTeam.logo}}" alt="logo" height=35></span>
-                </div>
-
-                <div class="away col-6 text-left p-0">
-                    <span class=" text-left"><img src="{{fixture.aTeam.logo}}" alt="logo" height=35></span>
-                    <span class="fw-bold">{{ fixture.aTeam.name}}</span>
-                </div>
-            </div>
-                
-            </a>
-            {% endif %}
-            {% endif %}
-            
-        {% endfor %}
-
-        {% comment %} PREMIERE LEAGUE END {% endcomment %}
-
-        {% comment %} CHAMPIONES LEAGUE START {% endcomment %}
-
-        <h1 class="fs-3 text-center mt-4 mx-3 bg-primary text-light p-1">UEFA Champions League</h1>
-        <div id="fixture-list">
-            
-            {% for fixture in fixtures %}
-            
-            {% if fixture.league != 'Premier League' %}
-            
-                <!--//TODO change to show only active games change .is_past_due to .is_active-->
-                {% if fixture.is_past_due %}
+                    {% for match in day.list %}
+                    
+                    {% if match.is_past_due %}
                
-                    <div class="fixture row shadow-sm p-3 mb-2  past_due">
-                        <div class="fs-6 fw-light text-center mb-3 text-secondary">{{fixture.date|date}}</div>
+                    <div class="fixture row p-3 my-3">
                         <div class="home col-6 text-end p-0">
-                            <span class="fw-bold">{{fixture.hTeam.name}}</span>
-                            <span class="border px-3 py-2 bg-light">{{fixture.hTeamScore}}</span>
+                            <span class="fw-bold">{{match.hTeam.name}}</span>
+                            <span class="border px-3 py-2 bg-light">{{match.hTeamScore}}</span>
                         </div>
     
                         <div class="away col-6 text-left p-0">
-                            <span class="border px-3 py-2 bg-light text-left">{{fixture.aTeamScore}}</span>
-                            <span class="fw-bold">{{ fixture.aTeam.name}}</span>
+                            <span class="border px-3 py-2 bg-light text-left">{{match.aTeamScore}}</span>
+                            <span class="fw-bold">{{ match.aTeam.name}}</span>
                         </div>
                     </div>
                 {% else %}
-                <a href="{% url 'predicts:match_prediction' fixture.pk %}" class="text-decoration-none text-dark">
-                <div class="fixture row shadow-sm p-3 mb-2 not_start">
-                    <div class="fs-6 fw-light text-center mb-3 text-secondary">{{fixture.date|date}}</div>
-                    <div class="home col-6 text-end p-0">
-                        <span class="fw-bold">{{fixture.hTeam.name}}</span>
-                        <span class=" "><img src="{{fixture.hTeam.logo}}" alt="logo" height=35></span>
-                    </div>
+                <a href="{% url 'predicts:match_prediction' match.pk %}" class="text-decoration-none text-dark">
+                    
+                    <div class="fixture row p-3 my-3">
+                        <p class="text-center card-subtitle mb-2 text-muted">{{match.date|time:"H:i"}}</p>
+                    
+                        <div class="home col-6 text-end p-0">
+                        
+                            <span class="fw-bold">{{match.hTeam.name}}</span>
+                            <span class=" "><img src="{{match.hTeam.logo}}" alt="logo" height=45></span>
+                        </div>
     
-                    <div class="away col-6 text-left p-0">
-                        <span class=" text-left"><img src="{{fixture.aTeam.logo}}" alt="logo" height=35></span>
-                        <span class="fw-bold">{{ fixture.aTeam.name}}</span>
+                        <div class="away col-6 text-left p-0">
+                            <span class=" text-left"><img src="{{match.aTeam.logo}}" alt="logo" height=45></span>
+                            <span class="fw-bold">{{ match.aTeam.name}}</span>
+                        </div>
                     </div>
-                </div>
                     
                 </a>
                 {% endif %}
-                {% endif %}
+
+    
+                    {% endfor %}
                 
-            {% endfor %}
-        {% comment %} CHAMPIONES LEAGUE END {% endcomment %}
-    </div>
+                </div>
+            </div>
+
+            
+             
+              
+           
+        
+        {% endfor %}
+    </ul>
+
+    
+
 </div>
     
 {% endblock content %}

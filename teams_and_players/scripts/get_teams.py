@@ -7,11 +7,12 @@ import os
 # Premier League id: 39
 # UEFA Natons League id: 5
 # Champions League id: 2
+#World Cup id: 1
 
 def get_teams():
     """get all teams and add them to Team model in database"""
 
-    url = 'https://v3.football.api-sports.io/teams?league=39&season=2022'
+    url = 'https://v3.football.api-sports.io/teams?league=1&season=2022'
     # url = 'https://v3.football.api-sports.io/teams?league=5&season=2022' #nations league url
     
     payload={}
