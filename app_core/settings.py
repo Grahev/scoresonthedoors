@@ -105,7 +105,7 @@ else:
             'USER': 'postgres',
             'PASSWORD': os.environ.get('Password','dev default value'),
             'HOST': 'containers-us-west-108.railway.app',
-            'PORT': '5715',
+            'PORT': '7164',
         }
     }
 
