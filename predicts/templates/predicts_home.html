@@ -34,7 +34,8 @@
                             <span class="fw-bold">{{ match.aTeam.name}}</span>
                         </div>
                     </div>
-                {% else %}
+                
+                    {% else %}
                 <a href="{% url 'predicts:match_prediction' match.pk %}" class="text-decoration-none text-dark">
                     
                     <div class="fixture row p-3 my-3">
@@ -43,11 +44,11 @@
                         <div class="home col-6 text-end p-0">
                         
                             <span class="fw-bold">{{match.hTeam.name}}</span>
-                            <span class=" "><img src="{{match.hTeam.logo}}" alt="logo" height=45></span>
+                            <span class=""><img src="{{match.hTeam.logo}}" class='rounded-circle m-1 border shadow-sm' alt="logo" height=35 width=35px></span>
                         </div>
     
                         <div class="away col-6 text-left p-0">
-                            <span class=" text-left"><img src="{{match.aTeam.logo}}" alt="logo" height=45></span>
+                            <span class=" text-left"><img src="{{match.aTeam.logo}}" class='rounded-circle m-1 border shadow-sm' alt="logo" height=35 width=35px></span>
                             <span class="fw-bold">{{ match.aTeam.name}}</span>
                         </div>
                     </div>
