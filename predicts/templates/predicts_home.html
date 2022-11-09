@@ -9,66 +9,62 @@
 <div class="container">
     
     
-    <ul>
-        {% for day in days_list %}
-
-            <div class="card my-3 ">
-                <div class="card-body shadow rounded-10">
-                    <div class="card-title">
-                        <h5 class="text-center">{{day.grouper}}</h5>
-                    </div>
-                    
-
-                    {% for match in day.list %}
-                    
-                    {% if match.is_past_due %}
-               
-                    <div class="fixture row p-3 my-3">
-                        <div class="home col-6 text-end p-0">
-                            <span class="fw-bold">{{match.hTeam.name}}</span>
-                            <span class="border px-3 py-2 bg-light">{{match.hTeamScore}}</span>
-                        </div>
     
-                        <div class="away col-6 text-left p-0">
-                            <span class="border px-3 py-2 bg-light text-left">{{match.aTeamScore}}</span>
-                            <span class="fw-bold">{{ match.aTeam.name}}</span>
-                        </div>
-                    </div>
-                
-                    {% else %}
-                <a href="{% url 'predicts:match_prediction' match.pk %}" class="text-decoration-none text-dark">
-                    
-                    <div class="fixture row p-3 my-3">
-                        <p class="text-center card-subtitle mb-2 text-muted">{{match.date|time:"H:i"}}</p>
-                    
-                        <div class="home col-6 text-end p-0">
-                        
-                            <span class="fw-bold">{{match.hTeam.name}}</span>
-                            <span class=""><img src="{{match.hTeam.logo}}" class='rounded-circle m-1 border shadow-sm' alt="logo" height=35 width=35px></span>
-                        </div>
-    
-                        <div class="away col-6 text-left p-0">
-                            <span class=" text-left"><img src="{{match.aTeam.logo}}" class='rounded-circle m-1 border shadow-sm' alt="logo" height=35 width=35px></span>
-                            <span class="fw-bold">{{ match.aTeam.name}}</span>
-                        </div>
-                    </div>
-                    
-                </a>
-                {% endif %}
-
-    
-                    {% endfor %}
-                
+    {% for day in days_list %}
+        <div class="card my-3 ">
+            <div class="card-body shadow rounded-10">
+                <div class="card-title">
+                    <h5 class="text-center">{{day.grouper}}</h5>
                 </div>
-            </div>
-
-            
-             
-              
+                
+                {% for match in day.list %}
+                
+                {% if match.is_past_due %}
            
+                <div class="fixture row p-3 my-3">
+                    <div class="home col-6 text-end p-0">
+                        <span class="fw-bold">{{match.hTeam.name}}</span>
+                        <span class="border px-3 py-2 bg-light">{{match.hTeamScore}}</span>
+                    </div>
+
+                    <div class="away col-6 text-left p-0">
+                        <span class="border px-3 py-2 bg-light text-left">{{match.aTeamScore}}</span>
+                        <span class="fw-bold">{{ match.aTeam.name}}</span>
+                    </div>
+                </div>
+            
+                {% else %}
+            <a href="{% url 'predicts:match_prediction' match.pk %}" class="text-decoration-none text-dark">
+                
+                <div class="fixture row p-3 my-3">
+                    <p class="text-center card-subtitle mb-2 text-muted">{{match.date|time:"H:i"}}</p>
+                
+                    <div class="home col-6 text-end p-0">
+                    
+                        <span class="fw-bold">{{match.hTeam.name}}</span>
+                        <span class=""><img src="{{match.hTeam.logo}}" class='rounded-circle m-1 border shadow-sm' alt="logo" height=35 width=35px></span>
+                    </div>
+
+                    <div class="away col-6 text-left p-0">
+                        <span class=" text-left"><img src="{{match.aTeam.logo}}" class='rounded-circle m-1 border shadow-sm' alt="logo" height=35 width=35px></span>
+                        <span class="fw-bold">{{ match.aTeam.name}}</span>
+                    </div>
+                </div>
+                
+            </a>
+            {% endif %}
+
+                {% endfor %}
+            
+            </div>
+        </div>
         
-        {% endfor %}
-    </ul>
+         
+          
+       
+    
+    {% endfor %}
+    
 
     
 
