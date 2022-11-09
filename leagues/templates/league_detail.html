@@ -3,10 +3,12 @@
 {% block content %}
 
 
-    <h1 class="text-center mt-5 mb-3">{{league.name}}</h1>
+    {% comment %} <h1 class="text-center mt-5 mb-3">{{league.name}}</h1> {% endcomment %}
+    
 
 
     <div class="container-sm">
+      <h1 class="fs-3 text-center mt-4 mx-3 bg-primary text-light p-1 rounded-pill">{{league.name}}</h1>
         <table class="table">
             <thead>
               <tr>

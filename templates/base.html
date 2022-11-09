@@ -16,25 +16,30 @@
   
     <!--NAVBAR start-->
     {% if request.user.is_authenticated %}
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary m-2 ">
       <div class="container-fluid">
-        <a class="navbar-brand fs-4 " href="{% url 'authentication:home' %}">SCORES ON THE DOORS</a>
+        
+        <a class="navbar-brand fs-4 px-3" href="{% url 'authentication:home' %}">SCORES ON THE DOORS</a>
+        
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarText">
+        
+        <div class="collapse navbar-collapse " id="navbarText">
+          
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item">
+            <li class="nav-item px-3 ">
               <a class="nav-link" aria-current="page" href="{% url 'predicts:predicts-home'%}">Current Games</a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item px-3">
               <a class="nav-link" href="{% url 'predicts:user_predictions' %}">My Predictions</a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item px-3">
               <a class="nav-link" href="{% url 'leagues:leagues-home'%}">Leagues</a>
             </li>
           </ul>
-          <span class="navbar-text">
+          
+          <span class="navbar-text px-3">
               Welcome {{user.username}}
               <a href="{% url 'authentication:logout' %}">Logout</a>
           </span>

@@ -2,12 +2,15 @@
 
 
 {% block content %}
-    <h1 class="text-center mt-5 mb-3">Join league</h1>
+<div class="container mt-4">
+  <h1 class="fs-3 text-center mt-4 mx-3 bg-primary text-light p-1 rounded-pill">Join league</h1>
 
     <ul class="list-group">
         {% for league in leagues %}
         <li class="list-group-item"><a href="{{league.pk}}">{{league.name}}</a></li>
         {% endfor %}
       </ul>
+</div>
+    
 
 {% endblock content %}
