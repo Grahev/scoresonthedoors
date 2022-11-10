@@ -44,10 +44,14 @@ def signup(request):
                         mail_subject, message, to=[to_email]  
             )  
             email.send()  
-            return HttpResponse('Please go to your email and confirm your email address by click activation link from email to complete the registration')  
+            return redirect('confirm/')
+            # return HttpResponse('Please go to your email and confirm your email address by click activation link from email to complete the registration')  
     else:  
         form = SignupForm()  
     return render(request, 'signup.html', {'form': form}) 
+
+def signup_confirmation(request):
+    return render(request, 'signup_confirmation.html')
 
 class activate(View):
     def get(self, request,uidb64, token):

@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path, include, reverse_lazy
-from authentication.views import home, signup, user_logout, activate, Login
+from authentication.views import home, signup, user_logout, activate, Login, signup_confirmation
 from django.contrib.auth import views as auth_views
 
 
@@ -11,6 +11,7 @@ urlpatterns = [
     path('login/', Login.as_view(),name='login'),
     path('signup/', signup,name='signup'),
     path('logout/', user_logout,name='logout'),
+    path('signup/confirm/', signup_confirmation,name='signup_confirmation'),
     path('activate/<uidb64>/<token>', activate.as_view(), name='activate'),
     
     #password recovery
