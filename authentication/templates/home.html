@@ -61,10 +61,20 @@
     </div> {% endcomment %}
 {% else %}
     <!--IF USER IS NOT LOGEDIN-->
-    <div class="container text-center mt-3">
-        <h2>scoresonthedoors.uk</h2>
-        <p>If you have an account login <a href="{% url 'authentication:login' %}">here</a></p>
-        <p>else register <a href="{% url 'authentication:signup' %}">here</a></p>
+    <div class="container mt-3">
+		{% comment %} <h1 class="fs-3 text-center mt-4 mx-3 bg-primary text-light p-1 rounded-pill"> Scores On The Doors</h1> {% endcomment %}
+        
+		<div class="card mx-auto mt-3 shadow" style="width: 18rem;">
+			<img src="https://images.unsplash.com/photo-1579952363873-27f3bade9f55?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80" class="card-img-top" alt="...">
+			<div class="card-body d-grid">
+			  {% comment %} <h5 class="card-title text-center fs-2 mb-4">WELCOME</h5> {% endcomment %}
+			  {% comment %} <p class="card-text fw-bold text-center mb-4">Please go to your email and confirm your email address by click activation link from email to complete the registration</p> {% endcomment %}
+			  <a href="{% url 'authentication:login' %}" class="btn btn-primary">Login</a>
+			  <p class="mt-2 text-center">Don't have an account?<br> Register <a href="{% url 'authentication:signup' %}">here</a></p>
+			</div>
+		  </div>
+        
+		  
     </div>
 {% endif %}
 
