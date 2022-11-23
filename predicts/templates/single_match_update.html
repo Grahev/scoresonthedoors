@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="continer">
+
+
+    <h1>match update</h1>
+    <br>
+    <h2>{{match}}</h2>
+    <br>
+    <h3>Full time score</h3>
+    <p>{{match.hTeam.name}} {{hTeamScore}} : {{aTeamScore}} {{match.aTeam.name}}</p>
+    <br>
+    <a class="btn btn-primary mx-auto" href="{% url 'predicts:match_point_update' match.pk %}" role="button">Points calculation</a>
+
+    <p>existing events in database</p>
+    {% if events_db %}
+        {% for event in events_db %}
+        <a href="{% url 'predicts:match_event_delete' event.id %}">delete</a>
+            <p>{{event.type}} / {{event.detail}} - time {{event.time}} event id : {{event.id}} - {{event.player.name}}</p>
+            <hr>
+        {% endfor %}
+    {% else %}
+        <p>No existing events in database for this match</p>
+    {% endif %}
+
+
+    <p>all events from api</p>
+    {% for event in events %}
+        {{event}}
+        <hr>
+    {% endfor %}
+</div>
+{% endblock content %}

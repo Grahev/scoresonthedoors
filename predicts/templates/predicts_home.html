@@ -35,6 +35,16 @@
                         <span class="border px-3 py-2 bg-light text-left">{{match.aTeamScore}}</span>
                         <span class="fw-bold">{{ match.aTeam.name}}</span>
                     </div>
+                    
+                </div>
+                <div class="row">
+                    <div class="col-4"></div>
+                    <div class="col-4 d-flex">
+                        {% if request.user.username == 'admin' %}
+                        <a class="btn btn-primary mx-auto" href="{% url 'predicts:single_match_update' match.pk %}" role="button">Update</a>
+                        {% endif %}
+                    </div>
+                    <div class="col-4"></div>
                 </div>
             
                 {% else %}
