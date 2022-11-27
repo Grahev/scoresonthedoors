@@ -9,6 +9,7 @@ from django.http import HttpResponseRedirect
 from django.utils import timezone
 import datetime
 from django.contrib import messages
+from django.contrib.admin.views.decorators import staff_member_required
 
 #import for current week
 from datetime import date
@@ -176,7 +177,7 @@ def user_predictions_list(request, user):
        
     return render(request, 'user_predictions_list.html', context)
 
-
+@staff_member_required
 def single_match_update(request,pk):
     match = Match.objects.get(pk=pk)
 
@@ -295,7 +296,7 @@ def single_match_update(request,pk):
     }
     return render(request,"single_match_update.html", context)
 
-
+@staff_member_required
 def event_delete(request,pk):
     # dictionary for initial data with
     # field names as keys
@@ -316,6 +317,7 @@ def event_delete(request,pk):
  
     return render(request, "match_event_delete.html", context)
 
+@staff_member_required
 def match_point_update(request, pk):
     """update points for all predictions for single match"""
     match = Match.objects.get(pk=pk)

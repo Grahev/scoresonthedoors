@@ -75,15 +75,15 @@ def get_players(team_id):
             print(f'\n NEW Player {name} added to db.\n')
                 
 # section to transfer out old players to new teams
-    players_to_transfer_out = return_players_to_transfer_out(db_team_players_ids,api_team_players_ids)
+    # players_to_transfer_out = return_players_to_transfer_out(db_team_players_ids,api_team_players_ids)
 
-    print(f'Numbers of players to transfer out: {len(players_to_transfer_out)}')
-    # counter = len(players_to_transfer_out)
-    for p in players_to_transfer_out:
-        counter = len(players_to_transfer_out)
-        transfer_out(p)
-        left = counter - 1
-        print(f'{left} to finish this team transfers')
+    # print(f'Numbers of players to transfer out: {len(players_to_transfer_out)}')
+    # # counter = len(players_to_transfer_out)
+    # for p in players_to_transfer_out:
+    #     counter = len(players_to_transfer_out)
+    #     transfer_out(p)
+    #     left = counter - 1
+    #     print(f'{left} to finish this team transfers')
 
 
 
