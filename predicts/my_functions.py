@@ -1,6 +1,7 @@
 import requests
 from predicts.models import MatchEvents, MatchPrediction
 from predicts.models import Match
+import os
 
 
 
@@ -86,3 +87,58 @@ def single_match_points(match):
             print('match status not finished')
 
  
+#function to get games
+def get_all_games():
+    """get all games"""
+    # epl id = 39
+    # champions league id = 2
+    #serie a id = 135
+    #la liga id = 140
+    # UEFA Natons League id: 5
+    #world cup id: 1
+
+    url = 'https://v3.football.api-sports.io/fixtures?league=1&season=2022&timezone=Europe/London&status=NS'
+    # url = 'https://v3.football.api-sports.io/fixtures?league=5&season=2022' # UEFA Natons League
+
+    payload={}
+    headers = {
+      'x-rapidapi-key': os.environ.get('key','dev default value'),
+      'x-rapidapi-host': os.environ.get('host','dev default value'),
+    }
+
+    r = requests.request("GET", url, headers=headers, data=payload)
+    print(f'request status code:{r.status_code}')
+    data = r.json()
+    response = data['response']
+    return response
+
+
+def get_match_details(match_id):
+    url = f'https://v3.football.api-sports.io/fixtures?id={match_id}'
+    payload={}
+    headers = {
+      'x-rapidapi-key': os.environ.get('key','dev default value'),
+      'x-rapidapi-host': os.environ.get('host','dev default value'),
+    }
+    r = requests.request("GET", url, headers=headers, data=payload)
+    print(f'request status code:{r.status_code}')
+    data = r.json()
+    response = data['response']
+    return response
+
+def get_players(team_id):
+    """get players for all teams"""
+
+    url = f'https://v3.football.api-sports.io/players/squads?team={team_id}'
+    
+    payload={}
+    headers = {
+      'x-rapidapi-key': os.environ.get('key','dev default value'),
+      'x-rapidapi-host': os.environ.get('host','dev default value'),
+    }
+
+    r = requests.request("GET", url, headers=headers, data=payload)
+    print(f'request status code:{r.status_code}')
+
+    data = r.json()
+    return data

@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.cache import cache_page
+from django.core.cache import cache
+from hashlib import sha256
 import requests
 import os
 from .forms import MatchPredictionForm
@@ -19,14 +21,21 @@ from django.urls import reverse_lazy
 from django.views.generic.edit import DeleteView
 
 #my functions import
-from .my_functions import single_match_points
+from .my_functions import single_match_points, get_all_games, get_match_details, get_players
 
 
 
 def predicts_home(request):
-    # fixtures = Match.objects.all()
+    
+    fixtures = cache.get('fixtures_cache') #all games
+    if not fixtures:
+        print('REQUEST TO API!!!!!!!!!!!!!!!!!!!!!')
+        cache.set('fixtures_cache', get_all_games(),86400)
+        fixtures = cache.get('fixtures_cache')
+        
 
-    fixtures = Match.objects.all() #all games
+    
+    # fixtures = Match.objects.all() #all games
     #fixtures = Match.objects.filter(date__week=current_week) #query and display only current week games from monday to sunday
     # fixtures = Match.objects.filter(matchday='Regular Season - 1') #query and display only current week games from monday to sunday
     context={
@@ -59,64 +68,80 @@ def user_predictions(request):
 
 
 def match_prediction(request,pk):
-    match = Match.objects.get(id=pk)
+    
+    match = cache.get(f'match_cache_{pk}') 
+    if not match:
+        print('REQUEST TO API!!!!!!!!!!!!!!!!!!!!!')
+        cache.set(f'match_cache_{pk}', get_match_details(pk),86400)
+        match = cache.get(f'match_cache_{pk}')
+
+    hteam = match[0]['teams']['home']['name']
+    ateam = match[0]['teams']['away']['name']
+    
+    hteam_squad = cache.get(f'{hteam}_squad')
+    if not hteam_squad:
+        print('REQUEST TO API!!!!!!!!!!!!!!!!!!!!!')
+        cache.set(f'{hteam}_squad', get_players(match[0]['teams']['home']['id']), 86400)
+        hteam_squad = cache.get(f'{hteam}_squad')
+
     form = MatchPredictionForm()
-    md = match.matchday
-    hteam = match.hTeam
-    ateam = match.aTeam
-    form = MatchPredictionForm(ht=hteam,at=ateam)
-    m_id = match.match_id
-    key = os.environ.get('key')
-    number_of_games_to_predict = NumberOfGamesToPredict.objects.get(pk=1)
-    print(f'\n number of EPL games to predict = {number_of_games_to_predict.EPL}')
+    # md = match.matchday
+    print(match)
+    
+    print(hteam,ateam)
+    form = MatchPredictionForm(ht=hteam_squad)
+    # m_id = match.match_id
+    # key = os.environ.get('key')
+    # number_of_games_to_predict = NumberOfGamesToPredict.objects.get(pk=1)
+    # print(f'\n number of EPL games to predict = {number_of_games_to_predict.EPL}')
 
 
-    if request.method == 'POST':
-        pred = MatchPrediction.objects.filter(user=request.user).filter(match__in=Match.objects.filter(id=pk)).exists()
-        print(pred)
-        print('post request')
-        form = MatchPredictionForm(request.POST,ht=hteam,at=ateam)
-        if form.is_valid():
-            if pred == True:
-                messages.error(request,'Prediction for this match alerady exists, please make prediction for other match.')
-                return HttpResponseRedirect(request.path_info)
-            # if MatchPrediction.objects.filter(user = request.user).filter(match__in=Match.objects.filter(date__week=current_week)).count() >= 3:
-            #     messages.error(request,'You predict 3 games already, delete your prediction to make new for this matchday.')
-            #     return HttpResponseRedirect(request.path_info)
-            if match.league == 'Premier League':
-                if MatchPrediction.objects.filter(user = request.user).filter(match__league= 'Premier League').filter(match__in=Match.objects.filter(date__week=current_week)).count() >= number_of_games_to_predict.EPL:
-                    messages.error(request,f'You predict {number_of_games_to_predict.EPL} games for Premier League already, delete your prediction to make new.')
-                    return HttpResponseRedirect(request.path_info)
-            if match.league != 'Premier League':
-                if MatchPrediction.objects.filter(user = request.user).filter(match__league= 'UEFA Champions League').filter(match__in=Match.objects.filter(date__week=current_week)).count() >= number_of_games_to_predict.UCL:
-                    messages.error(request,f'You predict {number_of_games_to_predict.UCL} game for Champions League already, delete your prediction to make new.')
-                    return HttpResponseRedirect(request.path_info)
-            if match.date < timezone.now():
-                messages.error(request,'Prediction match alredy started and can NOT be added on or edited. Please do prediction for other match.')
-                return HttpResponseRedirect(request.path_info)
+    # if request.method == 'POST':
+    #     pred = MatchPrediction.objects.filter(user=request.user).filter(match__in=Match.objects.filter(id=pk)).exists()
+    #     print(pred)
+    #     print('post request')
+    #     form = MatchPredictionForm(request.POST,ht=hteam,at=ateam)
+    #     if form.is_valid():
+    #         if pred == True:
+    #             messages.error(request,'Prediction for this match alerady exists, please make prediction for other match.')
+    #             return HttpResponseRedirect(request.path_info)
+    #         # if MatchPrediction.objects.filter(user = request.user).filter(match__in=Match.objects.filter(date__week=current_week)).count() >= 3:
+    #         #     messages.error(request,'You predict 3 games already, delete your prediction to make new for this matchday.')
+    #         #     return HttpResponseRedirect(request.path_info)
+    #         if match.league == 'Premier League':
+    #             if MatchPrediction.objects.filter(user = request.user).filter(match__league= 'Premier League').filter(match__in=Match.objects.filter(date__week=current_week)).count() >= number_of_games_to_predict.EPL:
+    #                 messages.error(request,f'You predict {number_of_games_to_predict.EPL} games for Premier League already, delete your prediction to make new.')
+    #                 return HttpResponseRedirect(request.path_info)
+    #         if match.league != 'Premier League':
+    #             if MatchPrediction.objects.filter(user = request.user).filter(match__league= 'UEFA Champions League').filter(match__in=Match.objects.filter(date__week=current_week)).count() >= number_of_games_to_predict.UCL:
+    #                 messages.error(request,f'You predict {number_of_games_to_predict.UCL} game for Champions League already, delete your prediction to make new.')
+    #                 return HttpResponseRedirect(request.path_info)
+    #         if match.date < timezone.now():
+    #             messages.error(request,'Prediction match alredy started and can NOT be added on or edited. Please do prediction for other match.')
+    #             return HttpResponseRedirect(request.path_info)
 
-            print(form.cleaned_data)
-            homeTeamScore = form.cleaned_data['homeTeamScore']
-            awayTeamScore = form.cleaned_data['awayTeamScore']
-            goal = form.cleaned_data['goalScorer']
-            user = request.user.username
-            print(goal)
-            u = User.objects.get(username=user)
-            MatchPrediction.objects.create(
-                match = match,
-                homeTeamScore=homeTeamScore,
-                awayTeamScore=awayTeamScore,
-                user = u,
-                goalScorer = goal,
-            )
-            print('new prediction created')
-            return redirect("predicts:predicts-home")
+    #         print(form.cleaned_data)
+    #         homeTeamScore = form.cleaned_data['homeTeamScore']
+    #         awayTeamScore = form.cleaned_data['awayTeamScore']
+    #         goal = form.cleaned_data['goalScorer']
+    #         user = request.user.username
+    #         print(goal)
+    #         u = User.objects.get(username=user)
+    #         MatchPrediction.objects.create(
+    #             match = match,
+    #             homeTeamScore=homeTeamScore,
+    #             awayTeamScore=awayTeamScore,
+    #             user = u,
+    #             goalScorer = goal,
+    #         )
+    #         print('new prediction created')
+    #         return redirect("predicts:predicts-home")
 
 
     context = {
         'match':match,
         'form':form,
-        'key':key,
+        # 'key':key,
     }
     return render(request, 'match_prediction.html', context)
 

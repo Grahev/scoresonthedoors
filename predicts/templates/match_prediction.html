@@ -9,7 +9,17 @@
 
 
 <!--NEW LAYOUT-->
-<div class="container">
+
+
+<div class="continer">
+    {% for m in match %}
+        <p>{{m}}</p><hr>
+        {{form}}
+    {% endfor %}
+</div>
+
+
+{% comment %} <div class="container">
     <hr>
         <div class="form-wrapper">
             <form action="" method="post">
@@ -45,7 +55,6 @@
                   <button class="btn btn-primary">Save</button>
                   <a class="btn btn-secondary mt-2 mb-2" href="{% url 'predicts:user_predictions' %}"> Back</a>
                   <hr class="mt-2">
-                  {% comment %} <a class="btn btn-danger" href="{% url 'predicts:match_prediction_delete' prediction.id %}"> Delete</a> {% endcomment %}
                 </div>
                 
               </form>
@@ -62,22 +71,6 @@
             {% endfor %}
             {% endif %}
         </div>
-
-
-        <!--LINEUP SCRIPT-->
-        {% comment %} <div id="wg-api-football-fixture"
-            data-host="v3.football.api-sports.io"
-            data-refresh="600"
-            data-id='{{match.match_id}}'
-            data-key="{{key}}"
-            data-theme=""
-            data-show-errors="false"
-            class="api_football_loader">
-        </div>
-        <script
-            type="module"
-            src="https://widgets.api-sports.io/football/1.1.8/widget.js">
-        </script> {% endcomment %}
-</div>
+</div> {% endcomment %}
 
 {% endblock content %}

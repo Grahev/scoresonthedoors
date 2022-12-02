@@ -4,8 +4,12 @@
 {% endblock title %}
 {% block content %}
 
-{% regroup fixtures by date|date as days_list %}
-
+{% comment %} {% regroup fixtures by date|date as days_list %} {% endcomment %}
+{{ fixtures|json_script:"fixtures" }}
+<script>
+    const fixtures = JSON.parse(document.getElementById('fixtures').textContent);
+    console.log(fixtures)
+  </script>
 
 
 
@@ -13,8 +17,46 @@
     <h1 class="fs-3 text-center mt-4 mx-3 bg-primary text-light p-1 rounded-pill"> World Cup 2022</h1>
     
     
+
+
+
+    {% for match in fixtures %}
+        <p>{{match}}</p><hr>
+        {% comment %} <a href="{% url 'predicts:match_prediction' match.pk %}" class="text-decoration-none text-dark"> {% endcomment %}
+        <a href="#" class="text-decoration-none text-dark">
+                
+            <div class="fixture row p-3 my-3">
+                <p class="text-center card-subtitle mb-2 text-muted">{{match.fixture.date}}</p>
+            
+                <div class="home col-6 text-end p-0">
+                
+                    <span class="fw-bold">{{match.teams.home.name}}</span>
+                    <span class=""><img src="{{match.teams.home.logo}}" class='rounded-circle m-1 border shadow-sm' alt="logo" height=35 width=35px></span>
+                </div>
+
+                <div class="away col-6 text-left p-0">
+                    <span class=" text-left"><img src="{{match.teams.away.logo}}" class='rounded-circle m-1 border shadow-sm' alt="logo" height=35 width=35px></span>
+                    <span class="fw-bold">{{ match.teams.away.name}}</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <p>{{match.league.name}}</p>
+                </div>
+                <div class="col">
+                    <p>{{match.league.round}}</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <a href="{% url 'predicts:match_prediction' match.fixture.id %}" class="text-decoration-none text-dark"> MATCH LINK {{match.fixture.id}}</a>
+                </div>
+            </div>
+            
+        </a>
+    {% endfor %}
     
-    {% for day in days_list %}
+    {% comment %} {% for day in days_list %}
         <div class="card my-3 ">
             <div class="card-body shadow rounded-10">
                 <div class="card-title">
@@ -77,11 +119,13 @@
           
        
     
-    {% endfor %}
-    
+    {% endfor %} 
+    {% endcomment %}
 
     
 
 </div>
+
+
     
 {% endblock content %}
