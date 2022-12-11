@@ -16,7 +16,8 @@ def get_all_games():
     # UEFA Natons League id: 5
     #world cup id: 1
 
-    url = 'https://v3.football.api-sports.io/fixtures?league=1&season=2022'
+    url = 'https://v3.football.api-sports.io/fixtures?league=1&season=2022&timezone=Europe/London&status=NS'
+    # url = 'https://v3.football.api-sports.io/fixtures?league=1&season=2022'
     # url = 'https://v3.football.api-sports.io/fixtures?league=5&season=2022' # UEFA Natons League
     
     payload={}
