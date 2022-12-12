@@ -140,3 +140,4 @@ GitHub.sublime-settings
 .history
 
 old2_db.sqlite3
+api_db.sqlite3
