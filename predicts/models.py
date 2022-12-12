@@ -53,21 +53,30 @@ class Match(models.Model):
 
 
 class MatchPrediction(models.Model):
-    match = models.ForeignKey(Match, on_delete=models.DO_NOTHING)
+    matchApiId = models.IntegerField(default=0)
     homeTeamScore = models.PositiveIntegerField()
+    homeTeamName = models.CharField(max_length=55)
     awayTeamScore = models.PositiveIntegerField()
+    awayTeamName = models.CharField(max_length=55)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    goalScorer = models.ForeignKey(Player, on_delete=models.DO_NOTHING)
+    # goalScorer = models.ForeignKey(Player, on_delete=models.DO_NOTHING)
+    goalScorerId = models.IntegerField(default=0)
+    goalScorerName = models.CharField(max_length=55)
     checked = models.BooleanField(default=False)
     points = models.IntegerField(blank=True, null=True)
+    league = models.CharField(max_length=100)
+    match_date = models.DateTimeField()
     
     def __str__(self):
-        return f'Match Prediction | {self.user} - {self.homeTeamScore} : {self.awayTeamScore} - {self.match}'
+        return f'Match Prediction | {self.user} - {self.homeTeamScore} : {self.awayTeamScore}'
 
     @property
     def is_past_due(self):
-        return timezone.now() > self.match.date
+        return timezone.now() > self.match_date
 
+    @property
+    def is_active(self):
+        return timezone.now() < self.match_date
 # class MatchEvents(models.Model):
 #     match = models.ForeignKey(Match, on_delete=DO_NOTHING)
 #     team = models.ForeignKey(Team, on_delete=DO_NOTHING)

@@ -21,9 +21,8 @@
 
 
     {% for match in fixtures %}
-        <p>{{match}}</p><hr>
         {% comment %} <a href="{% url 'predicts:match_prediction' match.pk %}" class="text-decoration-none text-dark"> {% endcomment %}
-        <a href="#" class="text-decoration-none text-dark">
+        <a href="{% url 'predicts:match_prediction' match.fixture.id %}" class="text-decoration-none text-dark">
                 
             <div class="fixture row p-3 my-3">
                 <p class="text-center card-subtitle mb-2 text-muted">{{match.fixture.date}}</p>
@@ -40,18 +39,18 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col">
+                <div class="col-6">
                     <p>{{match.league.name}}</p>
                 </div>
-                <div class="col">
+                <div class="col-6">
                     <p>{{match.league.round}}</p>
                 </div>
             </div>
-            <div class="row">
+            {% comment %} <div class="row">
                 <div class="col">
                     <a href="{% url 'predicts:match_prediction' match.fixture.id %}" class="text-decoration-none text-dark"> MATCH LINK {{match.fixture.id}}</a>
                 </div>
-            </div>
+            </div> {% endcomment %}
             
         </a>
     {% endfor %}

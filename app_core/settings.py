@@ -30,7 +30,8 @@ PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+
+DEBUG = True #do not chage this as models get change!!!
 
 # ALLOWED_HOSTS = ['vast-wildwood-19757.herokuapp.com', '127.0.0.1','scoresonthedoors.uk', 'web-production-7b21.up.railway.app']
 ALLOWED_HOSTS = ['*']
@@ -94,7 +95,7 @@ if DEBUG:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
+            'NAME': BASE_DIR / 'api_db.sqlite3',
         }
     }
 else:

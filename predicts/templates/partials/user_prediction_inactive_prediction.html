@@ -4,15 +4,15 @@
 
 
         <div class="fixture row shadow-sm p-3 mb-2 text-secondary">
-            <div class="fs-6 fw-light text-center mb-3 text-secondary">{{prediction.match.date|date}} - {{prediction.match.league}}</div>
+            <div class="fs-6 fw-light text-center mb-3 text-secondary">{{prediction.match_date|date}} - {{prediction.league}}</div>
             <div class="home col-6 text-end p-0">
-                <span class="fw-bold">{{prediction.match.hTeam.name}}</span>
+                <span class="fw-bold">{{prediction.homeTeamName}}</span>
                 <span class="border px-3 py-2 bg-light">{{prediction.homeTeamScore}}</span>
             </div>
 
             <div class="away col-6 text-left p-0">
                 <span class="border px-3 py-2 bg-light text-left">{{prediction.awayTeamScore}}</span>
-                <span class="fw-bold">{{ prediction.match.aTeam.name}}</span>
+                <span class="fw-bold">{{ prediction.awayTeamName}}</span>
             </div>
 
             <!--Points-->
@@ -52,9 +52,9 @@
                     <div class="fixture row shadow-sm p-3 text-secondary">
                         <div class="fs-6 fw-light text-center mb-3 text-secondary">FULL TIME RESULT</div>
                         <div class="home col-6 text-end p-0">
-                            <span class="fw-bold">{{prediction.match.hTeam.name}}</span>
+                            <span class="fw-bold">{{prediction.homeTeamName}}</span>
                             <span class="border px-3 py-2 bg-light">
-                                {% if prediction.match.hTeamScore == None  %}
+                                {% if prediction.homeTeamScore == None  %}   {% comment %} //TODO problem to solve here {% endcomment %}
                                 TBC
                                 {% else %}
                                     {{prediction.match.hTeamScore}}

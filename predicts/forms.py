@@ -8,18 +8,27 @@ from teams_and_players.models import Player
 from crispy_forms.helper import FormHelper
 
 
-class MatchPredictionForm(forms.ModelForm):
+# class ApiMatchPredictionForm(forms.Form):
+    
+#     homeTeamName = forms.CharField()
+#     homeTeamId = forms.IntegerField()
+#     homeTeamScore = forms.IntegerField(min_value=0, max_value=10)
+    
+#     awayTeamName = forms.CharField()
+#     awayTeamId = forms.IntegerField()
+#     awayTeamScore = forms.IntegerField(min_value=0, max_value=10)
+
+#     goalScorer = forms.ChoiceField(choices=[])
+#     goalScorerId = forms.IntegerField()
+
+
+class ApiMatchPredictionForm(forms.ModelForm):
+
+    goalScorerName = forms.ChoiceField(choices=[])
+    homeTeamScore = forms.IntegerField(initial=0)
+    awayTeamScore = forms.IntegerField(initial=0)
 
     class Meta:
         model = MatchPrediction
-        fields = ['homeTeamScore','awayTeamScore','goalScorer']
-
-    def __init__(self, *args, **kwargs):
-        ht = kwargs.pop('ht',None)
-        at = kwargs.pop('at',None)
-        super(MatchPredictionForm,self).__init__(*args, **kwargs)
-        self.fields['goalScorer'].queryset= Player.objects.filter(team__in=[ht,at])
-        self.fields['homeTeamScore'].label = ht
-        self.fields['awayTeamScore'].label = at
-        self.helper = FormHelper()
-        self.helper.form_show_labels = False
+        fields  = ['homeTeamScore','awayTeamScore','goalScorerName']
+        labels = {}

@@ -2,8 +2,19 @@ import requests
 from predicts.models import MatchEvents, MatchPrediction
 from predicts.models import Match
 import os
+from datetime import date, timedelta
+import datetime
 
+#date section
+# Get the current date
+current_date = datetime.date.today()
 
+year, week, day = current_date.isocalendar()
+
+first_day_of_week = current_date - datetime.timedelta(days=day-1)
+
+last_day_of_week = current_date + datetime.timedelta(days=6-day)
+print(f'last day{last_day_of_week}')
 
 def match_one_x_two(prediction):
     """return 1 X 2 for match"""
@@ -97,7 +108,7 @@ def get_all_games():
     # UEFA Natons League id: 5
     #world cup id: 1
 
-    url = 'https://v3.football.api-sports.io/fixtures?league=1&season=2022&timezone=Europe/London&status=NS'
+    url = f'https://v3.football.api-sports.io/fixtures?league=1&season=2022&timezone=Europe/London&from={first_day_of_week}&to={last_day_of_week}'
     # url = 'https://v3.football.api-sports.io/fixtures?league=5&season=2022' # UEFA Natons League
 
     payload={}
@@ -141,4 +152,5 @@ def get_players(team_id):
     print(f'request status code:{r.status_code}')
 
     data = r.json()
-    return data
+    players = data['response'][0]['players']
+    return players
