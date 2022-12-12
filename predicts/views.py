@@ -28,17 +28,12 @@ from .my_functions import single_match_points, get_all_games, get_match_details,
 
 def predicts_home(request):
     # cache.delete('fixtures_cache')
-    fixtures = cache.get('fixtures_cache') #all games
+    fixtures = cache.get('fixtures_cache') #current week only
     if not fixtures:
         print('REQUEST TO API!!!!!!!!!!!!!!!!!!!!!')
         cache.set('fixtures_cache', get_all_games(),86400)
         fixtures = cache.get('fixtures_cache')
         
-
-    
-    # fixtures = Match.objects.all() #all games
-    #fixtures = Match.objects.filter(date__week=current_week) #query and display only current week games from monday to sunday
-    # fixtures = Match.objects.filter(matchday='Regular Season - 1') #query and display only current week games from monday to sunday
     context={
         'fixtures':fixtures
     }

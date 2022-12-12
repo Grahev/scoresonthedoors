@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load predicts_extras %}
 {% block title %}
     Predction Home
 {% endblock title %}
@@ -21,11 +22,11 @@
 
 
     {% for match in fixtures %}
-        {% comment %} <a href="{% url 'predicts:match_prediction' match.pk %}" class="text-decoration-none text-dark"> {% endcomment %}
+        
         <a href="{% url 'predicts:match_prediction' match.fixture.id %}" class="text-decoration-none text-dark">
                 
-            <div class="fixture row p-3 my-3">
-                <p class="text-center card-subtitle mb-2 text-muted">{{match.fixture.date}}</p>
+            <div class="fixture row p-2 my-3 mx-1 border rounded-pill shadow">
+                <p class="text-center card-subtitle mb-2 text-muted">{{match.fixture.date|to_datetime|date}}</p>
             
                 <div class="home col-6 text-end p-0">
                 
@@ -37,91 +38,21 @@
                     <span class=" text-left"><img src="{{match.teams.away.logo}}" class='rounded-circle m-1 border shadow-sm' alt="logo" height=35 width=35px></span>
                     <span class="fw-bold">{{ match.teams.away.name}}</span>
                 </div>
+                <p class="text-center card-subtitle mt-2 text-muted">{{match.fixture.date|to_datetime|time:'H:i'}}</p>
+
+                <div class="row d-flex">
+                    <div class="col-6 text-end">
+                        <p>{{match.league.name}}</p>
+                    </div>
+                    <div class="col-6 text-start">
+                        <p>{{match.league.round}}</p>
+                    </div>
+                </div>
             </div>
-            <div class="row">
-                <div class="col-6">
-                    <p>{{match.league.name}}</p>
-                </div>
-                <div class="col-6">
-                    <p>{{match.league.round}}</p>
-                </div>
-            </div>
-            {% comment %} <div class="row">
-                <div class="col">
-                    <a href="{% url 'predicts:match_prediction' match.fixture.id %}" class="text-decoration-none text-dark"> MATCH LINK {{match.fixture.id}}</a>
-                </div>
-            </div> {% endcomment %}
+            
             
         </a>
     {% endfor %}
-    
-    {% comment %} {% for day in days_list %}
-        <div class="card my-3 ">
-            <div class="card-body shadow rounded-10">
-                <div class="card-title">
-                    <h5 class="text-center">{{day.grouper}}</h5>
-                </div>
-                
-                {% for match in day.list %}
-                
-                {% if match.is_past_due %}
-           
-                <div class="fixture row p-3 my-3">
-                    <div class="home col-6 text-end p-0">
-                        <span class="fw-bold">{{match.hTeam.name}}</span>
-                        <span class="border px-3 py-2 bg-light">{{match.hTeamScore}}</span>
-                    </div>
-
-                    <div class="away col-6 text-left p-0">
-                        <span class="border px-3 py-2 bg-light text-left">{{match.aTeamScore}}</span>
-                        <span class="fw-bold">{{ match.aTeam.name}}</span>
-                    </div>
-                    
-                </div>
-                <div class="row">
-                    <div class="col-4"></div>
-                    <div class="col-4 d-flex">
-                        {% if request.user.username == 'admin' %}
-                        <a class="btn btn-primary mx-auto" href="{% url 'predicts:single_match_update' match.pk %}" role="button">Update</a>
-                        {% endif %}
-                    </div>
-                    <div class="col-4"></div>
-                </div>
-            
-                {% else %}
-            <a href="{% url 'predicts:match_prediction' match.pk %}" class="text-decoration-none text-dark">
-                
-                <div class="fixture row p-3 my-3">
-                    <p class="text-center card-subtitle mb-2 text-muted">{{match.date|time:"H:i"}}</p>
-                
-                    <div class="home col-6 text-end p-0">
-                    
-                        <span class="fw-bold">{{match.hTeam.name}}</span>
-                        <span class=""><img src="{{match.hTeam.logo}}" class='rounded-circle m-1 border shadow-sm' alt="logo" height=35 width=35px></span>
-                    </div>
-
-                    <div class="away col-6 text-left p-0">
-                        <span class=" text-left"><img src="{{match.aTeam.logo}}" class='rounded-circle m-1 border shadow-sm' alt="logo" height=35 width=35px></span>
-                        <span class="fw-bold">{{ match.aTeam.name}}</span>
-                    </div>
-                </div>
-                
-            </a>
-            {% endif %}
-
-                {% endfor %}
-            
-            </div>
-        </div>
-        
-         
-          
-       
-    
-    {% endfor %} 
-    {% endcomment %}
-
-    
 
 </div>
 
