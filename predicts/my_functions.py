@@ -11,7 +11,8 @@ current_date = datetime.date.today()
 
 year, week, day = current_date.isocalendar()
 
-first_day_of_week = current_date - datetime.timedelta(days=day-1)
+# first_day_of_week = current_date - datetime.timedelta(days=day-1)
+first_day_of_week = '2022-12-01'
 
 last_day_of_week = current_date + datetime.timedelta(days=6-day)
 print(f'last day{last_day_of_week}')
