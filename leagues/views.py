@@ -83,7 +83,8 @@ def league_details(request,pk):
         points_dict = {}
         user_points = 0
         #print(user)
-        predictions = MatchPrediction.objects.filter(user=user).filter(match__date__gte = create_date)
+        predictions = MatchPrediction.objects.filter(user=user).filter(match_date__gte = create_date)
+        # predictions = MatchPrediction.objects.filter(user=user)
         print(predictions)
         for match in predictions.iterator():
             if match.points:

@@ -22,8 +22,8 @@
 
 
     {% for match in fixtures %}
-        
-        <a href="{% url 'predicts:match_prediction' match.fixture.id %}" class="text-decoration-none text-dark">
+
+        {% if match.fixture.status.long == 'Match Finished' %}
                 
             <div class="fixture row p-2 my-3 mx-1 border rounded-pill shadow">
                 <p class="text-center card-subtitle mb-2 text-muted">{{match.fixture.date|to_datetime|date}}</p>
@@ -31,27 +31,57 @@
                 <div class="home col-6 text-end p-0">
                 
                     <span class="fw-bold">{{match.teams.home.name}}</span>
-                    <span class=""><img src="{{match.teams.home.logo}}" class='rounded-circle m-1 border shadow-sm' alt="logo" height=35 width=35px></span>
+                    <span class="fw-bold py-1 px-2 m-1 border shadow-sm">{{match.goals.home}}</span>
                 </div>
 
                 <div class="away col-6 text-left p-0">
-                    <span class=" text-left"><img src="{{match.teams.away.logo}}" class='rounded-circle m-1 border shadow-sm' alt="logo" height=35 width=35px></span>
+                    <span class="fw-bold py-1 px-2 m-1 border shadow-sm">{{match.goals.away}}</span>
                     <span class="fw-bold">{{ match.teams.away.name}}</span>
                 </div>
                 <p class="text-center card-subtitle mt-2 text-muted">{{match.fixture.date|to_datetime|time:'H:i'}}</p>
 
                 <div class="row d-flex">
-                    <div class="col-6 text-end">
-                        <p>{{match.league.name}}</p>
-                    </div>
-                    <div class="col-6 text-start">
-                        <p>{{match.league.round}}</p>
+                    <div class="col text-center">
+                        <p>First goal: Display player name </p>
                     </div>
                 </div>
             </div>
-            
-            
-        </a>
+                
+                
+        {% else %}
+        
+            <a href="{% url 'predicts:match_prediction' match.fixture.id %}" class="text-decoration-none text-dark">
+                
+                <div class="fixture row p-2 my-3 mx-1 border rounded-pill shadow">
+                    <p class="text-center card-subtitle mb-2 text-muted">{{match.fixture.date|to_datetime|date}}</p>
+                
+                    <div class="home col-6 text-end p-0">
+                    
+                        <span class="fw-bold">{{match.teams.home.name}}</span>
+                        <span class=""><img src="{{match.teams.home.logo}}" class='rounded-circle m-1 border shadow-sm' alt="logo" height=35 width=35px></span>
+                    </div>
+    
+                    <div class="away col-6 text-left p-0">
+                        <span class=" text-left"><img src="{{match.teams.away.logo}}" class='rounded-circle m-1 border shadow-sm' alt="logo" height=35 width=35px></span>
+                        <span class="fw-bold">{{ match.teams.away.name}}</span>
+                    </div>
+                    <p class="text-center card-subtitle mt-2 text-muted">{{match.fixture.date|to_datetime|time:'H:i'}}</p>
+    
+                    <div class="row d-flex">
+                        <div class="col-6 text-end">
+                            <p>{{match.league.name}}</p>
+                        </div>
+                        <div class="col-6 text-start">
+                            <p>{{match.league.round}}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                
+            </a>
+        {% endif %}
+        
+
     {% endfor %}
 
 </div>

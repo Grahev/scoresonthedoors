@@ -12,9 +12,12 @@ current_date = datetime.date.today()
 year, week, day = current_date.isocalendar()
 
 # first_day_of_week = current_date - datetime.timedelta(days=day-1)
-first_day_of_week = '2022-12-01'
+first_day_of_week = current_date - datetime.timedelta(days=day+45)
+# first_day_of_week = '2022-12-01'
 
-last_day_of_week = current_date + datetime.timedelta(days=6-day)
+# last_day_of_week = current_date + datetime.timedelta(days=7-day)
+last_day_of_week = current_date + datetime.timedelta(days=8-day)
+print(f'first day{first_day_of_week}')
 print(f'last day{last_day_of_week}')
 
 def match_one_x_two(prediction):
@@ -109,7 +112,7 @@ def get_all_games():
     # UEFA Natons League id: 5
     #world cup id: 1
 
-    url = f'https://v3.football.api-sports.io/fixtures?league=1&season=2022&timezone=Europe/London&from={first_day_of_week}&to={last_day_of_week}'
+    url = f'https://v3.football.api-sports.io/fixtures?league=39&season=2022&timezone=Europe/London&from={first_day_of_week}&to={last_day_of_week}'
     # url = 'https://v3.football.api-sports.io/fixtures?league=5&season=2022' # UEFA Natons League
 
     payload={}
