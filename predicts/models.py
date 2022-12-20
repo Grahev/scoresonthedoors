@@ -4,6 +4,8 @@ from django.db.models.deletion import CASCADE, SET, SET_NULL, DO_NOTHING
 from django.utils import timezone
 from django.contrib.auth.models import User
 from teams_and_players.models import Team, Player
+import os
+import requests
 
 from django.contrib.auth.models import User
 User._meta.get_field('email')._unique = True
@@ -59,7 +61,6 @@ class MatchPrediction(models.Model):
     awayTeamScore = models.PositiveIntegerField()
     awayTeamName = models.CharField(max_length=55)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    # goalScorer = models.ForeignKey(Player, on_delete=models.DO_NOTHING)
     goalScorerId = models.IntegerField(default=0)
     goalScorerName = models.CharField(max_length=55)
     checked = models.BooleanField(default=False)
@@ -68,7 +69,7 @@ class MatchPrediction(models.Model):
     match_date = models.DateTimeField()
     
     def __str__(self):
-        return f'Match Prediction | {self.user} - {self.homeTeamScore} : {self.awayTeamScore}'
+        return f'Match Prediction | {self.user} - {self.homeTeamName} {self.homeTeamScore} : {self.awayTeamScore} {self.awayTeamName}'
 
     @property
     def is_past_due(self):
@@ -77,23 +78,44 @@ class MatchPrediction(models.Model):
     @property
     def is_active(self):
         return timezone.now() < self.match_date
-# class MatchEvents(models.Model):
-#     match = models.ForeignKey(Match, on_delete=DO_NOTHING)
-#     team = models.ForeignKey(Team, on_delete=DO_NOTHING)
-#     time = models.IntegerField()
-#     player = models.ForeignKey(Player, on_delete=DO_NOTHING)
-#     type = models.CharField(max_length=50)
 
-class MatchEvents(models.Model):
-    match = models.ForeignKey(Match, on_delete=DO_NOTHING, related_name='events')
-    team = models.ForeignKey(Team, on_delete=DO_NOTHING)
-    time = models.IntegerField()
-    player = models.ForeignKey(Player, on_delete=DO_NOTHING)
-    type = models.CharField(max_length=50)
-    detail = models.CharField(max_length=50)
+    def first_goal_scorer(self):
+        pass
+
+class MatchResult(models.Model):
+    code = (
+        ('1','Home Team Won'),
+        ('X','Draw'),
+        ('2','Away Team Won'),
+    )
+    match_id = models.IntegerField()
+    homeTeamResult = models.IntegerField()
+    awayTeamResult = models.IntegerField()
+    resultCode = models.CharField(max_length=1, choices=code)
+    firstGoalScorerId = models.IntegerField(null=True, blank=True)
+    firstGoalScorerName = models.CharField(max_length=100, null=True, blank=True)
 
     def __str__(self):
-        return f'Event | {self.type} - {self.team} - {self.player}'
+        return f'Match result | id{self.match_id} - code {self.resultCode}'
+
+    
+    
+    
+
+class MatchEvents(models.Model):
+    match_id = models.IntegerField()
+    team_id = models.IntegerField()
+    team_name = models.CharField(max_length=100)
+    time = models.IntegerField()
+    player_id = models.IntegerField()
+    player_name = models.CharField(max_length=100)
+    type = models.CharField(max_length=50)
+    detail = models.CharField(max_length=50)
+    comments = models.CharField(max_length=100, null=True, blank=True)
+
+    def __str__(self):
+        return f'Event | {self.type} - {self.detail} - {self.team_name} - {self.player_name} | comments {self.comments}'
+
 
 
 class NumberOfGamesToPredict(models.Model):
