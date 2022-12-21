@@ -26,8 +26,8 @@ from .my_functions import single_match_points
 def predicts_home(request):
     # fixtures = Match.objects.all()
 
-    fixtures = Match.objects.all() #all games
-    #fixtures = Match.objects.filter(date__week=current_week) #query and display only current week games from monday to sunday
+    # fixtures = Match.objects.all() #all games
+    fixtures = Match.objects.filter(date__week=current_week) #query and display only current week games from monday to sunday
     # fixtures = Match.objects.filter(matchday='Regular Season - 1') #query and display only current week games from monday to sunday
     context={
         'fixtures':fixtures
