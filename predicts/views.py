@@ -14,6 +14,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 #import for current week
 from datetime import date
 current_week = date.today().isocalendar()[1]  # return current week :)
+
 # delete view import
 from django.urls import reverse_lazy
 from django.views.generic.edit import DeleteView
@@ -25,9 +26,10 @@ from .my_functions import single_match_points
 
 def predicts_home(request):
     # fixtures = Match.objects.all()
-
+    print(f'current week {current_week}')
     # fixtures = Match.objects.all() #all games
     fixtures = Match.objects.filter(date__week=current_week) #query and display only current week games from monday to sunday
+    print(len(fixtures))
     # fixtures = Match.objects.filter(matchday='Regular Season - 1') #query and display only current week games from monday to sunday
     context={
         'fixtures':fixtures
