@@ -39,7 +39,9 @@ def get_teams():
         country = i['team']['country']
         founded = i['team']['founded']
         logo = i['team']['logo']
-        team = Team.objects.create(id=id,name=name,country=country,founded=founded,logo=logo)
+        # team = Team.objects.create(id=id,name=name,country=country,founded=founded,logo=logo)
+        team, created = Team.objects.update_or_create(id=id, defaults={'name':name,'country':country,'founded':founded,'logo':logo})
+
         team.save()
         print(f'{name} created and saved in database')
         
