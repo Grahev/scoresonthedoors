@@ -1,7 +1,8 @@
         <!--INACTIVE PREDICTIONS-->
-
         
-
+        {% with details=prediction.fetch_match_details %}
+        {{prediction.is_correct_result}}
+        
 
         <div class="fixture row shadow-sm p-3 mb-2 text-secondary">
             <div class="fs-6 fw-light text-center mb-3 text-secondary">{{prediction.match_date|date}} - {{prediction.league}}</div>
@@ -17,11 +18,7 @@
 
             <!--Points-->
             <div class="fs-6 fw-light text-center mb-1 mt-1 text-secondary">Points: 
-                {% if prediction.points %} 
-                    {{prediction.points}}
-                {% else %}
-                   TBC
-                {% endif %} 
+                {{prediction.calculate_points}}
             </div>
 
             <!-- Button trigger modal -->
@@ -37,11 +34,7 @@
               <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLabel">Points: 
-                        {% if prediction.points %} 
-                            {{prediction.points}}
-                        {% else %}
-                            TBC
-                        {% endif %}
+                        {{prediction.calculate_points}}
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
@@ -57,23 +50,19 @@
                                 {% if prediction.homeTeamScore == None  %}   {% comment %} //TODO problem to solve here {% endcomment %}
                                 TBC
                                 {% else %}
-                                    {{prediction.match.hTeamScore}}
+                                    {{prediction.home_team_score}}
                                 {% endif %}  
                             </span>
                         </div>
                     
                         <div class="away col-6 text-left p-0">
                             <span class="border px-3 py-2 bg-light text-left">
-                                {% if prediction.match.aTeamScore == None %}
-                                TBC
-                                {% else %}
-                                    {{prediction.match.aTeamScore}}
-                                {% endif %}
+                                    {{details.0.score.fulltime.away}}
                             </span>
-                            <span class="fw-bold">{{ prediction.match.aTeam.name}}</span>
+                            <span class="fw-bold">{{ prediction.awayTeamName}}</span>
                         </div>
                         <!--goal scorer-->
-                        <div class="fs-6 fw-light text-center mb-0 text-secondary mt-3"> 1st goal: {{prediction.match.first_goal}}</div>
+                        <div class="fs-6 fw-light text-center mb-0 text-secondary mt-3"> 1st goal: {{prediction.first_goal_scorer}}</div>
 
                     </div>
 
@@ -82,17 +71,17 @@
                         <div class="fs-6 fw-light text-center mb-3 text-secondary">PREDICTION</div>
                         
                         <div class="home col-6 text-end p-0">
-                            <span class="fw-bold">{{prediction.match.hTeam.name}}</span>
+                            <span class="fw-bold">{{prediction.homeTeamName}}</span>
                             <span class="border px-3 py-2 bg-light ">{{prediction.homeTeamScore}}</span>  
                         </div>
                     
                         <div class="away col-6 text-left p-0">
                             <span class="border px-3 py-2 bg-light ">{{prediction.awayTeamScore}}</span>
-                            <span class="fw-bold">{{ prediction.match.aTeam.name}}</span>
+                            <span class="fw-bold">{{ prediction.awayTeamName}}</span>
                         </div>
                         
                         <!--goal scorer-->
-                        <div class="fs-6 fw-light text-center mb-0 text-secondary mt-3"> 1st goal: {{prediction.goalScorer.name}}</div>
+                        <div class="fs-6 fw-light text-center mb-0 text-secondary mt-3"> 1st goal: {{prediction.goalScorerName}}</div>
                     </div>
 
                   
@@ -103,3 +92,4 @@
               </div>
             </div>
           </div>
+          {% endwith %}

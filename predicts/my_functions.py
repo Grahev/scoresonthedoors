@@ -20,6 +20,26 @@ last_day_of_week = current_date + datetime.timedelta(days=8-day)
 print(f'first day{first_day_of_week}')
 print(f'last day{last_day_of_week}')
 
+def get_last_monday_and_next_sunday(current_date):
+    # Get the current day of the week (0 = Monday, 1 = Tuesday, ..., 6 = Sunday)
+    current_day = current_date.weekday()
+
+    # Calculate the number of days since the previous Monday
+    days_since_monday = current_day + 1
+
+    # Subtract the calculated number of days from the current date to get the previous Monday
+    last_monday = current_date - timedelta(days=days_since_monday)
+
+    # Calculate the number of days until the next Sunday
+    days_until_sunday = 6 - current_day
+
+    # Add the calculated number of days to the current date to get the next Sunday
+    next_sunday = current_date + timedelta(days=days_until_sunday)
+
+    return last_monday, next_sunday
+
+last_monday, next_sunday = get_last_monday_and_next_sunday(current_date)
+
 def match_one_x_two(prediction):
     """return 1 X 2 for match"""
     if prediction.match.hTeamScore > prediction.match.aTeamScore:
@@ -112,7 +132,8 @@ def get_all_games():
     # UEFA Natons League id: 5
     #world cup id: 1
 
-    url = f'https://v3.football.api-sports.io/fixtures?league=39&season=2022&timezone=Europe/London&from={first_day_of_week}&to={last_day_of_week}'
+    # url = f'https://v3.football.api-sports.io/fixtures?league=135&season=2022&timezone=Europe/London&from={first_day_of_week}&to={last_day_of_week}'
+    url = f'https://v3.football.api-sports.io/fixtures?league=135&season=2022&timezone=Europe/London&from={last_monday}&to={next_sunday}'
     # url = 'https://v3.football.api-sports.io/fixtures?league=5&season=2022' # UEFA Natons League
 
     payload={}
@@ -125,7 +146,8 @@ def get_all_games():
     print(f'request status code:{r.status_code}')
     data = r.json()
     response = data['response']
-    return response
+    sorted_matches = sorted(response, key=lambda x: x['fixture']['date'])
+    return sorted_matches
 
 
 def get_match_details(match_id):
@@ -158,3 +180,4 @@ def get_players(team_id):
     data = r.json()
     players = data['response'][0]['players']
     return players
+

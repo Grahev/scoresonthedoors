@@ -19,3 +19,29 @@ class League(models.Model):
 
     def __str__(self):
         return self.name
+    
+class WeeklyPoint(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='weekly_points')
+    week_number = models.PositiveIntegerField()
+    points = models.IntegerField(default=0)
+
+    class Meta:
+        unique_together = ('user', 'week_number')
+
+    def update_points(self, points):
+        self.points += points
+        self.save()
+
+
+class MonthlyPoint(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='monthly_points')
+    month = models.PositiveIntegerField()
+    year = models.PositiveIntegerField()
+    points = models.IntegerField(default=0)
+
+    class Meta:
+        unique_together = ('user', 'month', 'year')
+
+    def update_points(self, points):
+        self.points += points
+        self.save()

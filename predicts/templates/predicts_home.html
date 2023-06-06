@@ -16,16 +16,15 @@
 
 <div class="container">
     <h1 class="fs-3 text-center mt-4 mx-3 bg-primary text-light p-1 rounded-pill"> World Cup 2022</h1>
-    
-    
-
 
 
     {% for match in fixtures %}
 
         {% if match.fixture.status.long == 'Match Finished' %}
+       
                 
             <div class="fixture row p-2 my-3 mx-1 border rounded-pill shadow">
+                
                 <p class="text-center card-subtitle mb-2 text-muted">{{match.fixture.date|to_datetime|date}}</p>
             
                 <div class="home col-6 text-end p-0">

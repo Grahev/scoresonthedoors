@@ -29,10 +29,12 @@ from .my_functions import single_match_points, get_all_games, get_match_details,
 def predicts_home(request):
     # cache.delete('fixtures_cache')
     fixtures = cache.get('fixtures_cache') #current week only
+
     if not fixtures:
         print('REQUEST TO API!!!!!!!!!!!!!!!!!!!!!')
-        cache.set('fixtures_cache', get_all_games(),86400)
+        cache.set('fixtures_cache', get_all_games(),86400) #86400 = 24h
         fixtures = cache.get('fixtures_cache')
+        print(fixtures)
         
     context={
         'fixtures':fixtures
@@ -206,7 +208,7 @@ def match_prediction_update(request, pk):
     ateam = match.aTeam
  
     # pass the object as instance in form
-    form = MatchPredictionForm(request.POST or None, instance = obj,ht=hteam,at=ateam)
+    form = ApiMatchPredictionForm(request.POST or None, instance = obj,ht=hteam,at=ateam)
  
     # save the data from the form and
     # redirect
