@@ -32,3 +32,22 @@ class ApiMatchPredictionForm(forms.ModelForm):
         model = MatchPrediction
         fields  = ['homeTeamScore','awayTeamScore','goalScorerName']
         labels = {}
+
+class ApiMatchPredictionFormUpdat(forms.ModelForm):
+
+    goalScorerName = forms.ChoiceField(choices=[])
+    homeTeamScore = forms.IntegerField(initial=0)
+    awayTeamScore = forms.IntegerField(initial=0)
+
+    class Meta:
+        model = MatchPrediction
+        fields  = ['homeTeamScore','awayTeamScore','goalScorerName']
+        labels = {}
+        
+    def __init__(self, *args, **kwargs):
+        labels = kwargs.pop('labels', {})
+        super(ApiMatchPredictionFormUpdat, self).__init__(*args, **kwargs)
+
+        self.fields['homeTeamScore'].label = labels.get('homeTeamScore', self.fields['homeTeamScore'].label)
+        self.fields['awayTeamScore'].label = labels.get('awayTeamScore', self.fields['awayTeamScore'].label)
+        self.fields['goalScorerName'].label = labels.get('goalScorerName', self.fields['goalScorerName'].label)

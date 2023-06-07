@@ -4,7 +4,7 @@ from django.core.cache import cache
 from hashlib import sha256
 import requests
 import os
-from .forms import ApiMatchPredictionForm
+from .forms import ApiMatchPredictionForm, ApiMatchPredictionFormUpdat
 from .models import Match, MatchPrediction, NumberOfGamesToPredict, Player, MatchEvents, Team
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
@@ -194,33 +194,34 @@ def match_prediction(request,pk):
     }
     return render(request, 'match_prediction.html', context)
 
-
-
 def match_prediction_update(request, pk):
-    """this is update view"""
-    context ={}
-    pred = MatchPrediction.objects.get(id=pk)
- 
-    # fetch the object related to passed id
-    obj = get_object_or_404(MatchPrediction, id = pk)
-    match = Match.objects.get(id=pred.match.id)
-    hteam = match.hTeam
-    ateam = match.aTeam
- 
-    # pass the object as instance in form
-    form = ApiMatchPredictionForm(request.POST or None, instance = obj,ht=hteam,at=ateam)
- 
-    # save the data from the form and
-    # redirect
-    if form.is_valid():
-        form.save()
-        return redirect("predicts:user_predictions")
- 
-    # add form dictionary to context
-    context["form"] = form
-    context["match"] = match
-    context["prediction"] = pred
+    """Update view for match prediction"""
+    pred = get_object_or_404(MatchPrediction, matchApiId=pk)
+
+    hteam_squad = cache.get(f'{pred.homeTeamName}_squad')
+    ateam_squad = cache.get(f'{pred.homeTeamName}_squad')
+    squads = ateam_squad + hteam_squad
+    # Create a list of choices from the dictionary
+    choices = [(player['name'],player['name'] ) for player in squads]
+   
+
+    # Update the choices for the form field
+    ApiMatchPredictionFormUpdat.base_fields['goalScorerName'].choices = choices
+
+
+
+    if request.method == 'POST':
+        form = ApiMatchPredictionFormUpdat(request.POST, instance=pred)
+        if form.is_valid():
+            form.save()
+            return redirect('predicts:user_predictions')  # Replace 'success_page' with the desired URL name for the success page
+    else:
+        form = ApiMatchPredictionFormUpdat(instance=pred)
+
+    context = {'form': form, 'hTeam':pred.homeTeamName, 'aTeam':pred.awayTeamName, 'match':pred.matchApiId, 'pred':pred}
     return render(request, 'match_prediction_update.html', context)
+
+
 
 
 def delete_view(request, pk):
@@ -229,7 +230,7 @@ def delete_view(request, pk):
     context ={}
  
     # fetch the object related to passed id
-    obj = get_object_or_404(MatchPrediction, id = pk)
+    obj = get_object_or_404(MatchPrediction, matchApiId = pk)
  
  
     if request.method =="POST":

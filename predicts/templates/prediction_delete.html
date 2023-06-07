@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block title %}
-    Delete | {{match}}
+    Delete | {{prediction}}
 {% endblock title %}
 
 {% block content %}
@@ -8,18 +8,18 @@
     <div class="main mt-5">
         <div class="match">
             <div class="fixture row shadow-sm p-3 mb-2 ">
-                <div class="fs-6 fw-light text-center mb-3 text-secondary">{{prediction.match.date|date}}</div>
+                <div class="fs-6 fw-light text-center mb-3 text-secondary">{{prediction.match_date|date}}</div>
                 <div class="home col-6 text-end p-0">
-                    <span class="fw-bold">{{prediction.match.hTeam.name}}</span>
+                    <span class="fw-bold">{{prediction.homeTeamName}}</span>
                     <span class="border px-3 py-2 bg-light">{{prediction.homeTeamScore}}</span>
                 </div>
 
                 <div class="away col-6 text-left p-0">
                     <span class="border px-3 py-2 bg-light text-left">{{prediction.awayTeamScore}}</span>
-                    <span class="fw-bold">{{ prediction.match.aTeam.name}}</span>
+                    <span class="fw-bold">{{ prediction.awayTeamName}}</span>
                 </div>
 
-                <div class="fs-6 fw-light text-center mb-1 mt-1 text-secondary">{{prediction.goalScorer.name}}</div>
+                <div class="fs-6 fw-light text-center mb-1 mt-1 text-secondary">{{prediction.goalScorerName}}</div>
             </div>
         </div>
         <!-- Create a Form -->
