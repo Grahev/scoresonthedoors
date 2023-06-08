@@ -24,29 +24,42 @@ from django.views.generic.edit import DeleteView
 #my functions import
 from .my_functions import single_match_points, get_all_games, get_match_details, get_players
 
-
+  # epl id = 39
+    # champions league id = 2
+    #serie a id = 135
+    #la liga id = 140
+    # UEFA Natons League id: 5
+    #world cup id: 1
+    #MLS id 253
 
 def predicts_home(request):
     # cache.delete('fixtures_cache')
     fixtures = cache.get('fixtures_cache') #current week only
+    ucl_fixtures = cache.get('ucl_fixtures_cache') #current week only
 
     if not fixtures:
         print('REQUEST TO API!!!!!!!!!!!!!!!!!!!!!')
-        cache.set('fixtures_cache', get_all_games(),86400) #86400 = 24h
+        cache.set('fixtures_cache', get_all_games(253),86400) #86400 = 24h
         fixtures = cache.get('fixtures_cache')
         print(fixtures)
+
+    if not ucl_fixtures:
+        print('REQUEST TO API!!!!!!!!!!!!!!!!!!!!!')
+        cache.set('ucl_fixtures_cache', get_all_games(2),86400)
+        ucl_fixtures = cache.get('ucl_fixtures_cache')
         
     context={
-        'fixtures':fixtures
+        'fixtures':fixtures,
+        'ucl_fixtures':ucl_fixtures,
     }
     return render(request, 'predicts_home.html', context)
 
 
 
 
-def match_prediction(request):
+# def match_prediction(request):
 
-    return render(request, 'prediction_create.html')
+#     return render(request, 'prediction_create.html')
 
 
 def user_predictions(request):
@@ -126,7 +139,13 @@ def match_prediction(request,pk):
 
    
     key = os.environ.get('key')
+    #no of games to predict - this store UCL and NON UCL games
     number_of_games_to_predict = NumberOfGamesToPredict.objects.get(pk=1)
+    #number of existing user predictions for current week NON UCL
+    non_UCL_predictions = MatchPrediction.objects.filter(user = request.user).exclude(league__icontains= 'UEFA Champions League').filter(match_date__week=current_week).count()
+    #number of existing user predictions for current week UCL
+    UCL_predictions = MatchPrediction.objects.filter(user = request.user).filter(league__icontains= 'UEFA Champions League').filter(match_date__week=current_week).count()
+    print(UCL_predictions, 'ucl games')
  
    
 
@@ -134,7 +153,6 @@ def match_prediction(request,pk):
     if request.method == 'POST':
         pred = MatchPrediction.objects.filter(user=request.user).filter(matchApiId=pk).exists()
         print(pred)
-        print('post request')
         form = ApiMatchPredictionForm(request.POST)
         if form.is_valid():
             homeTeamScore = form.cleaned_data['homeTeamScore']
@@ -149,20 +167,20 @@ def match_prediction(request,pk):
             if pred == True:
                 messages.error(request,'Prediction for this match alerady exists, please make prediction for other match.')
                 return HttpResponseRedirect(request.path_info)
-            # if MatchPrediction.objects.filter(user = request.user).filter(match__in=Match.objects.filter(date__week=current_week)).count() >= 3:
-            #     messages.error(request,'You predict 3 games already, delete your prediction to make new for this matchday.')
-            #     return HttpResponseRedirect(request.path_info)
-            if match_league == 'Premier League':
-                if MatchPrediction.objects.filter(user = request.user).filter(league= 'Premier League').filter(match_date__week=current_week).count() >= number_of_games_to_predict.EPL:
-                    messages.error(request,f'You predict {number_of_games_to_predict.EPL} games for Premier League already, delete your prediction to make new.')
-                    return HttpResponseRedirect(request.path_info)
-            if match_league != 'Premier League':
-                if MatchPrediction.objects.filter(user = request.user).filter(league= 'World Cup').filter(match_date__week=current_week).count() >= number_of_games_to_predict.UCL:
-                    messages.error(request,f'You predict {number_of_games_to_predict.UCL} game for Champions League already, delete your prediction to make new.')
-                    return HttpResponseRedirect(request.path_info)
             if match_datetime_object < timezone.now():
                 messages.error(request,'Prediction match alredy started and can NOT be added on or edited. Please do prediction for other match.')
                 return HttpResponseRedirect(request.path_info)
+            
+            if match_league == 'UEFA Champions League':
+                if UCL_predictions >= number_of_games_to_predict.UCL:
+                    messages.error(request,f'You reach limit of {UCL_predictions} games to predict for UEFA Champions League already, delete your prediction to make new.')
+                    return HttpResponseRedirect(request.path_info)
+            
+            if match_league != 'UEFA Champions League':
+                if non_UCL_predictions >= number_of_games_to_predict.EPL:
+                    messages.error(request,f'You reach limit of {non_UCL_predictions} games to predict already, delete your prediction to make new.')
+                    return HttpResponseRedirect(request.path_info)
+            
 
             print(form.cleaned_data)
             

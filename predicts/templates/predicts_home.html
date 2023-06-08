@@ -15,74 +15,144 @@
 
 
 <div class="container">
-    <h1 class="fs-3 text-center mt-4 mx-3 bg-primary text-light p-1 rounded-pill"> World Cup 2022</h1>
 
 
-    {% for match in fixtures %}
+    <div class="accordion" id="accordionExample">
+        <!-- FIRST ACCORDION START-->
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="accordionHeading">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#accordionContent" aria-expanded="false" aria-controls="accordionContent">
+              <h1 class="fs-3 text-center mt-4 mx-3  p-1 rounded-pill">
+                <img src="https://media.api-sports.io/football/leagues/2.png" alt="ucl logo" style="height: 40px;"> UEFA Champions League
+              </h1>
+            </button>
+          </h2>
+          <div id="accordionContent" class="accordion-collapse collapse" aria-labelledby="accordionHeading" data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+              <!-- Content for the accordion item goes here -->
+              {% for match in ucl_fixtures %}
 
-        {% if match.fixture.status.long == 'Match Finished' %}
-       
-                
-            <div class="fixture row p-2 my-3 mx-1 border rounded-pill shadow">
-                
-                <p class="text-center card-subtitle mb-2 text-muted">{{match.fixture.date|to_datetime|date}}</p>
-            
-                <div class="home col-6 text-end p-0">
-                
-                    <span class="fw-bold">{{match.teams.home.name}}</span>
-                    <span class="fw-bold py-1 px-2 m-1 border shadow-sm">{{match.goals.home}}</span>
-                </div>
-
-                <div class="away col-6 text-left p-0">
-                    <span class="fw-bold py-1 px-2 m-1 border shadow-sm">{{match.goals.away}}</span>
-                    <span class="fw-bold">{{ match.teams.away.name}}</span>
-                </div>
-                <p class="text-center card-subtitle mt-2 text-muted">{{match.fixture.date|to_datetime|time:'H:i'}}</p>
-
-                <div class="row d-flex">
-                    <div class="col text-center">
-                        <p>First goal: Display player name </p>
-                    </div>
-                </div>
+              {% if match.fixture.status.long == 'Match Finished' %}
+             
+                      
+                  <div class="fixture row p-2 my-3 mx-1 border rounded-pill shadow">
+                      
+                      <p class="text-center card-subtitle mb-2 text-muted">{{match.fixture.date|to_datetime|date}}</p>
+                  
+                      <div class="home col-6 text-end p-0">
+                      
+                          <span class="fw-bold">{{match.teams.home.name}}</span>
+                          <span class="fw-bold py-1 px-2 m-1 border shadow-sm">{{match.goals.home}}</span>
+                      </div>
+      
+                      <div class="away col-6 text-left p-0">
+                          <span class="fw-bold py-1 px-2 m-1 border shadow-sm">{{match.goals.away}}</span>
+                          <span class="fw-bold">{{ match.teams.away.name}}</span>
+                      </div>
+                      <p class="text-center card-subtitle mt-2 text-muted">{{match.fixture.date|to_datetime|time:'H:i'}}</p>
+                  </div>
+                      
+                      
+              {% else %}
+              
+                  <a href="{% url 'predicts:match_prediction' match.fixture.id %}" class="text-decoration-none text-dark">
+                      
+                      <div class="fixture row p-2 my-3 mx-1 border rounded-pill shadow">
+                          <p class="text-center card-subtitle mb-2 text-muted">{{match.fixture.date|to_datetime|date}}</p>
+                      
+                          <div class="home col-6 text-end p-0">
+                          
+                              <span class="fw-bold">{{match.teams.home.name}}</span>
+                              <span class=""><img src="{{match.teams.home.logo}}" class='rounded-circle m-1 border shadow-sm' alt="logo" height=35 width=35px></span>
+                          </div>
+          
+                          <div class="away col-6 text-left p-0">
+                              <span class=" text-left"><img src="{{match.teams.away.logo}}" class='rounded-circle m-1 border shadow-sm' alt="logo" height=35 width=35px></span>
+                              <span class="fw-bold">{{ match.teams.away.name}}</span>
+                          </div>
+                          <p class="text-center card-subtitle mt-2 text-muted">{{match.fixture.date|to_datetime|time:'H:i'}}</p>
+                      </div>
+                      
+                      
+                  </a>
+              {% endif %}
+              
+      
+          {% endfor %}
             </div>
-                
-                
-        {% else %}
-        
-            <a href="{% url 'predicts:match_prediction' match.fixture.id %}" class="text-decoration-none text-dark">
-                
-                <div class="fixture row p-2 my-3 mx-1 border rounded-pill shadow">
-                    <p class="text-center card-subtitle mb-2 text-muted">{{match.fixture.date|to_datetime|date}}</p>
-                
-                    <div class="home col-6 text-end p-0">
+          </div>
+          <!-- FIRST ACCORDION END-->
+
+          <!-- SECOND ACCORDION BODY START-->
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="accordionHeading">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#accordionContent1" aria-expanded="false" aria-controls="accordionContent1">
+                <h1 class="fs-3 text-center mt-4 mx-3  p-1 rounded-pill">
+                  <img src="https://media.api-sports.io/football/leagues/256.png" alt="ucl logo" style="height: 40px;"> MLS
+                </h1>
+              </button>
+            </h2>
+            <div id="accordionContent1" class="accordion-collapse collapse" aria-labelledby="accordionHeading" data-bs-parent="#accordionExample">
+              <div class="accordion-body">
+                <!-- Content for the accordion item goes here -->
+                {% for match in fixtures %}
+  
+                {% if match.fixture.status.long == 'Match Finished' %}
+               
+                        
+                    <div class="fixture row p-2 my-3 mx-1 border rounded-pill shadow">
+                        
+                        <p class="text-center card-subtitle mb-2 text-muted">{{match.fixture.date|to_datetime|date}}</p>
                     
-                        <span class="fw-bold">{{match.teams.home.name}}</span>
-                        <span class=""><img src="{{match.teams.home.logo}}" class='rounded-circle m-1 border shadow-sm' alt="logo" height=35 width=35px></span>
-                    </div>
-    
-                    <div class="away col-6 text-left p-0">
-                        <span class=" text-left"><img src="{{match.teams.away.logo}}" class='rounded-circle m-1 border shadow-sm' alt="logo" height=35 width=35px></span>
-                        <span class="fw-bold">{{ match.teams.away.name}}</span>
-                    </div>
-                    <p class="text-center card-subtitle mt-2 text-muted">{{match.fixture.date|to_datetime|time:'H:i'}}</p>
-    
-                    <div class="row d-flex">
-                        <div class="col-6 text-end">
-                            <p>{{match.league.name}}</p>
+                        <div class="home col-6 text-end p-0">
+                        
+                            <span class="fw-bold">{{match.teams.home.name}}</span>
+                            <span class="fw-bold py-1 px-2 m-1 border shadow-sm">{{match.goals.home}}</span>
                         </div>
-                        <div class="col-6 text-start">
-                            <p>{{match.league.round}}</p>
-                        </div>
-                    </div>
-                </div>
-                
-                
-            </a>
-        {% endif %}
         
+                        <div class="away col-6 text-left p-0">
+                            <span class="fw-bold py-1 px-2 m-1 border shadow-sm">{{match.goals.away}}</span>
+                            <span class="fw-bold">{{ match.teams.away.name}}</span>
+                        </div>
+                        <p class="text-center card-subtitle mt-2 text-muted">{{match.fixture.date|to_datetime|time:'H:i'}}</p>
+                    </div>
+                        
+                        
+                {% else %}
+                
+                    <a href="{% url 'predicts:match_prediction' match.fixture.id %}" class="text-decoration-none text-dark">
+                        
+                        <div class="fixture row p-2 my-3 mx-1 border rounded-pill shadow">
+                            <p class="text-center card-subtitle mb-2 text-muted">{{match.fixture.date|to_datetime|date}}</p>
+                        
+                            <div class="home col-6 text-end p-0">
+                            
+                                <span class="fw-bold">{{match.teams.home.name}}</span>
+                                <span class=""><img src="{{match.teams.home.logo}}" class='rounded-circle m-1 border shadow-sm' alt="logo" height=35 width=35px></span>
+                            </div>
+            
+                            <div class="away col-6 text-left p-0">
+                                <span class=" text-left"><img src="{{match.teams.away.logo}}" class='rounded-circle m-1 border shadow-sm' alt="logo" height=35 width=35px></span>
+                                <span class="fw-bold">{{ match.teams.away.name}}</span>
+                            </div>
+                            <p class="text-center card-subtitle mt-2 text-muted">{{match.fixture.date|to_datetime|time:'H:i'}}</p>
+                        </div>
+                        
+                        
+                    </a>
+                {% endif %}
+                
+        
+            {% endfor %}
+              </div>
+            </div>
+          <!-- SECOND ACCORDION BODY END-->
+        </div>
+      </div>
+      
 
-    {% endfor %}
-
+    
+<!--end of container-->
 </div>
 
 
