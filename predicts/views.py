@@ -36,11 +36,16 @@ def predicts_home(request):
     # cache.delete('fixtures_cache')
     fixtures = cache.get('fixtures_cache') #current week only
     ucl_fixtures = cache.get('ucl_fixtures_cache') #current week only
+    numbers_of_games_to_predict = NumberOfGamesToPredict.objects.first()
+    ucl_predictions = MatchPrediction.objects.filter(user=request.user).filter(league='UEFA Champions League').filter(match_date__week=current_week).count()
+    non_ucl_predictions = MatchPrediction.objects.filter(user=request.user).exclude(league='UEFA Champions League').filter(match_date__week=current_week).count()
+    available_non_ucl_predictions = numbers_of_games_to_predict.EPL - non_ucl_predictions
 
     if not fixtures:
         print('REQUEST TO API!!!!!!!!!!!!!!!!!!!!!')
         cache.set('fixtures_cache', get_all_games(253),86400) #86400 = 24h
         fixtures = cache.get('fixtures_cache')
+        print(fixtures)
         print(fixtures)
 
     if not ucl_fixtures:
@@ -51,6 +56,10 @@ def predicts_home(request):
     context={
         'fixtures':fixtures,
         'ucl_fixtures':ucl_fixtures,
+        'numbers_of_games_to_predict':numbers_of_games_to_predict,
+        'ucl_predictions':ucl_predictions,
+        'non_ucl_predictions':non_ucl_predictions,
+        'available_non_ucl_predictions':available_non_ucl_predictions,
     }
     return render(request, 'predicts_home.html', context)
 

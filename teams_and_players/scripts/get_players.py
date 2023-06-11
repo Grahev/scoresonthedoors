@@ -65,6 +65,7 @@ def get_teams_ids():
 def get_players_run():
     ids = get_teams_ids()
     # ids.remove(999999999) #remove N/A team from teams ids
+    # ids = [505]
 
     for i in ids:
         get_players(i)
