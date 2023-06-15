@@ -134,7 +134,7 @@ def get_all_games(league_id):
     #MLS id 253
 
     # url = f'https://v3.football.api-sports.io/fixtures?league=135&season=2022&timezone=Europe/London&from={first_day_of_week}&to={last_day_of_week}'
-    url = f'https://v3.football.api-sports.io/fixtures?league={league_id}&season=2022&timezone=Europe/London&from={last_monday}&to={next_sunday}'
+    url = f'https://v3.football.api-sports.io/fixtures?league={league_id}&season=2023&timezone=Europe/London&from={last_monday}&to={next_sunday}'
     # url = 'https://v3.football.api-sports.io/fixtures?league=5&season=2022' # UEFA Natons League
 
     payload={}
@@ -147,6 +147,7 @@ def get_all_games(league_id):
     print(f'request status code:{r.status_code}')
     data = r.json()
     response = data['response']
+    print(response)
     sorted_matches = sorted(response, key=lambda x: x['fixture']['date'])
     return sorted_matches
 

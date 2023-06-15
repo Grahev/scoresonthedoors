@@ -4,13 +4,13 @@
 {% endblock title %}
 
 {% block content %}
-{{league.weekly_points}}
+
 
 
     {% comment %} <h1 class="text-center mt-5 mb-3">{{league.name}}</h1> {% endcomment %}
     
 
-
+  
     <div class="container-sm">
       <h1 class="fs-3 text-center mt-4 mx-3 bg-primary text-light p-1 rounded-pill">{{league.name}}</h1>
         <table class="table">
@@ -18,16 +18,38 @@
               <tr>
                 <th scope="col">#</th>
                 <th scope="col">Name</th>
-                <th scope="col">Points</th>
+                <th scope="col">Weekly Points</th>
+                <th scope="col">Monthly Points</th>
+                <th scope="col">Total Points</th>
+                
               </tr>
             </thead>
             <tbody>
-                {% for user in table %}
+                {% for user in league.table  %}
               <tr>
                 <th scope="row">{{forloop.counter}}</th>
-                {% comment %} <td>{{user.name}}</td> {% endcomment %}
-                <td><a href="../../predicts/{{user.name}}">{{user.name}}</a></td>
-                <td>{{user.points}}</td>
+          
+                <td><a href="../../predicts/{{user.name}}">{{user.username}}</a></td>
+                
+                <td>
+                  {% for points in user.four_weekly_points %}
+                  <span class="badge bg-primary text-white" style="width: 30px; height: 30px; font-size: 18px; padding: 5px;">{{points.points}}</span>
+                  {% endfor %}
+                  </td>
+                  
+                  <td>
+                    {% for points in user.monthly_points %}
+                    <span class="badge bg-primary text-white" style="width: 30px; height: 30px; font-size: 18px; padding: 5px;">{{points.points}}</span>
+                    {% endfor %}
+                  </td>
+                  <td>
+                    {% if user.monthly_points_sum %}
+                    <span class="badge bg-primary text-white" style="width: 30px; height: 30px; font-size: 18px; padding: 5px;">{{user.monthly_points_sum}}</span>
+                    {% else %}
+                    <span class="badge bg-primary text-white" style="width: 30px; height: 30px; font-size: 18px; padding: 5px;">0</span>
+                    {% endif %}
+                    
+
               </tr>
               {% endfor %}
             </tbody>
@@ -42,4 +64,6 @@
             <small>{{league.rules|linebreaks}}</small>
           </div>
     </div>
+
+
 {% endblock content %}

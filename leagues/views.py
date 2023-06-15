@@ -1,13 +1,15 @@
 from re import L
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, CreateView, DetailView
-from leagues.models import League
+from leagues.models import League, WeeklyPoint, MonthlyPoint
 from predicts.models import MatchPrediction
 from leagues.forms import LeagueCreateModelForm, LeagueJoinPinForm
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import HttpResponseRedirect
+from django.core import serializers
+import json
 
 from django.urls import reverse_lazy
 
@@ -73,37 +75,21 @@ def league_view(request):
     }
     return render(request, 'predictor/league.html', context)
 
+
+
 def league_details(request,pk):
     league = League.objects.get(id=pk)
-    table = []
-    create_date = league.create_date
+    # Retrieve weekly points for each user in the league
+    weekly_points = WeeklyPoint.objects.filter(user__leagues=league)
 
-    #create dict with user points
-    for user in league.users.iterator():  
-        points_dict = {}
-        user_points = 0
-        #print(user)
-        predictions = MatchPrediction.objects.filter(user=user).filter(match_date__gte = create_date)
-        # predictions = MatchPrediction.objects.filter(user=user)
-        print(predictions)
-        for match in predictions.iterator():
-            if match.points:
-                print(match.points)
-                user_points += match.points
-        print(f'{user} points:{user_points}')
-        points_dict = {
-            'name': user.username,
-            'points' : user_points
-            }
-
-        table.append(points_dict)
+    # Retrieve monthly points for each user in the league
+    monthly_points = MonthlyPoint.objects.filter(user__leagues=league)
     
-    #sort table by points
-    points_table= sorted(table, key=lambda d: d['points'], reverse=True)
+    
+    
     
     context = {
-        'league': league,
-        'table' : points_table,
+        'league': league 
     }
 
     return render(request,'league_detail.html', context)
