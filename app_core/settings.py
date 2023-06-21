@@ -194,3 +194,4 @@ EMAIL_HOST_USER = 'assafootball2021@gmail.com'
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD','dev default value')
 EMAIL_PORT = 587
 
+CSRF_TRUSTED_ORIGINS = ['https://worldcup.scoresonthedoors.uk']
