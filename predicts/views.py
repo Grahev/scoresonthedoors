@@ -51,8 +51,11 @@ def predicts_home(request):
     if not ucl_fixtures:
         print(' UCL REQUEST TO API!!!!!!!!!!!!!!!!!!!!!')
         print(ucl_fixtures)
-        cache.set('ucl_fixtures_cache', get_all_games(2),86400)
-        ucl_fixtures = cache.get('ucl_fixtures_cache')
+        if ucl_fixtures is None:
+            print('ucl_fixtures is None')
+        else:
+            cache.set('ucl_fixtures_cache', get_all_games(2),86400)
+            ucl_fixtures = cache.get('ucl_fixtures_cache')
         
     context={
         'fixtures':fixtures,
