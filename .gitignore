@@ -141,3 +141,4 @@ GitHub.sublime-settings
 
 old2_db.sqlite3
 api_db.sqlite3
+database_backup.dump

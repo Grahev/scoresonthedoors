@@ -44,18 +44,78 @@ class League(models.Model):
         for user in users:
             # weekly_points[user] = {}
             for week in range(1, 52):
-                points = MatchPrediction.objects.filter(user = user, match_date__week = week, match_date__year = self.current_year()).aggregate(models.Sum('points'))['points__sum']
+                points = MatchPrediction.objects.filter(
+                    user = user, 
+                    match_date__week = week, 
+                    match_date__year = self.current_year()
+                    ).aggregate(models.Sum('points'))['points__sum']
                 if points == None:
                     pass
                 else:
-                    # weekly_points[user][week] = points
                     #update or create weekly points
-                    weekly_points, created = WeeklyPoint.objects.get_or_create(user = user, week_number = week, year = self.current_year())
+                    weekly_points, created = WeeklyPoint.objects.get_or_create(
+                        user = user, 
+                        #TODO: change the way how to calculate week - use week 1 when season start and keep counting???
+                        week_number = week, 
+                        year = self.current_year()
+                        )
                     weekly_points.points = points
                     weekly_points.save()
                 
         
         return weekly_points
+    
+    def monthly_points_calc(self):
+        """Calculate monthly points for each user in league - takes last for weeks to calcuate sum of points for each user then create MonthlyPoint object for each user in league.
+        Month is based on current month"""
+        points_dict = {
+            1: 25,
+            2: 18,
+            3: 15,
+            4: 12,
+            5: 10,
+            6: 8,
+            7: 6,
+            8: 4,
+            9: 2,
+            10: 1
+        }
+        #create monthly points for each user in league or placec from 1 to 10
+        users = self.users.all()
+        #get current week number
+        current_week = datetime.date.today().isocalendar()[1]
+        #get current month
+        current_month = datetime.date.today().month
+        
+        end_month_table =  {}
+        for user in users:
+            #get user weekly points from last 4 weeks
+            weekly_points = WeeklyPoint.objects.filter(user = user, week_number__gte = current_week - 4, year = self.current_year())
+            #get weekly points sume
+            weekly_points_sum = weekly_points.aggregate(Sum('points'))['points__sum']
+            #append to dict
+            end_month_table[user] = weekly_points_sum
+
+        #sort dict by points
+        sorted_weekly_points = sorted(end_month_table.items(), key=itemgetter(1), reverse=True)
+            
+        #get top 10 users
+        top_ten = sorted_weekly_points[:10]
+        #create monthly points for each user
+        for i, user in enumerate(top_ten):
+            place = int(i+1)
+            monthly_points, created = MonthlyPoint.objects.get_or_create(
+                user = user[0], 
+                #TODO: change the way how to calculate month - use month 1 when season start and keep counting???
+                month=current_month, 
+                year = self.current_year(),
+                league = League.objects.get(id = self.id)
+                )
+            monthly_points.points = points_dict[i+1]
+            monthly_points.place = place 
+            monthly_points.save()
+            print(f'{user[0]} - place: {i+1} - points: {points_dict[i+1]}')
+
     
     def table(self):
         #return table of users and their points
@@ -108,10 +168,14 @@ class MonthlyPoint(models.Model):
     points = models.IntegerField(default=0)
     league = models.ForeignKey(League, on_delete=models.CASCADE, related_name='monthly_points')
     created_at = models.DateTimeField(auto_now_add=True)
+    place = models.PositiveIntegerField(default=0)
 
-    class Meta:
-        unique_together = ('user', 'month', 'year')
+    # class Meta:
+    #     unique_together = ('user', 'month', 'year')
 
     def update_points(self, points):
         self.points += points
         self.save()
+
+    def __str__(self):
+        return f'{self.user} - {self.month} - {self.year} - {self.points} - {self.place}'

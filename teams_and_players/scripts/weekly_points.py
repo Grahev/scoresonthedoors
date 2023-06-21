@@ -29,6 +29,7 @@ def run():
     for prediction in predictions:
         if prediction.checked == False and prediction.is_past_due:
             prediction.points = prediction.calculate_points()
+            prediction.checked = True
             #update prediction points
             prediction.save()
            
