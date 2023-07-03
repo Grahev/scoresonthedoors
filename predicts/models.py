@@ -137,6 +137,8 @@ class MatchPrediction(models.Model):
         for event in events:
             if event.get('type') == 'Goal':
                 first_goal_scorer = event.get('player', {}).get('name')
+            else:
+                first_goal_scorer = None
 
         return first_goal_scorer
 
