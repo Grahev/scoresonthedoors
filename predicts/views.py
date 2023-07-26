@@ -5,7 +5,7 @@ from hashlib import sha256
 import requests
 import os
 from .forms import ApiMatchPredictionForm, ApiMatchPredictionFormUpdat
-from .models import Match, MatchPrediction, NumberOfGamesToPredict, Player, MatchEvents, Team
+from .models import Match, MatchPrediction, NumberOfGamesToPredict, Player, MatchEvents, Team, LiveLeague
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.utils import timezone
@@ -31,35 +31,57 @@ from .my_functions import single_match_points, get_all_games, get_match_details,
     # UEFA Natons League id: 5
     #world cup id: 1
     #MLS id 253
+    #club frendlies id: 667
 
 def predicts_home(request):
-    # cache.delete('fixtures_cache')
-    fixtures = cache.get('fixtures_cache') #current week only
-    ucl_fixtures = cache.get('ucl_fixtures_cache') #current week only
+    # cache.delete('ucl_fixtures_cache')
+    live_league = LiveLeague.objects.filter(active = True)
+    print(live_league)
     numbers_of_games_to_predict = NumberOfGamesToPredict.objects.first()
     ucl_predictions = MatchPrediction.objects.filter(user=request.user).filter(league='UEFA Champions League').filter(match_date__week=current_week).count()
     non_ucl_predictions = MatchPrediction.objects.filter(user=request.user).exclude(league='UEFA Champions League').filter(match_date__week=current_week).count()
     available_non_ucl_predictions = numbers_of_games_to_predict.EPL - non_ucl_predictions
+    fixtures = {}
+    
+    for league in live_league:
+        # cache.delete(f'{league.league_name}_cache')
+        print(league.league_id)
 
-    if not fixtures:
-        print('REQUEST TO API!!!!!!!!!!!!!!!!!!!!!')
-        cache.set('fixtures_cache', get_all_games(253),86400) #86400 = 24h
-        fixtures = cache.get('fixtures_cache')
-        print(fixtures)
-        print(fixtures)
-
-    if not ucl_fixtures:
-        print(' UCL REQUEST TO API!!!!!!!!!!!!!!!!!!!!!')
-        print(ucl_fixtures)
-        if ucl_fixtures is None:
-            print('ucl_fixtures is None')
+        league_fixtures = cache.get(f'{league.league_name}_cache') #current week only
+        if not league_fixtures:
+            print(f'REQUEST TO API! {league} ')
+            cache.set(f'{league.league_name}_cache', get_all_games(league.league_id, league.season),86400) #86400 = 24h
+            fixtures_league = cache.get(f'{league.league_name}_cache')
+            
         else:
-            cache.set('ucl_fixtures_cache', get_all_games(2),86400)
-            ucl_fixtures = cache.get('ucl_fixtures_cache')
+            fixtures_league = cache.get(f'{league.league_name}_cache')
+            
+
+        fixtures[league.league_name] = fixtures_league
+        
+        
+    
+
+    # if not fixtures:
+    #     print('REQUEST TO API!!!!!!!!!!!!!!!!!!!!!')
+    #     cache.set('fixtures_cache', get_all_games(253),86400) #86400 = 24h
+    #     fixtures = cache.get('fixtures_cache')
+    #     print(fixtures)
+
+    # if not ucl_fixtures:
+    #     print(' UCL REQUEST TO API!!!!!!!!!!!!!!!!!!!!!')
+    #     ucl_fixtures = ['ucl_fixtures']
+    #     print(ucl_fixtures)
+    #     if ucl_fixtures is None:
+    #         print('ucl_fixtures is None')
+    #         cache.set('ucl_fixtures_cache', ucl_fixtures,86400)
+    #     else:
+    #         cache.set('ucl_fixtures_cache', get_all_games(2),86400)
+    #         ucl_fixtures = cache.get('ucl_fixtures_cache')
         
     context={
         'fixtures':fixtures,
-        'ucl_fixtures':ucl_fixtures,
+        # 'ucl_fixtures':ucl_fixtures,
         'numbers_of_games_to_predict':numbers_of_games_to_predict,
         'ucl_predictions':ucl_predictions,
         'non_ucl_predictions':non_ucl_predictions,

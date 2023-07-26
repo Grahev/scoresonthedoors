@@ -123,7 +123,7 @@ def single_match_points(match):
 
  
 #function to get games
-def get_all_games(league_id):
+def get_all_games(league_id, season):
     """get all games"""
     # epl id = 39
     # champions league id = 2
@@ -134,7 +134,7 @@ def get_all_games(league_id):
     #MLS id 253
 
     # url = f'https://v3.football.api-sports.io/fixtures?league=135&season=2022&timezone=Europe/London&from={first_day_of_week}&to={last_day_of_week}'
-    url = f'https://v3.football.api-sports.io/fixtures?league={league_id}&season=2023&timezone=Europe/London&from={last_monday}&to={next_sunday}'
+    url = f'https://v3.football.api-sports.io/fixtures?league={league_id}&season={season}&timezone=Europe/London&from={last_monday}&to={next_sunday}'
     # url = 'https://v3.football.api-sports.io/fixtures?league=5&season=2022' # UEFA Natons League
 
     payload={}
@@ -149,6 +149,8 @@ def get_all_games(league_id):
     response = data['response']
     print(response)
     sorted_matches = sorted(response, key=lambda x: x['fixture']['date'])
+    print(f"this is lenght of get all games sorted matches {len(sorted_matches)}")
+    print(f'sorted matches {data}')
     return sorted_matches
 
 

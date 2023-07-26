@@ -29,27 +29,106 @@
 
 	<section id="reules">
 		<div class="container">
-			<div class="text-center fs-2 fw-bold my-3">
-				RULES
-			</div>
-			<div class="text-center">
-				<ul class="list-group">
-					<li class="list-group-item">
-						You can predict every game in World Cup group stage (hopefully next stages will be added later)
-					</li>
-					<li class="list-group-item">
-						3 points for correct score.
-					</li>
-					<li class="list-group-item">
-						3 points for 1st goal scorer
-					</li>
-					<li class="list-group-item">1 point if the selected team wins but its is the wrong result.</li>
-					<li class="list-group-item">1 point if goal scorer scores any time after the 1st goal.</li>
-					<li class="list-group-item">Own goals will count as 1st goal scorer</li>
-					<li class="list-group-item">If any player from first goal scorer team get red card you will get <span class="text-danger">penalty -1 point</span></li>
-					<li class="list-group-item">All results and points will be updated daily, most of the time it will be late evening <span> 😀 </span></li>
-				</ul>
-			</div>
+			    <!-- Center the content using Bootstrap container -->
+				<div class="container">
+					<h1 class="text-center">Football Prediction Point System</h1>
+					<p class="text-center">Rules for predicting football match scores and goal scorers:</p>
+			
+					<div class="table-responsive">
+						<table class="table table-bordered table-striped mx-auto">
+							<thead>
+								<tr>
+									<th>Prediction Type</th>
+									<th>Points</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>Correct Full-Time Score</td>
+									<td>3</td>
+								</tr>
+								<tr>
+									<td>Correct Winning Team or Draw</td>
+									<td>1</td>
+								</tr>
+								<tr>
+									<td>Correct First Goal Scorer</td>
+									<td>3</td>
+								</tr>
+								<tr>
+									<td>Correct Anytime Goal Scorer (except the first goal)</td>
+									<td>1</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+			
+					<p class="text-center">Number of Weekly Predictions:</p>
+					<ul class="list-unstyled mx-auto">
+						<li>Users can predict from 3 to 6 games each week.</li>
+						<li>If there are Champions League matches available, users can make one additional prediction each
+							week.</li>
+					</ul>
+			
+					<p class="text-center">Monthly Points Calculation:</p>
+					<ul class="list-unstyled mx-auto">
+						<li>Sum up the points earned by the user from all predictions made in a month.</li>
+						<li>Assign monthly points based on the following scale:</li>
+					</ul>
+			
+					<div class="table-responsive">
+						<table class="table table-bordered table-striped mx-auto">
+							<thead>
+								<tr>
+									<th>Monthly Rank</th>
+									<th>Points</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>1st place</td>
+									<td>25</td>
+								</tr>
+								<tr>
+									<td>2nd place</td>
+									<td>18</td>
+								</tr>
+								<tr>
+									<td>3rd place</td>
+									<td>15</td>
+								</tr>
+								<tr>
+									<td>4th place</td>
+									<td>12</td>
+								</tr>
+								<tr>
+									<td>5th place</td>
+									<td>10</td>
+								</tr>
+								<tr>
+									<td>6th place</td>
+									<td>8</td>
+								</tr>
+								<tr>
+									<td>7th place</td>
+									<td>6</td>
+								</tr>
+								<tr>
+									<td>8th place</td>
+									<td>4</td>
+								</tr>
+								<tr>
+									<td>9th place</td>
+									<td>2</td>
+								</tr>
+								<tr>
+									<td>10th place</td>
+									<td>1</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
 		</div>
 		
 	</section>

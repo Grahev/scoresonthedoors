@@ -267,3 +267,19 @@ class NumberOfGamesToPredict(models.Model):
 
     def __str__(self) -> str:
         return f'Number of games to predict | EPL = {self.EPL}, UCL = {self.UCL}'
+    
+
+
+class LiveLeague(models.Model):
+    league_id = models.IntegerField()
+    league_name = models.CharField(max_length=100)
+    league_logo = models.CharField(max_length=100)
+    season = models.IntegerField()
+    active = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f'Live League | {self.league_name} - {self.season}'
+    
+    def api_url(self):
+        return f'https://v3.football.api-sports.io/fixtures?league={self.league_id}&season={self.season}&timezone=Europe/London'
+                # https://v3.football.api-sports.io/fixtures?league={league_id}&season=2023&timezone=Europe/London&from={last_monday}&to={next_sunday}
