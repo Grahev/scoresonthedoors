@@ -149,19 +149,40 @@ class MatchPrediction(models.Model):
             self.awayTeamScore == away_team_score
         )
 
+    # def is_correct_result(self):
+    #     match_details = self.fetch_match_details()[0]
+    #     home_team_score = match_details.get('score', {}).get('fulltime', {}).get('home')
+    #     away_team_score = match_details.get('score', {}).get('fulltime', {}).get('away')
+
+    #     print(f"home team score {home_team_score}")
+
+    #     if home_team_score > away_team_score:
+    #         return self.homeTeamScore > self.awayTeamScore
+    #     elif home_team_score < away_team_score:
+    #         return self.homeTeamScore < self.awayTeamScore
+    #     else:
+    #         return self.homeTeamScore == self.awayTeamScore
     def is_correct_result(self):
-        match_details = self.fetch_match_details()[0]
-        home_team_score = match_details.get('score', {}).get('fulltime', {}).get('home')
-        away_team_score = match_details.get('score', {}).get('fulltime', {}).get('away')
+        try:
+            match_details = self.fetch_match_details()[0]
+            home_team_score = match_details.get('score', {}).get('fulltime', {}).get('home')
+            away_team_score = match_details.get('score', {}).get('fulltime', {}).get('away')
 
-        print(f"home team score {home_team_score}")
+            if home_team_score is not None and away_team_score is not None:
+                print(f"Home team score: {home_team_score}")
+                if home_team_score > away_team_score:
+                    return self.homeTeamScore > self.awayTeamScore
+                elif home_team_score < away_team_score:
+                    return self.homeTeamScore < self.awayTeamScore
+                else:
+                    return self.homeTeamScore == self.awayTeamScore
+            else:
+                print("Error: Unable to retrieve scores for both teams.")
+                return False
 
-        if home_team_score > away_team_score:
-            return self.homeTeamScore > self.awayTeamScore
-        elif home_team_score < away_team_score:
-            return self.homeTeamScore < self.awayTeamScore
-        else:
-            return self.homeTeamScore == self.awayTeamScore
+        except Exception as e:
+            print(f"Error: {e}")
+            return False
 
     def is_correct_first_goal_scorer(self):
         match_details = self.fetch_match_details()
