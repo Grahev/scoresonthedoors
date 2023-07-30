@@ -38,11 +38,17 @@ def run():
             print(f'prediction: {prediction} is correct')
 
     #get all users
-    users = User.objects.all()
+    # users = User.objects.all()
 
-    for user in users:
-        user_predictions = MatchPrediction.objects.filter(user = user, checked = False, match_date__week = current_week, match_date__year = current_year)
-        print(f'user: {user} len: {len(user_predictions)}')
-        #check if user current week points exist if not create use get_or_create
-        weekly_points, created = WeeklyPoint.objects.get_or_create(user = user, week_number = current_week, year = current_year)
-        print(f'weekly_points: {weekly_points} created: {created}')
+    # for user in users:
+    #     user_predictions = MatchPrediction.objects.filter(user = user, checked = False, match_date__week = current_week, match_date__year = current_year)
+    #     print(f'user: {user} len: {len(user_predictions)}')
+    #     #check if user current week points exist if not create use get_or_create
+    #     weekly_points, created = WeeklyPoint.objects.get_or_create(user = user, week_number = current_week, year = current_year)
+    #     print(f'weekly_points: {weekly_points} created: {created}')
+
+    #get all leagues
+    leagues = League.objects.all()
+
+    for league in leagues:
+        league.weekly_points_calc()

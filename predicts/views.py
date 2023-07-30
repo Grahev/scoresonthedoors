@@ -16,13 +16,16 @@ from django.contrib.admin.views.decorators import staff_member_required
 
 #import for current week
 from datetime import date
-current_week = date.today().isocalendar()[1]  # return current week :)
+
 # delete view import
 from django.urls import reverse_lazy
 from django.views.generic.edit import DeleteView
 
 #my functions import
 from .my_functions import single_match_points, get_all_games, get_match_details, get_players
+
+current_week = 0
+current_week = date.today().isocalendar()[1]  # return current week :)
 
   # epl id = 39
     # champions league id = 2
@@ -36,7 +39,7 @@ from .my_functions import single_match_points, get_all_games, get_match_details,
 def predicts_home(request):
     # cache.delete('ucl_fixtures_cache')
     live_league = LiveLeague.objects.filter(active = True)
-    print(live_league)
+    # print(live_league)
     numbers_of_games_to_predict = NumberOfGamesToPredict.objects.first()
     ucl_predictions = MatchPrediction.objects.filter(user=request.user).filter(league='UEFA Champions League').filter(match_date__week=current_week).count()
     non_ucl_predictions = MatchPrediction.objects.filter(user=request.user).exclude(league='UEFA Champions League').filter(match_date__week=current_week).count()

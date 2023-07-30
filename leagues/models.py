@@ -41,6 +41,7 @@ class League(models.Model):
         #return weekly points for each user in league for each week from create date to current week
         users = self.users.all()
         weekly_points = {}
+        l = League.objects.get(id=self.id)
         for user in users:
             # weekly_points[user] = {}
             for week in range(1, 52):
@@ -57,7 +58,8 @@ class League(models.Model):
                         user = user, 
                         #TODO: change the way how to calculate week - use week 1 when season start and keep counting???
                         week_number = week, 
-                        year = self.current_year()
+                        year = self.current_year(),
+                        league = l
                         )
                     weekly_points.points = points
                     weekly_points.save()
@@ -122,7 +124,7 @@ class League(models.Model):
         table = []
         users = self.users.all()
         for user in users:
-            weekly_points = WeeklyPoint.objects.filter(user = user)
+            weekly_points = WeeklyPoint.objects.filter(user = user).filter(league = self.id)
             four_weekly_points = weekly_points.order_by('-week_number')[:4]
             monthly_points = MonthlyPoint.objects.filter(
                 Q(user = user) & Q(created_at__gte=self.create_date))
@@ -149,6 +151,7 @@ class WeeklyPoint(models.Model):
     year = models.PositiveIntegerField()
     points = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
+    league = models.ForeignKey(League, on_delete=models.CASCADE, related_name='weekly_points')
 
     # class Meta:
         # unique_together = ('user', 'week_number', 'year')

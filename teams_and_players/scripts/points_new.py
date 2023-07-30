@@ -3,7 +3,7 @@ import os
 import time
 from django.core.cache import cache
 
-from predicts.models import MatchPrediction, MatchResult, MatchEvents
+from predicts.models import MatchPrediction, MatchResult, MatchEvents, LiveLeague
 
 def compare_ints(a, b):
   if a > b:
@@ -194,26 +194,35 @@ def single_match_points(match_id):
                 print(f'points: {points} - {p} updated')
 
 
-            else:
-                print('match status not finished')
+        else:
+            print('match status not finished')
     
 
 
 def run():
-    fixtures = cache.get('fixtures_cache')
-    for fixture in fixtures:
+    live_league = LiveLeague.objects.filter(active = True)
 
-        match_id = fixture['fixture']['id']
-        status = fixture['fixture']['status']['long']
+    for league in live_league:
+        # cache.delete(f'{league.league_name}_cache')
+        print(league.league_id)
 
-        if status =='Match Finished':
+        # league_fixtures = cache.get(f'{league.league_name}_cache') #current week only
 
-            print(f'\n\n{match_id} \n\n')
 
-            match_result(match_id)
-            create_match_events(match_id)
-            print('Sleep for 10 seconds')
-            time.sleep(10)
-        else:
-            continue
+        fixtures = cache.get(f'{league.league_name}_cache')
+        for fixture in fixtures:
+
+            match_id = fixture['fixture']['id']
+            status = fixture['fixture']['status']['long']
+
+            if status =='Match Finished':
+
+                print(f'\n\n{match_id} \n\n')
+
+                match_result(match_id)
+                create_match_events(match_id)
+                print('Sleep for 10 seconds')
+                time.sleep(10)
+            else:
+                continue
     print('finish')
