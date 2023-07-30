@@ -133,6 +133,7 @@ class MatchPrediction(models.Model):
         # Retrieve the events from the match details
         events = data.get('events', [])
 
+        first_goal_scorer = None
         # Iterate over the events to find the first goal event
         for event in events:
             if event.get('type') == 'Goal':
