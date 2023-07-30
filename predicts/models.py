@@ -154,6 +154,8 @@ class MatchPrediction(models.Model):
         home_team_score = match_details.get('score', {}).get('fulltime', {}).get('home')
         away_team_score = match_details.get('score', {}).get('fulltime', {}).get('away')
 
+        print(f"home team score {home_team_score}")
+
         if home_team_score > away_team_score:
             return self.homeTeamScore > self.awayTeamScore
         elif home_team_score < away_team_score:
