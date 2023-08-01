@@ -127,6 +127,7 @@ def match_prediction(request,pk):
     hteam = match[0]['teams']['home']['name']
     ateam = match[0]['teams']['away']['name']
     match_league = match[0]['league']['name']
+    print(f'Match league: {match_league}')
 
     match_date = match[0]['fixture']['date']
    # Define the input string and its format
@@ -183,7 +184,7 @@ def match_prediction(request,pk):
     non_UCL_predictions = MatchPrediction.objects.filter(user = request.user).exclude(league__icontains= 'UEFA Champions League').filter(match_date__week=current_week).count()
     #number of existing user predictions for current week UCL
     UCL_predictions = MatchPrediction.objects.filter(user = request.user).filter(league__icontains= 'UEFA Champions League').filter(match_date__week=current_week).count()
-    print(UCL_predictions, 'ucl games')
+   
  
    
 
