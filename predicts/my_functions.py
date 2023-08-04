@@ -147,10 +147,10 @@ def get_all_games(league_id, season):
     print(f'request status code:{r.status_code}')
     data = r.json()
     response = data['response']
-    print(response)
+    # print(response)
     sorted_matches = sorted(response, key=lambda x: x['fixture']['date'])
     print(f"this is lenght of get all games sorted matches {len(sorted_matches)}")
-    print(f'sorted matches {data}')
+    # print(f'sorted matches {data}')
     return sorted_matches
 
 

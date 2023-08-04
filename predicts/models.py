@@ -137,7 +137,11 @@ class MatchPrediction(models.Model):
         # Iterate over the events to find the first goal event
         for event in events:
             if event.get('type') == 'Goal':
-                first_goal_scorer = event.get('player', {}).get('name')
+                first_goal_scorer = event.get('player', {}).get('name') 
+                if first_goal_scorer:
+                    return first_goal_scorer
+                else:
+                    continue
 
         return first_goal_scorer
 
