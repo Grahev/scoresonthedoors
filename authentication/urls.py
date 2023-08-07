@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path, include, reverse_lazy
-from authentication.views import home, signup, user_logout, activate, Login, signup_confirmation
+from authentication.views import home, signup, user_logout, activate, Login, signup_confirmation, matchday_cache_clearout, panel
 from django.contrib.auth import views as auth_views
 
 
@@ -13,6 +13,9 @@ urlpatterns = [
     path('logout/', user_logout,name='logout'),
     path('signup/confirm/', signup_confirmation,name='signup_confirmation'),
     path('activate/<uidb64>/<token>', activate.as_view(), name='activate'),
+    path('clear_cache/', matchday_cache_clearout, name='matchday_cache_clearout'),
+    path('panel/', panel, name='panel'),
+
     
     #password recovery
     

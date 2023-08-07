@@ -14,6 +14,8 @@ from django.contrib.auth.models import User
 from django.views.generic import View
 from django.contrib.auth.views import LoginView    
 from leagues.models import League
+from predicts.models import Match, MatchPrediction, NumberOfGamesToPredict, Player, MatchEvents, Team, LiveLeague
+from django.core.cache import cache
 
 # Create your views here.
 
@@ -83,3 +85,14 @@ def user_logout(request):
     logout(request)
     return redirect('/')
 
+def matchday_cache_clearout(request):
+    live_league = LiveLeague.objects.filter(active = True)
+    print(live_league)
+    for league in live_league:
+        cache.delete(f'{league.league_name}_cache')
+        print(f"CACHE CLEAR: {league}")
+
+    return render(request, 'predicts_home.html' )
+
+def panel(request):
+    return  render(request, 'panel.html')

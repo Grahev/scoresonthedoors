@@ -13,5 +13,5 @@ urlpatterns = [
     path('<int:pk>/event/delete',event_delete, name='match_event_delete'),
     path('<str:user>/',user_predictions_list, name='user_prediction_list'),
     path('update/<int:pk>/',single_match_update, name='single_match_update'),
-    path('points/<int:pk>/',match_point_update, name='match_point_update'),
+    path('points/<int:pk>/',match_point_update, name='match_point_update')
 ]

@@ -37,6 +37,9 @@ current_week = date.today().isocalendar()[1]  # return current week :)
     #club frendlies id: 667
 
 def predicts_home(request):
+    current_week = 0
+    current_week = date.today().isocalendar()[1]  # return current week :)
+    print(f'current week: {current_week}')
     # cache.delete('ucl_fixtures_cache')
     live_league = LiveLeague.objects.filter(active = True)
     # print(live_league)
@@ -47,13 +50,13 @@ def predicts_home(request):
     fixtures = {}
     
     for league in live_league:
-        # cache.delete(f'{league.league_name}_cache')
-        # print(league.league_id)
+        cache.delete(f'{league.league_name}_cache')
+        print(league.league_id)
 
         league_fixtures = cache.get(f'{league.league_name}_cache') #current week only
         if not league_fixtures:
             print(f'REQUEST TO API! {league} ')
-            cache.set(f'{league.league_name}_cache', get_all_games(league.league_id, league.season),86400) #86400 = 24h
+            cache.set(f'{league.league_name}_cache', get_all_games(league.league_id, league.season),86400/2) #86400 = 24h
             fixtures_league = cache.get(f'{league.league_name}_cache')
             
         else:
@@ -455,3 +458,5 @@ def match_point_update(request, pk):
     match = Match.objects.get(pk=pk)
     single_match_points(match)
     return render(request, 'single_match_points.html')
+
+
