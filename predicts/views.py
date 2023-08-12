@@ -50,7 +50,7 @@ def predicts_home(request):
     fixtures = {}
     
     for league in live_league:
-        cache.delete(f'{league.league_name}_cache')
+        # cache.delete(f'{league.league_name}_cache')
         print(league.league_id)
 
         league_fixtures = cache.get(f'{league.league_name}_cache') #current week only

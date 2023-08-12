@@ -103,10 +103,10 @@ class MatchPrediction(models.Model):
             status = match_details[0]['fixture']['status']['short']
             print(status)
             if status == 'FT':
-                cache_timeout = timedelta(days=180)  # Cache for 6 months for finished matches
-                print(cache_timeout)
+                cache_timeout = timedelta(days=365 * 10)  # Cache for 10 years for finished matches
+                # print(cache_timeout)
             else:
-                cache_timeout = timedelta(hours=2)  # Cache for 1 hour for ongoing matches
+                cache_timeout = timedelta(hours=4)  # Cache for 1 hour for ongoing matches
 
             # Cache the match details with the appropriate timeout
             cache.set(cache_key, match_details, timeout=cache_timeout.total_seconds())
