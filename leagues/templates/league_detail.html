@@ -29,7 +29,8 @@
               <tr>
                 <th scope="row">{{forloop.counter}}</th>
           
-                <td><a href="../../predicts/{{user.name}}">{{user.username}}</a></td>
+                {% comment %} <td><a href="../../predicts/{{user.name}}">{{user.username}}</a></td> {% endcomment %}
+                <td><a href="{% url 'predicts:user_prediction_list' user.username %}">{{user.username}}</a></td>
                 
                 <td>
                   {% for points in user.four_weekly_points %}
