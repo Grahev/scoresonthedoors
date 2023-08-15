@@ -118,6 +118,7 @@ def user_predictions(request):
 
 
 def match_prediction(request,pk):
+    current_week = Week.objects.get(pk=1)
     
     match = cache.get(f'match_cache_{pk}') 
     if not match:
@@ -182,9 +183,9 @@ def match_prediction(request,pk):
     #no of games to predict - this store UCL and NON UCL games
     number_of_games_to_predict = NumberOfGamesToPredict.objects.get(pk=1)
     #number of existing user predictions for current week NON UCL
-    non_UCL_predictions = MatchPrediction.objects.filter(user = request.user).exclude(league__icontains= 'UEFA Champions League').filter(match_date__week=current_week).count()
+    non_UCL_predictions = MatchPrediction.objects.filter(user = request.user).exclude(league__icontains= 'UEFA Champions League').filter(match_date__week=current_week.week_number).count()
     #number of existing user predictions for current week UCL
-    UCL_predictions = MatchPrediction.objects.filter(user = request.user).filter(league__icontains= 'UEFA Champions League').filter(match_date__week=current_week).count()
+    UCL_predictions = MatchPrediction.objects.filter(user = request.user).filter(league__icontains= 'UEFA Champions League').filter(match_date__week=current_week.week_number).count()
    
  
    
