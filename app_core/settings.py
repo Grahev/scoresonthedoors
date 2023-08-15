@@ -31,7 +31,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 
-DEBUG = True #do not chage this as models get change!!!
+DEBUG = False #do not chage this as models get change!!!
 
 # ALLOWED_HOSTS = ['vast-wildwood-19757.herokuapp.com', '127.0.0.1','scoresonthedoors.uk', 'web-production-7b21.up.railway.app']
 ALLOWED_HOSTS = ['*']
