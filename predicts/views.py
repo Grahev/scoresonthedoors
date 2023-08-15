@@ -42,8 +42,8 @@ def predicts_home(request):
     live_league = LiveLeague.objects.filter(active = True)
     # print(live_league)
     numbers_of_games_to_predict = NumberOfGamesToPredict.objects.first()
-    ucl_predictions = MatchPrediction.objects.filter(user=request.user).filter(league='UEFA Champions League').filter(match_date__week=current_week.week_number).count()
-    non_ucl_predictions = MatchPrediction.objects.filter(user=request.user).exclude(league='UEFA Champions League').filter(match_date__week=current_week.week_number).count()
+    ucl_predictions = MatchPrediction.objects.filter(user=request.user).filter(league='UEFA Champions League').filter(match_date__week=current_week.week_number).count() # update this
+    non_ucl_predictions = MatchPrediction.objects.filter(user=request.user).exclude(league='UEFA Champions League').filter(match_date__week=current_week.week_number).count() # update this
     available_non_ucl_predictions = numbers_of_games_to_predict.EPL - non_ucl_predictions
     fixtures = {}
     
