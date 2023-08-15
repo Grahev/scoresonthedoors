@@ -7,7 +7,8 @@ from teams_and_players.models import Team, Player
 import os
 import requests
 from django.core.cache import cache
-from datetime import timedelta
+from datetime import timedelta, datetime
+
 
 from django.contrib.auth.models import User
 User._meta.get_field('email')._unique = True
@@ -268,9 +269,6 @@ class MatchResult(models.Model):
 
     def __str__(self):
         return f'Match result | id{self.match_id} - code {self.resultCode}'
-
-    
-    
     
 
 class MatchEvents(models.Model):
@@ -311,3 +309,42 @@ class LiveLeague(models.Model):
     def api_url(self):
         return f'https://v3.football.api-sports.io/fixtures?league={self.league_id}&season={self.season}&timezone=Europe/London'
                 # https://v3.football.api-sports.io/fixtures?league={league_id}&season=2023&timezone=Europe/London&from={last_monday}&to={next_sunday}
+
+class SingletonWeekDateManager(models.Manager):
+    """class is responsible for managing the singleton instance. It overrides the get_instance() method, which gets or creates an instance with a primary key of 1. If the instance is created, it calculates the dates and saves them to the database. This ensures that only one instance of the Week model exists in the database."""
+    def get_instance(self):
+        instance, created = self.get_or_create(pk=1)
+        if created:
+            instance.calculate_dates()
+            instance.save()
+        return instance
+
+class Week(models.Model):
+    week_number = models.IntegerField()
+    monday = models.DateField()
+    sunday = models.DateField()
+    year = models.IntegerField()
+
+    objects = SingletonWeekDateManager()
+
+    def save(self, *args, **kwargs):
+        self.calculate_dates()
+        super().save(*args, **kwargs)
+
+    def calculate_dates(self):
+        first_day = datetime(self.year, 1, 1)
+        first_monday = first_day + timedelta(days=(7 - first_day.weekday()))
+
+        self.monday = first_monday + timedelta(weeks=(self.week_number - 1))
+        self.sunday = self.monday + timedelta(days=6)
+
+    def next_week(self):
+        if self.week_number < 52:
+            self.week_number = self.week_number +1
+        else:
+            self.week_number = 0
+            self.year = self.year +1
+
+    def __str__(self):
+        return f'Week {self.week_number} | {self.monday} - {self.sunday}'
+    

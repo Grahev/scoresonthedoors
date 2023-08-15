@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.db.models.deletion import CASCADE, SET, SET_NULL, DO_NOTHING
 from django.contrib.auth.models import User
 User._meta.get_field('email')._unique = True
-from predicts.models import MatchPrediction
+from predicts.models import MatchPrediction, Week
 import datetime
 from django.db.models import Q, Sum
 from operator import itemgetter
@@ -36,7 +36,7 @@ class League(models.Model):
    
     
     def weekly_points_calc(self):
-        current_week = datetime.date.today().isocalendar()[1]
+        current_week = Week.objects.get(pk=1)
         print(f'current_week: {current_week}')
         #return weekly points for each user in league for each week from create date to current week
         users = self.users.all()
@@ -44,25 +44,25 @@ class League(models.Model):
         l = League.objects.get(id=self.id)
         for user in users:
             # weekly_points[user] = {}
-            for week in range(1, 52):
-                points = MatchPrediction.objects.filter(
+            # for week in range(1, 52):
+            points = MatchPrediction.objects.filter(
+                user = user, 
+                match_date__week = current_week.week_number, 
+                match_date__year = current_week.year
+                ).aggregate(models.Sum('points'))['points__sum']
+            if points == None:
+                pass
+            else:
+                #update or create weekly points
+                weekly_points, created = WeeklyPoint.objects.get_or_create(
                     user = user, 
-                    match_date__week = week, 
-                    match_date__year = self.current_year()
-                    ).aggregate(models.Sum('points'))['points__sum']
-                if points == None:
-                    pass
-                else:
-                    #update or create weekly points
-                    weekly_points, created = WeeklyPoint.objects.get_or_create(
-                        user = user, 
-                        #TODO: change the way how to calculate week - use week 1 when season start and keep counting???
-                        week_number = week, 
-                        year = self.current_year(),
-                        league = l
-                        )
-                    weekly_points.points = points
-                    weekly_points.save()
+                    
+                    week_number = current_week.week_number, 
+                    year = current_week.year,
+                    league = l
+                    )
+                weekly_points.points = points
+                weekly_points.save()
                 
         
         return weekly_points

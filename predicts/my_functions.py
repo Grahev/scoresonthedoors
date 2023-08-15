@@ -123,7 +123,7 @@ def single_match_points(match):
 
  
 #function to get games
-def get_all_games(league_id, season):
+def get_all_games(league_id, season,monday,sunday):
     """get all games"""
     # epl id = 39
     # champions league id = 2
@@ -134,7 +134,7 @@ def get_all_games(league_id, season):
     #MLS id 253
 
     # url = f'https://v3.football.api-sports.io/fixtures?league=135&season=2022&timezone=Europe/London&from={first_day_of_week}&to={last_day_of_week}'
-    url = f'https://v3.football.api-sports.io/fixtures?league={league_id}&season={season}&timezone=Europe/London&from={last_monday}&to={next_sunday}'
+    url = f'https://v3.football.api-sports.io/fixtures?league={league_id}&season={season}&timezone=Europe/London&from={monday}&to={sunday}'
     # url = 'https://v3.football.api-sports.io/fixtures?league=5&season=2022' # UEFA Natons League
 
     payload={}

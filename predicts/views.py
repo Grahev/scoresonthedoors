@@ -5,7 +5,7 @@ from hashlib import sha256
 import requests
 import os
 from .forms import ApiMatchPredictionForm, ApiMatchPredictionFormUpdat
-from .models import Match, MatchPrediction, NumberOfGamesToPredict, Player, MatchEvents, Team, LiveLeague
+from .models import Match, MatchPrediction, NumberOfGamesToPredict, Player, MatchEvents, Team, LiveLeague, Week
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.utils import timezone
@@ -24,8 +24,7 @@ from django.views.generic.edit import DeleteView
 #my functions import
 from .my_functions import single_match_points, get_all_games, get_match_details, get_players
 
-current_week = 0
-current_week = date.today().isocalendar()[1]  # return current week :)
+
 
   # epl id = 39
     # champions league id = 2
@@ -37,15 +36,14 @@ current_week = date.today().isocalendar()[1]  # return current week :)
     #club frendlies id: 667
 
 def predicts_home(request):
-    current_week = 0
-    current_week = date.today().isocalendar()[1]  # return current week :)
-    print(f'current week: {current_week}')
+    current_week = Week.objects.get(pk=1)
+    print(f'current week: {current_week.week_number}')
     # cache.delete('ucl_fixtures_cache')
     live_league = LiveLeague.objects.filter(active = True)
     # print(live_league)
     numbers_of_games_to_predict = NumberOfGamesToPredict.objects.first()
-    ucl_predictions = MatchPrediction.objects.filter(user=request.user).filter(league='UEFA Champions League').filter(match_date__week=current_week).count()
-    non_ucl_predictions = MatchPrediction.objects.filter(user=request.user).exclude(league='UEFA Champions League').filter(match_date__week=current_week).count()
+    ucl_predictions = MatchPrediction.objects.filter(user=request.user).filter(league='UEFA Champions League').filter(match_date__week=current_week.week_number).count()
+    non_ucl_predictions = MatchPrediction.objects.filter(user=request.user).exclude(league='UEFA Champions League').filter(match_date__week=current_week.week_number).count()
     available_non_ucl_predictions = numbers_of_games_to_predict.EPL - non_ucl_predictions
     fixtures = {}
     
@@ -56,7 +54,7 @@ def predicts_home(request):
         league_fixtures = cache.get(f'{league.league_name}_cache') #current week only
         if not league_fixtures:
             print(f'REQUEST TO API! {league} ')
-            cache.set(f'{league.league_name}_cache', get_all_games(league.league_id, league.season),86400/2) #86400 = 24h
+            cache.set(f'{league.league_name}_cache', get_all_games(league.league_id, league.season, current_week.monday, current_week.sunday),86400/2) #86400 = 24h
             fixtures_league = cache.get(f'{league.league_name}_cache')
             
         else:
