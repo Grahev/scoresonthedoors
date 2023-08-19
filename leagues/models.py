@@ -85,14 +85,14 @@ class League(models.Model):
         #create monthly points for each user in league or placec from 1 to 10
         users = self.users.all()
         #get current week number
-        current_week = datetime.date.today().isocalendar()[1]
+        current_week = Week.objects.get(pk=1)
         #get current month
         current_month = datetime.date.today().month
         
         end_month_table =  {}
         for user in users:
             #get user weekly points from last 4 weeks
-            weekly_points = WeeklyPoint.objects.filter(user = user, week_number__gte = current_week - 4, year = self.current_year())
+            weekly_points = WeeklyPoint.objects.filter(user = user, week_number__gte = current_week.week_number - 4, year = self.current_year())
             #get weekly points sume
             weekly_points_sum = weekly_points.aggregate(Sum('points'))['points__sum']
             #append to dict
