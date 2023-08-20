@@ -218,18 +218,27 @@ class MatchPrediction(models.Model):
         first_goal_scorer = None
         for event in events:
             if event.get('type') == 'Goal':
+                # print(f'anytie goalscorer goal event {event}')
                 first_goal_scorer = event.get('player', {}).get('name')
                 break
 
         if first_goal_scorer == self.goalScorerName:
             # Check if the first goal scorer scores anytime
+            return False
+        
+        if first_goal_scorer != self.goalScorerName:
             for event in events:
                 if event.get('type') == 'Goal':
                     scorer_name = event.get('player', {}).get('name')
-                    if scorer_name == first_goal_scorer:
+                    # print(f'event scorer_name {scorer_name} | first goal scorer {self.goalScorerName}')
+                    if scorer_name == self.goalScorerName:
+                        # print('1 point for anytime')
                         return True
+                    else:
+                        # print('false anytime')
+                        continue
 
-        return False  # Return False if the first goal scorer doesn't score anytime
+        # return False  # Return False if the first goal scorer doesn't score anytime
     
     def calculate_points(self):
         points = 0

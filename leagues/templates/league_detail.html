@@ -19,6 +19,7 @@
                 <th scope="col">#</th>
                 <th scope="col">Name</th>
                 <th scope="col">Weekly Points</th>
+                <th scope="col">Weekly Points Sum</th>
                 <th scope="col">Monthly Points</th>
                 <th scope="col">Total Points</th>
                 
@@ -37,6 +38,12 @@
                   <span class="badge bg-primary text-white" style="width: 15x; height: 30px; font-size: 18px; padding: 3px;">{{points.points}}</span>
                   {% endfor %}
                   </td>
+
+                  <td>
+                    
+                    <span class="badge bg-primary text-white" style="width: 15x; height: 30px; font-size: 18px; padding: 3px;">{{user.weekly_sum}}</span>
+                    
+                    </td>
                   
                   <td>
                     {% for points in user.monthly_points %}

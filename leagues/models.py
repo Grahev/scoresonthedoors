@@ -8,6 +8,7 @@ from predicts.models import MatchPrediction, Week
 import datetime
 from django.db.models import Q, Sum
 from operator import itemgetter
+from django.utils import timezone
 
 
 
@@ -121,6 +122,9 @@ class League(models.Model):
     
     def table(self):
         #return table of users and their points
+        # Get the current month and year
+        current_month = timezone.now().month
+        current_year = timezone.now().year
         table = []
         users = self.users.all()
         for user in users:
@@ -132,12 +136,25 @@ class League(models.Model):
             monthly_points_sum = monthly_points.aggregate(Sum('points'))['points__sum']
              # Provide a default value of 0 for monthly_points_sum if it is None
             monthly_points_sum = monthly_points_sum or 0
+            
+            #weekly points sum calculation
+            weekly_sum = WeeklyPoint.objects.filter(
+                user=user,
+                league = self.id,
+                created_at__month=current_month,
+                created_at__year=current_year
+                ).aggregate(total_points=models.Sum('points'))['total_points']
+            
+            # If there are no points for the current month, default to 0
+            weekly_sum = weekly_sum or 0
+            
             table.append({
                 'username': user.username,
                 'weekly_points': weekly_points,
                 'four_weekly_points': four_weekly_points,
                 'monthly_points': monthly_points,
-                'monthly_points_sum': monthly_points_sum  # Add the sum to the table
+                'monthly_points_sum': monthly_points_sum,  # Add the sum to the table
+                'weekly_sum': weekly_sum
             })
 
          # Sort the table based on monthly_points_sum in descending order
