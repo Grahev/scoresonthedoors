@@ -13,15 +13,16 @@
   
     <div class="container-sm">
       <h1 class="fs-3 text-center mt-4 mx-3 bg-primary text-light p-1 rounded-pill">{{league.name}}</h1>
+      
         <table class="table">
             <thead>
               <tr>
                 <th scope="col">#</th>
                 <th scope="col">Name</th>
-                <th scope="col">Weekly Points</th>
-                <th scope="col">Weekly Points Sum</th>
-                <th scope="col">Monthly Points</th>
-                <th scope="col">Total Points</th>
+                <th scope="col">WP</th> <!--WEEKLY POINTS-->
+                <th scope="col">WPS</th><!--WEEKLY POINTS SUM-->
+                <th scope="col">MP</th> <!--Monthly Points-->
+                <th scope="col">TP</th> <!--Total Points-->
                 
               </tr>
             </thead>
@@ -62,6 +63,14 @@
               {% endfor %}
             </tbody>
           </table>
+          <div class="d-flex flex-column">
+            <small class="fw-bold">Legend:</small>
+            <small><span class="fw-bold">WP</span> - Weekly Points (series of last 4 weeks)</small>
+            <small><span class="fw-bold">WPS</span> - Weekly Points Sum (sum of weekly points from this month)</small>
+            <small><span class="fw-bold">MP</span> - Monthly Points (series of last 4 months)</small>
+            <small><span class="fw-bold">TP</span> - Total Points (sum of montly points)</small>
+          </div>
+          <hr>
           <div class="d-flex justify-content-between">
               <small>Created: {{league.create_date}}</small>
               <small>Admin: {{league.admin}}</small>
