@@ -289,7 +289,7 @@ def delete_view(request, pk):
     context ={}
  
     # fetch the object related to passed id
-    obj = get_object_or_404(MatchPrediction, matchApiId = pk)
+    obj = get_object_or_404(MatchPrediction, matchApiId = pk, user=request.user)
  
  
     if request.method =="POST":
