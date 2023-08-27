@@ -255,7 +255,7 @@ def match_prediction(request,pk):
 
 def match_prediction_update(request, pk):
     """Update view for match prediction"""
-    pred = get_object_or_404(MatchPrediction, matchApiId=pk)
+    pred = get_object_or_404(MatchPrediction, matchApiId=pk, user=request.user)
 
     hteam_squad = cache.get(f'{pred.homeTeamName}_squad')
     ateam_squad = cache.get(f'{pred.homeTeamName}_squad')
