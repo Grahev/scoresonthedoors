@@ -357,3 +357,12 @@ class Week(models.Model):
     def __str__(self):
         return f'Week {self.week_number} | {self.monday} - {self.sunday}'
     
+class Month(models.Model):
+    month = models.IntegerField(range(1,12))
+    year = models.PositiveIntegerField(range(2023,2050))
+    start = models.DateField()
+    end = models.DateField()
+    
+    def __str__(self):
+        return f'Month {self.month} / {self.year} | {self.start} - {self.end}'
+    

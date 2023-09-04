@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.db.models.deletion import CASCADE, SET, SET_NULL, DO_NOTHING
 from django.contrib.auth.models import User
 User._meta.get_field('email')._unique = True
-from predicts.models import MatchPrediction, Week
+from predicts.models import MatchPrediction, Week, Month
 import datetime
 from django.db.models import Q, Sum
 from operator import itemgetter
@@ -88,14 +88,21 @@ class League(models.Model):
         #get current week number
         current_week = Week.objects.get(pk=1)
         #get current month
-        current_month = datetime.date.today().month
+        # current_month = datetime.date.today().month
+        current_month = Month.objects.get(pk=1)
+        current_month_start = Month.objects.get(pk=1).start
+        current_month_end = Month.objects.get(pk=1).end
+
+        print(f' {current_month.month} - start {current_month_start} end {current_month_end}')
         
         end_month_table =  {}
         for user in users:
             #get user weekly points from last 4 weeks
-            weekly_points = WeeklyPoint.objects.filter(user = user, week_number__gte = current_week.week_number - 4, year = self.current_year())
+            # weekly_points = WeeklyPoint.objects.filter(user = user, week_number__gte = current_week.week_number - 4, year = self.current_year())
+            weekly_points = WeeklyPoint.objects.filter(user = user, created_at__gte = current_month_start, year = current_month.year)
+            print(f'\n {weekly_points} \n')
             #get weekly points sume
-            weekly_points_sum = weekly_points.aggregate(Sum('points'))['points__sum']
+            weekly_points_sum = weekly_points.aggregate(Sum('points'))['points__sum'] or 0
             #append to dict
             end_month_table[user] = weekly_points_sum
 
@@ -110,7 +117,7 @@ class League(models.Model):
             monthly_points, created = MonthlyPoint.objects.get_or_create(
                 user = user[0], 
                 #TODO: change the way how to calculate month - use month 1 when season start and keep counting???
-                month=current_month, 
+                month=current_month.month, 
                 year = self.current_year(),
                 league = League.objects.get(id = self.id)
                 )
@@ -131,7 +138,7 @@ class League(models.Model):
             weekly_points = WeeklyPoint.objects.filter(user = user).filter(league = self.id)
             four_weekly_points = weekly_points.order_by('-week_number')[:4]
             monthly_points = MonthlyPoint.objects.filter(
-                Q(user = user) & Q(created_at__gte=self.create_date))
+                Q(user = user) & Q(created_at__gte=self.create_date) & Q(league = self.id))
             # Calculate the sum of monthly points
             monthly_points_sum = monthly_points.aggregate(Sum('points'))['points__sum']
              # Provide a default value of 0 for monthly_points_sum if it is None
