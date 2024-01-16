@@ -66,4 +66,15 @@
         </div>
 </div> 
 
+<script>
+    // Add attributes to limit input to positive integers between 0 and 9
+    document.getElementById("id_homeTeamScore").setAttribute("type", "number");
+    document.getElementById("id_homeTeamScore").setAttribute("min", "0");
+    document.getElementById("id_homeTeamScore").setAttribute("max", "9");
+
+    document.getElementById("id_awayTeamScore").setAttribute("type", "number");
+    document.getElementById("id_awayTeamScore").setAttribute("min", "0");
+    document.getElementById("id_awayTeamScore").setAttribute("max", "9");
+</script>
+
 {% endblock content %}

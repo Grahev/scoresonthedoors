@@ -1,9 +1,13 @@
 from django.conf import settings
 from django.db import models
+from django.db.models import Sum
 from django.db.models.deletion import CASCADE, SET, SET_NULL, DO_NOTHING
 from django.utils import timezone
 from django.contrib.auth.models import User
 from teams_and_players.models import Team, Player
+#from leagues.models import WeeklyPoint
+from django.apps import apps
+
 import os
 import requests
 from django.core.cache import cache
@@ -365,4 +369,23 @@ class Month(models.Model):
     
     def __str__(self):
         return f'Month {self.month} / {self.year} | {self.start} - {self.end}'
+    
+    def get_league_user_points(self):
+        # Retrieve the start and end dates from the Month object
+        start_date = self.start
+        end_date = self.end
+        result = WeeklyPoint.objects.filter(
+            created_at__gte=start_date,
+            created_at__lte=end_date
+        ).values(
+            'league_id',
+            'user_id',
+            'league__name',
+            'user__username'
+        ).annotate(
+            total_points=Sum('points')
+        ).order_by(
+            '-total_points'
+        )
+        return result
     

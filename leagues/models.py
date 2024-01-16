@@ -10,6 +10,18 @@ from django.db.models import Q, Sum
 from operator import itemgetter
 from django.utils import timezone
 
+import logging
+
+logging.basicConfig(
+    level=logging.DEBUG,
+    filename='montly points log.log',
+    filemode='a',
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s' 
+)
+
+logger = logging.getLogger('points')
+
+
 
 
 # Create your models here.
@@ -99,10 +111,12 @@ class League(models.Model):
         for user in users:
             #get user weekly points from last 4 weeks
             # weekly_points = WeeklyPoint.objects.filter(user = user, week_number__gte = current_week.week_number - 4, year = self.current_year())
-            weekly_points = WeeklyPoint.objects.filter(user = user, created_at__gte = current_month_start, year = current_month.year)
+            weekly_points = WeeklyPoint.objects.filter(user = user, created_at__gte = current_month_start, year = current_month.year, league = self.id)
             print(f'\n {weekly_points} \n')
+            
             #get weekly points sume
             weekly_points_sum = weekly_points.aggregate(Sum('points'))['points__sum'] or 0
+            logger.info(f'{current_month.month} | {self.name} | {user.username} - {weekly_points_sum}')
             #append to dict
             end_month_table[user] = weekly_points_sum
 
@@ -125,6 +139,9 @@ class League(models.Model):
             monthly_points.place = place 
             monthly_points.save()
             print(f'{user[0]} - place: {i+1} - points: {points_dict[i+1]}')
+            logger.info(f'{current_month.month} | {self.name} | {user} - place: {place}, {monthly_points.points}')
+
+       
 
     
     def table(self):

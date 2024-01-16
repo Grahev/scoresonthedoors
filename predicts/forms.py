@@ -3,6 +3,7 @@ from django import forms
 from .models import MatchPrediction
 from django.contrib.auth.models import User
 from teams_and_players.models import Player
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 #crispy form import
 from crispy_forms.helper import FormHelper
@@ -32,6 +33,16 @@ class ApiMatchPredictionForm(forms.ModelForm):
         model = MatchPrediction
         fields  = ['homeTeamScore','awayTeamScore','goalScorerName']
         labels = {}
+        
+        homeTeamScore = forms.IntegerField(
+            validators=[MinValueValidator(0), MaxValueValidator(9)],
+            widget=forms.NumberInput(attrs={'type': 'number', 'min': '0', 'max': '9'})
+            )
+    
+        awayTeamScore = forms.IntegerField(
+            validators=[MinValueValidator(0), MaxValueValidator(9)],
+            widget=forms.NumberInput(attrs={'type': 'number', 'min': '0', 'max': '9'})
+            )
 
 class ApiMatchPredictionFormUpdat(forms.ModelForm):
 
