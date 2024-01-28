@@ -197,7 +197,7 @@ def match_prediction(request,pk):
     UCL_predictions = MatchPrediction.objects.filter(
         user=request.user,
         league__icontains='UEFA Champions League',
-        match_date__range=(current_week.start_date, current_week.end_date)
+        match_date__range=(current_week.monday, current_week.sunday)
         ).count()
  
    
