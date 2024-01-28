@@ -120,6 +120,7 @@ def user_predictions(request):
 
 def match_prediction(request,pk):
     current_week = Week.objects.get(pk=1)
+    print(f'current week: {current_week}')
     
     match = cache.get(f'match_cache_{pk}') 
     if not match:
@@ -184,14 +185,20 @@ def match_prediction(request,pk):
     #no of games to predict - this store UCL and NON UCL games
     number_of_games_to_predict = NumberOfGamesToPredict.objects.get(pk=1)
     #number of existing user predictions for current week NON UCL
-    non_UCL_predictions = MatchPrediction.objects.filter(user = request.user).exclude(league__icontains= 'UEFA Champions League').filter(match_date__week=current_week.week_number).count()
-    test_non_UCL_predictions = MatchPrediction.objects.filter(user = request.user).exclude(league__icontains= 'UEFA Champions League').filter(match_date__week=current_week.week_number)
-    print(f'non ucl games predicted {non_UCL_predictions}')
-    for m in test_non_UCL_predictions:
-        print(m.id, m.checked, m.homeTeamName, m.awayTeamName, m.match_date)
+    # non_UCL_predictions = MatchPrediction.objects.filter(user = request.user).exclude(league__icontains= 'UEFA Champions League').filter(match_date__week=current_week.week_number).count()
+    non_UCL_predictions = MatchPrediction.objects.filter(
+        user=request.user,
+        match_date__range=(current_week.monday, current_week.sunday)
+        ).exclude(league__icontains='UEFA Champions League')
+    
+
     #number of existing user predictions for current week UCL
-    UCL_predictions = MatchPrediction.objects.filter(user = request.user).filter(league__icontains= 'UEFA Champions League').filter(match_date__week=current_week.week_number).count()
-   
+    # UCL_predictions = MatchPrediction.objects.filter(user = request.user).filter(league__icontains= 'UEFA Champions League').filter(match_date__week=current_week.week_number).count()
+    UCL_predictions = MatchPrediction.objects.filter(
+        user=request.user,
+        league__icontains='UEFA Champions League',
+        match_date__range=(current_week.start_date, current_week.end_date)
+        ).count()
  
    
 
@@ -223,8 +230,8 @@ def match_prediction(request,pk):
                     return HttpResponseRedirect(request.path_info)
             
             if match_league != 'UEFA Champions League':
-                if non_UCL_predictions >= number_of_games_to_predict.EPL:
-                    messages.error(request,f'You reach limit of {non_UCL_predictions} games to predict already, delete your prediction to make new.')
+                if non_UCL_predictions.count() >= number_of_games_to_predict.EPL:
+                    messages.error(request,f'You reach limit of {non_UCL_predictions.count()} games to predict already, delete your prediction to make new.')
                     return HttpResponseRedirect(request.path_info)
             
 
