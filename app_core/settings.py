@@ -35,7 +35,7 @@ DEBUG = False #do not chage this as models get change!!!
 
 # ALLOWED_HOSTS = ['vast-wildwood-19757.herokuapp.com', '127.0.0.1','scoresonthedoors.uk', 'web-production-7b21.up.railway.app']
 ALLOWED_HOSTS = ['*']
-CSRF_TRUSTED_ORIGINS = ['https://sotd.krzysztof.online'] # this is required due to use cloudflare tunnel
+CSRF_TRUSTED_ORIGINS = ['https://scoresonthedoors.uk'] # this is required due to use cloudflare tunnel
 
 
 # Application definition
