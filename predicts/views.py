@@ -44,6 +44,7 @@ def predicts_home(request):
     numbers_of_games_to_predict = NumberOfGamesToPredict.objects.first()
     ucl_predictions = MatchPrediction.objects.filter(user=request.user).filter(league='UEFA Champions League').filter(match_date__week=current_week.week_number).count() # update this
     non_ucl_predictions = MatchPrediction.objects.filter(user=request.user).exclude(league='UEFA Champions League').filter(match_date__week=current_week.week_number).count() # update this
+    print(non_ucl_predictions)
     available_non_ucl_predictions = numbers_of_games_to_predict.EPL - non_ucl_predictions
     fixtures = {}
     
@@ -184,6 +185,10 @@ def match_prediction(request,pk):
     number_of_games_to_predict = NumberOfGamesToPredict.objects.get(pk=1)
     #number of existing user predictions for current week NON UCL
     non_UCL_predictions = MatchPrediction.objects.filter(user = request.user).exclude(league__icontains= 'UEFA Champions League').filter(match_date__week=current_week.week_number).count()
+    test_non_UCL_predictions = MatchPrediction.objects.filter(user = request.user).exclude(league__icontains= 'UEFA Champions League').filter(match_date__week=current_week.week_number)
+    print(f'non ucl games predicted {non_UCL_predictions}')
+    for m in test_non_UCL_predictions:
+        print(m.id, m.checked, m.homeTeamName, m.awayTeamName, m.match_date)
     #number of existing user predictions for current week UCL
     UCL_predictions = MatchPrediction.objects.filter(user = request.user).filter(league__icontains= 'UEFA Champions League').filter(match_date__week=current_week.week_number).count()
    

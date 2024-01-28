@@ -9,6 +9,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.core import serializers
+from django.db.models import Count, Sum, Avg, Case, When, IntegerField, F, Value
+from django.db.models.functions import Round
+from django.db.models.aggregates import Count
 import json
 
 from django.urls import reverse_lazy
@@ -175,3 +178,67 @@ def league_delete(request, pk):
             return redirect('leagues:leagues-home')
 
     return render(request, 'delete_league.html', context)
+
+def league_old_points(request):
+    queryset = (
+        MatchPrediction.objects.values(
+            'user_id',
+            'user__username'
+        )
+        .annotate(
+            total_predictions_by_user=Count('id'),
+            total_points=Sum('points'),
+            avg_points_per_user=Round(Avg(F('points') * 1.0), 2),
+            points_6=Count(Case(When(points=6, then=Value(1)), output_field=IntegerField())),
+            points_4=Count(Case(When(points=4, then=Value(1)), output_field=IntegerField())),
+            points_3=Count(Case(When(points=3, then=Value(1)), output_field=IntegerField())),
+            points_2=Count(Case(When(points=2, then=Value(1)), output_field=IntegerField())),
+            points_1=Count(Case(When(points=1, then=Value(1)), output_field=IntegerField())),
+            points_0=Count(Case(When(points=0, then=Value(1)), output_field=IntegerField()))
+            )
+            .order_by('-total_points')
+            
+    )
+    context = {'queryset': queryset}
+   
+    return render(request, 'league_old_points.html', context=context)
+
+def user_statistics(request,pk):
+        # Ensure the requested user exists, or return a 404 page
+    user = get_object_or_404(User, pk=pk)
+
+    # Filter predictions for the specified user
+    user_predictions = MatchPrediction.objects.filter(user=user)
+
+    common_home_teams = user_predictions.values('homeTeamName').annotate(total=Count('homeTeamName')).order_by('-total')[:5]
+    common_away_teams = user_predictions.values('awayTeamName').annotate(total=Count('awayTeamName')).order_by('-total')[:5]
+    common_goal_scorers = user_predictions.values('goalScorerName').annotate(total=Count('goalScorerName')).order_by('-total')[:5]
+
+    queryset = (
+        MatchPrediction.objects.values(
+            'user_id',
+            'user__username'
+        )
+        .annotate(
+            total_predictions_by_user=Count('id'),
+            total_points=Sum('points'),
+            avg_points_per_user=Round(Avg(F('points') * 1.0), 2),
+            points_6=Count(Case(When(points=6, then=Value(1)), output_field=IntegerField())),
+            points_4=Count(Case(When(points=4, then=Value(1)), output_field=IntegerField())),
+            points_3=Count(Case(When(points=3, then=Value(1)), output_field=IntegerField())),
+            points_2=Count(Case(When(points=2, then=Value(1)), output_field=IntegerField())),
+            points_1=Count(Case(When(points=1, then=Value(1)), output_field=IntegerField())),
+            points_0=Count(Case(When(points=0, then=Value(1)), output_field=IntegerField()))
+            )
+            .filter(user_id=pk).order_by('-total_points')
+    )
+  
+    context = {
+        'target_user': user,
+        'common_home_teams': common_home_teams,
+        'common_away_teams': common_away_teams,
+        'common_goal_scorers': common_goal_scorers,
+        'queryset': queryset,
+    }
+
+    return render(request, 'user_statistics.html', context)
