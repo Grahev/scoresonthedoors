@@ -24,7 +24,7 @@ from django.views.generic.edit import DeleteView
 #my functions import
 from .my_functions import single_match_points, get_all_games, get_match_details, get_players
 
-
+from datetime import timedelta, datetime
 
   # epl id = 39
     # champions league id = 2
@@ -42,6 +42,10 @@ def predicts_home(request):
     live_league = LiveLeague.objects.filter(active = True)
     # print(live_league)
     numbers_of_games_to_predict = NumberOfGamesToPredict.objects.first()
+
+    end_date_inclusive = datetime.combine(current_week.sunday, datetime.max.time())
+
+    
     ucl_predictions = MatchPrediction.objects.filter(
         user=request.user,
         league__icontains='UEFA Champions League',
@@ -50,10 +54,15 @@ def predicts_home(request):
     
     non_ucl_predictions = MatchPrediction.objects.filter(
         user=request.user,
-        match_date__range=(current_week.monday, current_week.sunday)
+        match_date__range=(current_week.monday, end_date_inclusive)
         ).exclude(league__icontains='UEFA Champions League').count()
     
-    print(non_ucl_predictions)
+    test_non_ucl_predictions = MatchPrediction.objects.filter(
+        user=request.user,
+        match_date__range=(current_week.monday, end_date_inclusive)
+        ).exclude(league__icontains='UEFA Champions League')
+    
+    print(test_non_ucl_predictions)
     available_non_ucl_predictions = numbers_of_games_to_predict.EPL - non_ucl_predictions
     fixtures = {}
     
@@ -195,9 +204,12 @@ def match_prediction(request,pk):
     number_of_games_to_predict = NumberOfGamesToPredict.objects.get(pk=1)
     #number of existing user predictions for current week NON UCL
     # non_UCL_predictions = MatchPrediction.objects.filter(user = request.user).exclude(league__icontains= 'UEFA Champions League').filter(match_date__week=current_week.week_number).count()
+    
+    end_date_inclusive = datetime.combine(current_week.sunday, datetime.max.time())
+    
     non_UCL_predictions = MatchPrediction.objects.filter(
         user=request.user,
-        match_date__range=(current_week.monday, current_week.sunday)
+        match_date__range=(current_week.monday, end_date_inclusive)
         ).exclude(league__icontains='UEFA Champions League')
     
 
@@ -206,7 +218,7 @@ def match_prediction(request,pk):
     UCL_predictions = MatchPrediction.objects.filter(
         user=request.user,
         league__icontains='UEFA Champions League',
-        match_date__range=(current_week.monday, current_week.sunday)
+        match_date__range=(current_week.monday, end_date_inclusive)
         ).count()
  
    
