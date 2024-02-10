@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'crispy_bootstrap5',
     'whitenoise.runserver_nostatic',
+    'django_apscheduler',
 ]
 
 MIDDLEWARE = [
@@ -118,7 +119,7 @@ DATABASES = {
         'NAME': os.environ.get('POSTGRES_DB','dev default value'),
         'USER': os.environ.get('POSTGRES_USER','dev default value'),
         'PASSWORD': os.environ.get('POSTGRES_PASSWORD','dev default value'),
-        'HOST': os.environ.get('POSTGRES_HOST','dev default value'), #'192.168.1.213'
+        'HOST':'192.168.1.213',# os.environ.get('POSTGRES_HOST','dev default value'), #'192.168.1.213'
         'PORT': '5432',
     }
 }
@@ -205,3 +206,6 @@ EMAIL_HOST_USER = 'assafootball2021@gmail.com'
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD','dev default value')
 EMAIL_PORT = 587
 
+# CRONJOBS = [
+#     ('* * * * *', 'predicts.cron.test_crone_job', '>> /cron/django_cron.log 2>&1')
+# ]
