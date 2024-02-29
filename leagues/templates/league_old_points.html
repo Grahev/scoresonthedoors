@@ -7,45 +7,59 @@
 {% block content %}
 <div class="container">
     <h2 class="text-center my-5">STATISTICS</h2>
-    <table class="table table-bordered mt-3" id="userStatsTable">
-        <thead>
-            <tr>
-                <th>Username</th>
-                <th>No of Predictions</th>
-                <th>Total Points</th>
-                <th>Avg Points</th>
-                <th>6</th>
-                <th>4</th>
-                <th>3</th>
-                <th>2</th>
-                <th>1</th>
-                <th>0</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for user_stats in queryset %}
-                <tr class="">
-                    <td class="d-grid"><a class="btn btn-primary btn-sm" href="{% url 'leagues:user-statistics' pk=user_stats.user_id %}">{{ user_stats.user__username }}</a></td>
-                    {% comment %} <td>{{ user_stats.user__username }}</td> {% endcomment %}
-                    <td>{{ user_stats.total_predictions_by_user }}</td>
-                    <td>{{ user_stats.total_points }}</td>
-                    <td>{{ user_stats.avg_points_per_user }}</td>
-                    <td>{{ user_stats.points_6 }}</td>
-                    <td>{{ user_stats.points_4 }}</td>
-                    <td>{{ user_stats.points_3 }}</td>
-                    <td>{{ user_stats.points_2 }}</td>
-                    <td>{{ user_stats.points_1 }}</td>
-                    <td>{{ user_stats.points_0 }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="row">
+        <div class="col">
+            <div class="table-container">
+                <table class="table mt-3 table-striped table-hover " id="userStatsTable">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>No of Pred.</th>
+                            <th>Pts.</th>
+                            <th>Avg Pts.</th>
+                            <th>6</th>
+                            <th>4</th>
+                            <th>3</th>
+                            <th>2</th>
+                            <th>1</th>
+                            <th>0</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user_stats in queryset %}
+                            <tr class="">
+                                <td class="d-grid"><a class="btn btn-primary btn-sm" href="{% url 'leagues:user-statistics' pk=user_stats.user_id %}">{{ user_stats.user__username }}</a></td>
+                                {% comment %} <td>{{ user_stats.user__username }}</td> {% endcomment %}
+                                <td>{{ user_stats.total_predictions_by_user }}</td>
+                                <td>{{ user_stats.total_points }}</td>
+                                <td>{{ user_stats.avg_points_per_user }}</td>
+                                <td>{{ user_stats.points_6 }}</td>
+                                <td>{{ user_stats.points_4 }}</td>
+                                <td>{{ user_stats.points_3 }}</td>
+                                <td>{{ user_stats.points_2 }}</td>
+                                <td>{{ user_stats.points_1 }}</td>
+                                <td>{{ user_stats.points_0 }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <!-- DataTables CSS and JS -->
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css">
 <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js"></script>
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+
+<style>
+    /* Custom CSS for styling */
+    .table-container {
+      overflow-x: auto;
+    }
+  </style>
 
 <script>
     $(document).ready( function () {

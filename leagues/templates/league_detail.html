@@ -13,50 +13,49 @@
   
     <div class="container-sm">
       <h1 class="fs-3 text-center mt-4 mx-3 bg-primary text-light p-1 rounded-pill">{{league.name}}</h1>
-      <table class="table table-bordered mt-3" id="userStatsTable">
-        <thead>
-            <tr>
-                <th>Username</th>
-                <th>No of Predictions</th>
-                <th>Total Points</th>
-                <th>Avg Points</th>
-                <th>6</th>
-                <th>4</th>
-                <th>3</th>
-                <th>2</th>
-                <th>1</th>
-                <th>0</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for user_stats in league.old_points %}
-                <tr>
-                    <td class="d-grid"><a class="btn btn-primary btn-sm" href="{% url 'predicts:user_prediction_list' user.username %}">{{ user_stats.user__username }}</a></td>
-                    {% comment %} <td>{{ user_stats.user__username }}</td> {% endcomment %}
-                    <td>{{ user_stats.total_predictions_by_user }}</td>
-                    <td>{{ user_stats.total_points }}</td>
-                    <td>{{ user_stats.avg_points_per_user }}</td>
-                    <td>{{ user_stats.points_6 }}</td>
-                    <td>{{ user_stats.points_4 }}</td>
-                    <td>{{ user_stats.points_3 }}</td>
-                    <td>{{ user_stats.points_2 }}</td>
-                    <td>{{ user_stats.points_1 }}</td>
-                    <td>{{ user_stats.points_0 }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+      <div class="row">
+        <div class="col">
+          <div class="table-container">
+            <table class="table mt-3 table-striped table-hover" id="userStatsTable">
+              <thead>
+                  <tr>
+                      <th scope="col">Username</th>
+                      <th scope="col">No of Pred.</th>
+                      <th scope="col">Pts.</th>
+                      <th scope="col">Avg Pts.</th>
+                      <th scope="col">6</th>
+                      <th scope="col">4</th>
+                      <th scope="col">3</th>
+                      <th scope="col">2</th>
+                      <th scope="col">1</th>
+                      <th scope="col">0</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  {% for user_stats in league.old_points %}
+                      <tr>
+                          <td class="d-grid"><a class="btn btn-primary btn-sm" href="{% url 'predicts:user_prediction_list' user.username %}">{{ user_stats.user__username }}</a></td>
+                          {% comment %} <td>{{ user_stats.user__username }}</td> {% endcomment %}
+                          <td>{{ user_stats.total_predictions_by_user }}</td>
+                          <td>{{ user_stats.total_points }}</td>
+                          <td>{{ user_stats.avg_points_per_user }}</td>
+                          <td>{{ user_stats.points_6 }}</td>
+                          <td>{{ user_stats.points_4 }}</td>
+                          <td>{{ user_stats.points_3 }}</td>
+                          <td>{{ user_stats.points_2 }}</td>
+                          <td>{{ user_stats.points_1 }}</td>
+                          <td>{{ user_stats.points_0 }}</td>
+                      </tr>
+                  {% endfor %}
+              </tbody>
+          </table>
+          </div>
+        </div>
+      </div>
         
 
-          <div class="d-flex flex-column">
-            <small class="fw-bold">Legend:</small>
-            <small><span class="fw-bold">WP</span> - Weekly Points (series of last 4 weeks)</small>
-            <small><span class="fw-bold">WPS</span> - Weekly Points Sum (sum of weekly points from this month)</small>
-            <small><span class="fw-bold">MP</span> - Monthly Points (series of last 4 months)</small>
-            <small><span class="fw-bold">TP</span> - Total Points (sum of montly points)</small>
-          </div>
-          <hr>
-          <div class="d-flex justify-content-between">
+        
+          <div class="d-flex justify-content-between mt-4">
               <small>Created: {{league.create_date}}</small>
               <small>Admin: {{league.admin}}</small>
               <small>PIN: {{league.pin}}</small>
@@ -74,6 +73,13 @@
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css">
 <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js"></script>
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+
+<style>
+  /* Custom CSS for styling */
+  .table-container {
+    overflow-x: auto;
+  }
+</style>
 
 <script>
     $(document).ready( function () {
