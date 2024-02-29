@@ -34,7 +34,7 @@
               <tbody>
                   {% for user_stats in league.old_points %}
                       <tr>
-                          <td class="d-grid"><a class="btn btn-primary btn-sm" href="{% url 'predicts:user_prediction_list' user.username %}">{{ user_stats.user__username }}</a></td>
+                          <td class="d-grid"><a class="btn btn-primary btn-sm" href="{% url 'predicts:user_prediction_list' user_stats.user__username %}">{{ user_stats.user__username }}</a></td>
                           {% comment %} <td>{{ user_stats.user__username }}</td> {% endcomment %}
                           <td>{{ user_stats.total_predictions_by_user }}</td>
                           <td>{{ user_stats.total_points }}</td>
