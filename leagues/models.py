@@ -6,7 +6,9 @@ from django.contrib.auth.models import User
 User._meta.get_field('email')._unique = True
 from predicts.models import MatchPrediction, Week, Month
 import datetime
-from django.db.models import Q, Sum
+from django.db.models import Q, Count, Sum, Avg, Case, When, IntegerField, F, Value
+from django.db.models.functions import Round
+from django.db.models.aggregates import Count
 from operator import itemgetter
 from django.utils import timezone
 
@@ -185,6 +187,27 @@ class League(models.Model):
         sorted_table = sorted(table, key=itemgetter('monthly_points_sum'), reverse=True)
         
         return sorted_table
+    
+    def old_points(self):
+        queryset = (
+            MatchPrediction.objects.filter(user__in=self.users.all())  # Filter predictions for users in this league
+            .values(
+                'user_id',
+                'user__username'
+            )
+            .annotate(
+                total_predictions_by_user=Count('id'),
+                total_points=Sum('points'),
+                avg_points_per_user=Round(Avg(F('points') * 1.0), 2),
+                points_6=Count(Case(When(points=6, then=Value(1)), output_field=IntegerField())),
+                points_4=Count(Case(When(points=4, then=Value(1)), output_field=IntegerField())),
+                points_3=Count(Case(When(points=3, then=Value(1)), output_field=IntegerField())),
+                points_2=Count(Case(When(points=2, then=Value(1)), output_field=IntegerField())),
+                points_1=Count(Case(When(points=1, then=Value(1)), output_field=IntegerField())),
+                points_0=Count(Case(When(points=0, then=Value(1)), output_field=IntegerField()))
+            )
+            .order_by('-total_points'))
+        return queryset
     
 class WeeklyPoint(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='weekly_points')

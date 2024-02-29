@@ -24,8 +24,8 @@
         </thead>
         <tbody>
             {% for user_stats in queryset %}
-                <tr>
-                    <td><a href="{% url 'leagues:user-statistics' pk=user_stats.user_id %}">{{ user_stats.user__username }}</a></td>
+                <tr class="">
+                    <td class="d-grid"><a class="btn btn-primary btn-sm" href="{% url 'leagues:user-statistics' pk=user_stats.user_id %}">{{ user_stats.user__username }}</a></td>
                     {% comment %} <td>{{ user_stats.user__username }}</td> {% endcomment %}
                     <td>{{ user_stats.total_predictions_by_user }}</td>
                     <td>{{ user_stats.total_points }}</td>

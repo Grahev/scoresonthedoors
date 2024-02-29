@@ -65,7 +65,10 @@ class LeagueDetailView(DetailView):
     def get_conext_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = request.user.username
+        
+        
         context['p'] = MatchPrediction.objects.filter(user=user)
+        
         return context
         
 
@@ -86,10 +89,7 @@ def league_details(request,pk):
     weekly_points = WeeklyPoint.objects.filter(user__leagues=league)
 
     # Retrieve monthly points for each user in the league
-    monthly_points = MonthlyPoint.objects.filter(user__leagues=league)
-    
-    
-    
+    monthly_points = MonthlyPoint.objects.filter(user__leagues=league) 
     
     context = {
         'league': league 
