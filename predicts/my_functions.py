@@ -1,9 +1,10 @@
 import requests
-from predicts.models import MatchEvents, MatchPrediction
-from predicts.models import Match
+#from predicts.models import MatchEvents, MatchPrediction
+# from predicts.models import Match
 import os
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 import datetime
+import json
 
 #date section
 # Get the current date
@@ -61,111 +62,119 @@ def prediction_one_x_two(prediction):
     return prediction_winner
 
 def single_match_points(match):
-    unchacked_predictions = MatchPrediction.objects.filter(match__match_id=match.match_id)
-    print(unchacked_predictions)
-
-    for prediction in unchacked_predictions:
-        points = 0
-        goal_scorers = MatchEvents.objects.filter(match=prediction.match).filter(type='Goal').order_by('time')
-        red_cards = MatchEvents.objects.filter(match=prediction.match).filter(detail='Red Card')
-        print(f'number of red cards: {len(red_cards)}')
-   
-        if prediction.match.status == 'FT':
-            print('Match Finished calculate points')
-            #red card minus points
-            # if MatchEvents.objects.filter(match=prediction.match).filter(detail='Red Card').filter(player=prediction.goalScorer).exists():
-            if MatchEvents.objects.filter(match=prediction.match).filter(detail='Red Card').filter(team=prediction.goalScorer.team).exists():
-            #minus points
-                print('minus point for red card')
-                points -= 1
-            else:
-                print('no penalty points for red card')
-            
-            #goalscorers points
-            try:
-                if goal_scorers[0].player.name == prediction.goalScorer.name:
-                    points+=3
-                    print('3 points for correct first goalscorer')
-                else:
-                  for goal in goal_scorers:
-                    if goal.player.name == prediction.goalScorer.name:
-                      print('1 point for anytime goalscorer')
-                      points +=1
-                      break
-                    else:
-                      continue
-            except:
-                points += 0
-            
-            #correct score points
-            if prediction.homeTeamScore == prediction.match.hTeamScore and prediction.awayTeamScore == prediction.match.aTeamScore:
-                points +=3
-                print('3 points for correct score')
-            #winning team points
-            else: 
-                match_winner = match_one_x_two(prediction)
-                prediction_winner = prediction_one_x_two(prediction)
-                if match_winner == prediction_winner:
-                    points +=1
-                    print('1 point for winner')
-                else:
-                    points +=0
-
-
-
-            p = MatchPrediction.objects.filter(pk=prediction.pk)
-            p.update(points=points, checked=True)
-            print(f'points: {points} - {p} updated')
-
-    
-        else:
-            print('match status not finished')
+    match.calculate_points()
 
  
 #function to get games
-def get_all_games(league_id, season,monday,sunday):
-    """get all games"""
-    # epl id = 39
-    # champions league id = 2
-    #serie a id = 135
-    #la liga id = 140
-    # UEFA Natons League id: 5
-    #world cup id: 1
-    #MLS id 253
-
-    # url = f'https://v3.football.api-sports.io/fixtures?league=135&season=2022&timezone=Europe/London&from={first_day_of_week}&to={last_day_of_week}'
-    url = f'https://v3.football.api-sports.io/fixtures?league={league_id}&season={season}&timezone=Europe/London&from={monday}&to={sunday}'
-    # url = 'https://v3.football.api-sports.io/fixtures?league=5&season=2022' # UEFA Natons League
-
-    payload={}
+def get_games_by_date(date=None):
+    """pass date in format YYYMMDD"""
+    # Get the current date and time
+    
+    cookies = {
+        '_hjSessionUser_2585474': 'eyJpZCI6IjQ5MzQ4M2E3LTljN2ItNTY0Mi04ZTlkLTllNDBhNGU5Njc3NSIsImNyZWF0ZWQiOjE2NDk4NzM4MTQyODEsImV4aXN0aW5nIjp0cnVlfQ==',
+        'NEXT_LOCALE': 'en-GB',
+        '_ga': 'GA1.2.1094432626.1649006611',
+        '_ga_SQ24F7Q7YW': 'GS1.1.1708259313.13.0.1708259314.0.0.0',
+        '_ga_K2ECMCJBFQ': 'GS1.1.1708259313.12.0.1708259314.0.0.0',
+        '_ga_G0V1WDW9B2': 'GS1.1.1708299288.79.1.1708299757.52.0.0',
+        'g_state': '{"i_p":1712784070517,"i_l":4}',
+        'u:location': '%7B%22countryCode%22%3A%22GB%22%2C%22ccode3%22%3A%22GBR%22%2C%22timezone%22%3A%22Europe%2FLondon%22%2C%22ip%22%3A%2286.150.110.98%22%2C%22regionId%22%3A%22NIR%22%2C%22regionName%22%3A%22Northern%20Ireland%22%7D',
+        'spotim_visitId': '{%22creationDate%22:%22Tue%20May%2021%202024%2020:11:35%20GMT+0100%20(British%20Summer%20Time)%22%2C%22duration%22:1}',
+    }
     headers = {
-      'x-rapidapi-key': os.environ.get('key','dev default value'),
-      'x-rapidapi-host': os.environ.get('host','dev default value'),
+        'accept': '*/*',
+        'accept-language': 'en-GB,en;q=0.9,en-US;q=0.8,pl;q=0.7',
+        'cache-control': 'no-cache',
+        # 'cookie': '_hjSessionUser_2585474=eyJpZCI6IjQ5MzQ4M2E3LTljN2ItNTY0Mi04ZTlkLTllNDBhNGU5Njc3NSIsImNyZWF0ZWQiOjE2NDk4NzM4MTQyODEsImV4aXN0aW5nIjp0cnVlfQ==; NEXT_LOCALE=en-GB; _ga=GA1.2.1094432626.1649006611; _ga_SQ24F7Q7YW=GS1.1.1708259313.13.0.1708259314.0.0.0; _ga_K2ECMCJBFQ=GS1.1.1708259313.12.0.1708259314.0.0.0; _ga_G0V1WDW9B2=GS1.1.1708299288.79.1.1708299757.52.0.0; g_state={"i_p":1712784070517,"i_l":4}; u:location=%7B%22countryCode%22%3A%22GB%22%2C%22ccode3%22%3A%22GBR%22%2C%22timezone%22%3A%22Europe%2FLondon%22%2C%22ip%22%3A%2286.150.110.98%22%2C%22regionId%22%3A%22NIR%22%2C%22regionName%22%3A%22Northern%20Ireland%22%7D; spotim_visitId={%22creationDate%22:%22Tue%20May%2021%202024%2020:11:35%20GMT+0100%20(British%20Summer%20Time)%22%2C%22duration%22:1}',
+        'pragma': 'no-cache',
+        'priority': 'u=1, i',
+        'referer': 'https://www.fotmob.com/en-GB/leagues/50/matches/euro?page=1',
+        'sec-ch-ua': '"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"',
+        'sec-ch-ua-mobile': '?0',
+        'sec-ch-ua-platform': '"Windows"',
+        'sec-fetch-dest': 'empty',
+        'sec-fetch-mode': 'cors',
+        'sec-fetch-site': 'same-origin',
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+        'x-fm-req': 'eyJib2R5Ijp7ImNvZGUiOjE3MTYzMTkwOTc5MTZ9LCJzaWduYXR1cmUiOiIwQTI1QTY3MEMyOEREQzc4NzY5NTAyNjAzMTRDNThEMyJ9',
     }
 
-    r = requests.request("GET", url, headers=headers, data=payload)
-    print(f'request status code:{r.status_code}')
-    data = r.json()
-    response = data['response']
-    # print(response)
-    sorted_matches = sorted(response, key=lambda x: x['fixture']['date'])
-    print(f"this is lenght of get all games sorted matches {len(sorted_matches)}")
-    # print(f'sorted matches {data}')
-    return sorted_matches
+    params = {
+        'date': '20240527',
+        'ccode3': 'GBR',
+    }
+    response = requests.get('https://www.fotmob.com/api/matches', params=params, cookies=cookies, headers=headers)
+    data = response.json()['leagues']
+    pretty_json = json.dumps(data, indent=4)
+    # print(pretty_json)
+
+    for league in data:
+        print(league['matches'])
+
+    return data
 
 
 def get_match_details(match_id):
-    url = f'https://v3.football.api-sports.io/fixtures?id={match_id}'
-    payload={}
+    url = f'https://www.fotmob.com/api/matchDetails'
     headers = {
-      'x-rapidapi-key': os.environ.get('key','dev default value'),
-      'x-rapidapi-host': os.environ.get('host','dev default value'),
+      'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
     }
-    r = requests.request("GET", url, headers=headers, data=payload)
-    print(f'request status code:{r.status_code}')
-    data = r.json()
-    response = data['response']
+    params = {
+    'matchId': match_id,
+    }
+    r = requests.get(url, params=params, headers=headers)
+    response = r.json()
     return response
+
+def convert_to_player_list(original_json):
+    player_list = []
+    
+    for group in original_json:
+        title = group['title']
+        members = group['members']
+        
+        for member in members:
+            player = {
+                'id': member['id'],
+                'fallback': member['role']['fallback'],
+                'name': member['name'],
+                #'rating': member.get('rating', None),
+                #'goals': member.get('goals', 0),
+                #'assists': member.get('assists', 0),
+                #'ycards': member.get('ycards', 0)
+            }
+            player_list.append(player)
+    
+    return player_list
+
+def get_team_squad(id,ccode3="GBR"):
+    url = f'https://www.fotmob.com/api/teams'
+    headers = {
+        'accept': '*/*',
+        'accept-language': 'en-GB,en;q=0.9,en-US;q=0.8,pl;q=0.7',
+        'cache-control': 'no-cache',
+        # 'cookie': '_hjSessionUser_2585474=eyJpZCI6IjQ5MzQ4M2E3LTljN2ItNTY0Mi04ZTlkLTllNDBhNGU5Njc3NSIsImNyZWF0ZWQiOjE2NDk4NzM4MTQyODEsImV4aXN0aW5nIjp0cnVlfQ==; NEXT_LOCALE=en-GB; _ga=GA1.2.1094432626.1649006611; _ga_SQ24F7Q7YW=GS1.1.1708259313.13.0.1708259314.0.0.0; _ga_K2ECMCJBFQ=GS1.1.1708259313.12.0.1708259314.0.0.0; _ga_G0V1WDW9B2=GS1.1.1708299288.79.1.1708299757.52.0.0; g_state={"i_p":1712784070517,"i_l":4}; u:location=%7B%22countryCode%22%3A%22GB%22%2C%22ccode3%22%3A%22GBR%22%2C%22timezone%22%3A%22Europe%2FLondon%22%2C%22ip%22%3A%2286.150.110.98%22%2C%22regionId%22%3A%22NIR%22%2C%22regionName%22%3A%22Northern%20Ireland%22%7D; spotim_visitId={%22creationDate%22:%22Tue%20May%2021%202024%2020:11:35%20GMT+0100%20(British%20Summer%20Time)%22%2C%22duration%22:1}',
+        'pragma': 'no-cache',
+        'priority': 'u=1, i',
+        'referer': 'https://www.fotmob.com/en-GB/leagues/50/matches/euro?page=1',
+        'sec-ch-ua': '"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"',
+        'sec-ch-ua-mobile': '?0',
+        'sec-ch-ua-platform': '"Windows"',
+        'sec-fetch-dest': 'empty',
+        'sec-fetch-mode': 'cors',
+        'sec-fetch-site': 'same-origin',
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+        'x-fm-req': 'eyJib2R5Ijp7ImNvZGUiOjE3MTYzMTkwOTc5MTZ9LCJzaWduYXR1cmUiOiIwQTI1QTY3MEMyOEREQzc4NzY5NTAyNjAzMTRDNThEMyJ9',
+    }
+    params = {
+    'id': id,
+    'ccode3': ccode3,
+}
+    r = requests.get(url, params=params, headers=headers)
+    response = r.json()['squad']
+    team = convert_to_player_list(response)
+    return team
+
 
 def get_players(team_id):
     """get players for all teams"""
@@ -185,3 +194,49 @@ def get_players(team_id):
     players = data['response'][0]['players']
     return players
 
+
+def get_euro_games():
+    cookies = {
+        '_hjSessionUser_2585474': 'eyJpZCI6IjQ5MzQ4M2E3LTljN2ItNTY0Mi04ZTlkLTllNDBhNGU5Njc3NSIsImNyZWF0ZWQiOjE2NDk4NzM4MTQyODEsImV4aXN0aW5nIjp0cnVlfQ==',
+        'NEXT_LOCALE': 'en-GB',
+        '_ga': 'GA1.2.1094432626.1649006611',
+        '_ga_SQ24F7Q7YW': 'GS1.1.1708259313.13.0.1708259314.0.0.0',
+        '_ga_K2ECMCJBFQ': 'GS1.1.1708259313.12.0.1708259314.0.0.0',
+        '_ga_G0V1WDW9B2': 'GS1.1.1708299288.79.1.1708299757.52.0.0',
+        'g_state': '{"i_p":1712784070517,"i_l":4}',
+        'u:location': '%7B%22countryCode%22%3A%22GB%22%2C%22ccode3%22%3A%22GBR%22%2C%22timezone%22%3A%22Europe%2FLondon%22%2C%22ip%22%3A%2286.150.110.98%22%2C%22regionId%22%3A%22NIR%22%2C%22regionName%22%3A%22Northern%20Ireland%22%7D',
+        'spotim_visitId': '{%22creationDate%22:%22Tue%20May%2021%202024%2020:11:35%20GMT+0100%20(British%20Summer%20Time)%22%2C%22duration%22:1}',
+    }
+
+    headers = {
+        'accept': '*/*',
+        'accept-language': 'en-GB,en;q=0.9,en-US;q=0.8,pl;q=0.7',
+        'cache-control': 'no-cache',
+        # 'cookie': '_hjSessionUser_2585474=eyJpZCI6IjQ5MzQ4M2E3LTljN2ItNTY0Mi04ZTlkLTllNDBhNGU5Njc3NSIsImNyZWF0ZWQiOjE2NDk4NzM4MTQyODEsImV4aXN0aW5nIjp0cnVlfQ==; NEXT_LOCALE=en-GB; _ga=GA1.2.1094432626.1649006611; _ga_SQ24F7Q7YW=GS1.1.1708259313.13.0.1708259314.0.0.0; _ga_K2ECMCJBFQ=GS1.1.1708259313.12.0.1708259314.0.0.0; _ga_G0V1WDW9B2=GS1.1.1708299288.79.1.1708299757.52.0.0; g_state={"i_p":1712784070517,"i_l":4}; u:location=%7B%22countryCode%22%3A%22GB%22%2C%22ccode3%22%3A%22GBR%22%2C%22timezone%22%3A%22Europe%2FLondon%22%2C%22ip%22%3A%2286.150.110.98%22%2C%22regionId%22%3A%22NIR%22%2C%22regionName%22%3A%22Northern%20Ireland%22%7D; spotim_visitId={%22creationDate%22:%22Tue%20May%2021%202024%2020:11:35%20GMT+0100%20(British%20Summer%20Time)%22%2C%22duration%22:1}',
+        'pragma': 'no-cache',
+        'priority': 'u=1, i',
+        'referer': 'https://www.fotmob.com/en-GB/leagues/50/matches/euro?page=1',
+        'sec-ch-ua': '"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"',
+        'sec-ch-ua-mobile': '?0',
+        'sec-ch-ua-platform': '"Windows"',
+        'sec-fetch-dest': 'empty',
+        'sec-fetch-mode': 'cors',
+        'sec-fetch-site': 'same-origin',
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+        'x-fm-req': 'eyJib2R5Ijp7ImNvZGUiOjE3MTYzMTkwOTc5MTZ9LCJzaWduYXR1cmUiOiIwQTI1QTY3MEMyOEREQzc4NzY5NTAyNjAzMTRDNThEMyJ9',
+    }
+
+    params = {
+        'id': '50',
+        # 'id': '45',
+        'ccode3': 'GBR',
+    }
+
+    response = requests.get('https://www.fotmob.com/api/leagues', params=params, cookies=cookies, headers=headers)
+    data = response.json()['overview']['leagueOverviewMatches']
+
+    return data
+
+# data = get_match_details(49682)
+
+# print(data)

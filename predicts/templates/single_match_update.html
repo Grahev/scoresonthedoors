@@ -11,7 +11,7 @@
     <h3>Full time score</h3>
     <p>{{match.hTeam.name}} {{hTeamScore}} : {{aTeamScore}} {{match.aTeam.name}}</p>
     <br>
-    <a class="btn btn-primary mx-auto" href="{% url 'predicts:match_point_update' match.pk %}" role="button">Points calculation</a>
+    <a class="btn btn-primary mx-auto" href="{% url 'predicts:match_point_update' match.match_id %}" role="button">Points calculation</a>
 
     <p>existing events in database</p>
     {% if events_db %}

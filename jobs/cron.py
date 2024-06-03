@@ -1,5 +1,5 @@
 from django.utils import timezone
-from predicts.models import MatchEvents, MatchPrediction
+from predicts.models import  MatchPrediction
 
 def test_crone_job():
     now = timezone.now()

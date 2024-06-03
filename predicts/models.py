@@ -4,39 +4,167 @@ from django.db.models import Sum
 from django.db.models.deletion import CASCADE, SET, SET_NULL, DO_NOTHING
 from django.utils import timezone
 from django.contrib.auth.models import User
-from teams_and_players.models import Team, Player
-#from leagues.models import WeeklyPoint
 from django.apps import apps
-
+from predicts.my_functions import get_match_details
 import os
 import requests
 from django.core.cache import cache
 from datetime import timedelta, datetime
-
-
 from django.contrib.auth.models import User
 User._meta.get_field('email')._unique = True
+import json
+import re
+from django.core.cache import cache
 # Create your models here.
 
 
 class Match(models.Model):
-
-    matchday = models.CharField(max_length=50)
-    hTeam = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='home_team')
-    aTeam = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='away_team')
+    api_url = 'https://www.fotmob.com/api/matchDetails'
+    hTeam_name = models.CharField(blank=True, null=True, max_length=100)
+    aTeam_name = models.CharField(blank=True, null=True, max_length=100)
+    hTeam_id = models.IntegerField(blank=True, null=True)
+    aTeam_id = models.IntegerField(blank=True, null=True)
     date = models.DateTimeField()
-    status = models.CharField(max_length=20)
+    started = models.BooleanField(default=False)
+    finished = models.BooleanField(default=False)
     hTeamScore = models.IntegerField(blank=True, null=True)
     aTeamScore = models.IntegerField(blank=True, null=True)
-    goalScorers = models.ManyToManyField(Player, related_name='goal_scorers',blank=True)
-    match_id = models.IntegerField()
+    goalScorers = models.TextField(blank=True, null=True)
+    match_id = models.IntegerField(unique=True)
     league = models.CharField(max_length=50, blank=True, null=True)
+    league_id = models.IntegerField()
+    data = models.TextField(null=True,blank=True)
+    onextwo = models.CharField(blank=True, null=True, max_length=1)
+    league_sezon = models.CharField(blank=True, null=True, max_length=25)
 
     class Meta:
         ordering = ['date']
 
     def __str__(self):
-        return f'Match | {self.matchday} - {self.hTeam} : {self.aTeam} - {self.status}'
+        return f'Match | {self.date} - {self.hTeam_name} : {self.aTeam_name} - {self.finished}'
+
+    def fetch_data(self):
+
+        headers = {
+          'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+        }
+        params = {
+        'matchId': self.match_id,
+        }
+        cache_key = f'match_cache_{self.match_id}'
+        data = cache.get(cache_key)
+
+        if not data:
+            r = requests.get(self.api_url, params=params, headers=headers)
+            if r.status_code == 200:
+                data = r.json()
+                cache.set(cache_key, data, timeout=3600) #3600 1 hour timeout,  86400 s (24 h * 3600 seconds/hour)
+            else:
+                data = None
+        
+        return data
+    
+    def get_goals(self):
+        """return list of goals scorers"""
+        goals_data = self.fetch_data()['header']['events']
+        # Collect all goal events
+        all_goals = []
+
+        if goals_data:
+          # Function to extract and append goal details
+          def extract_goal_data(team_goals, is_home):
+              for player_goals in team_goals.values():
+                  for goal in player_goals:
+                      goal_data = {
+                          'name': goal['player']['name'],
+                          'id': goal['player']['id'],
+                          'time': goal['time'],
+                          'is_home': is_home
+                      }
+                      all_goals.append(goal_data)
+
+
+          # Extract home team goals
+          extract_goal_data(goals_data['homeTeamGoals'], True)
+
+          # Extract away team goals
+          extract_goal_data(goals_data['awayTeamGoals'], False)
+
+          # Sort goals by time
+          all_goals.sort(key=lambda x: (x['time'], x.get('overloadTime', 0))) 
+
+          return all_goals
+        else:
+            all_goals = None
+
+    
+    def first_goal(self):
+        """return first goalscorer"""
+        if self.get_goals():
+          return self.get_goals()[0]
+        else:
+            return None
+        
+    def get_result(self):
+        try:
+            score = self.fetch_data()['header']['status']['scoreStr']
+        except:
+            score = None
+        return score
+        
+    
+    def one_x_two(self,home:int,away:int):
+        try:
+            if home > away:
+                return 1
+            elif home == away:
+                return 0
+            elif home < away:
+                return 2
+            else:
+                None
+        except:
+            None
+    
+    def match_result(self):
+        return self.one_x_two(self.hTeamScore, self.aTeamScore)
+    
+    def update_match_data(self):
+        """fill all match data like home team etc."""
+        data = self.fetch_data()
+        league_id = data['general']['leagueId']
+        league = data['general']['leagueName']
+        home_teama_name = data['general']['homeTeam']['name']
+        home_teama_id = data['general']['homeTeam']['id']
+        away_teama_name = data['general']['awayTeam']['name']
+        away_teama_id = data['general']['awayTeam']['id']
+        started = data['general']['started']
+        finished = data['general']['finished']
+        date = data['general']['matchTimeUTCDate']
+
+        if data:
+            self.league_id = league_id
+            self.league = league
+            self.started = started
+            self.finished = finished
+            if self.first_goal():
+                self.match_goalscorer = self.first_goal()['name']
+            if self.first_goal():
+                self.match_goalscorer_id = self.first_goal()['id']
+            if self.get_result():
+                self.hTeamScore = int(self.get_result()[0].strip())
+                self.aTeamScore = int(self.get_result()[-1].strip())
+            self.hTeam_name = home_teama_name
+            self.aTeam_name = away_teama_name
+            self.hTeam_id = home_teama_id
+            self.aTeam_id = away_teama_id
+            self.data = data
+            if self.match_result():
+                self.onextwo = self.match_result()
+            self.goalScorers = self.get_goals()
+            self.date = date
+
+        self.save()
 
     @property
     def is_past_due(self):
@@ -46,259 +174,62 @@ class Match(models.Model):
     def is_active(self):
         return timezone.now() < self.date
 
-    @property
-    def md(self):
-        day = self.matchday.split('-')[-1]
-        return day
-
-    @property
-    def first_goal(self):
-        first = MatchEvents.objects.filter(match=self).filter(type='Goal').first()
-        try:
-            f = first.player.name
-        except:
-            f = ""
-        return f
-
 
 class MatchPrediction(models.Model):
-    matchApiId = models.IntegerField(default=0)
     homeTeamScore = models.PositiveIntegerField()
-    homeTeamName = models.CharField(max_length=55)
     awayTeamScore = models.PositiveIntegerField()
-    awayTeamName = models.CharField(max_length=55)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     goalScorerId = models.IntegerField(default=0)
     goalScorerName = models.CharField(max_length=55)
     checked = models.BooleanField(default=False)
     points = models.IntegerField(blank=True, null=True)
-    league = models.CharField(max_length=100)
-    match_date = models.DateTimeField()
+    match = models.ForeignKey(Match, on_delete=CASCADE, related_name='predictions')
+    onextwo = models.CharField(max_length=1)
     
     def __str__(self):
-        return f'Match Prediction | {self.user} - {self.homeTeamName} {self.homeTeamScore} : {self.awayTeamScore} {self.awayTeamName}'
-
-    @property
-    def is_past_due(self):
-        return timezone.now() > self.match_date
-
-    @property
-    def is_active(self):
-        return timezone.now() < self.match_date
+        return f'Match Prediction | {self.user} - {self.match.hTeam_name} {self.homeTeamScore} : {self.awayTeamScore} {self.match.aTeam_name}'
     
-    def fetch_match_details(self):
-        # Check if match details are already cached
-        cache_key = f"match_details_{self.matchApiId}"
-        match_details = cache.get(cache_key)
-
-        if match_details is None:
-            # Fetch match details from the external API
-            # Adjust the API endpoint and parameters according to your needs
-            url = f'https://v3.football.api-sports.io/fixtures?id={self.matchApiId}'
-            payload={}
-            headers = {
-                'x-rapidapi-key': os.environ.get('key','dev default value'),
-                'x-rapidapi-host': os.environ.get('host','dev default value'),
-            }
-            r = requests.request("GET", url, headers=headers, data=payload)
-            data = r.json()
-            match_details = data['response']
-
-            # Determine the cache timeout based on the match status
-            status = match_details[0]['fixture']['status']['short']
-            print(status)
-            if status == 'FT':
-                cache_timeout = timedelta(days=365 * 10)  # Cache for 10 years for finished matches
-                # print(cache_timeout)
-            else:
-                cache_timeout = timedelta(hours=4)  # Cache for 1 hour for ongoing matches
-
-            # Cache the match details with the appropriate timeout
-            cache.set(cache_key, match_details, timeout=cache_timeout.total_seconds())
-
-        return match_details
-
-    def home_team_score(self):
-        match_details = self.fetch_match_details()[0]
-        home_team_score = match_details.get('score', {}).get('fulltime', {}).get('home')
-        if home_team_score is None:
-            return 'TBC'
+    def one_x_two(self,home:int,away:int):
+        if home > away:
+            return 1
+        elif home == away:
+            return 0
         else:
-            return home_team_score
+            return 2
 
-    def get_away_team_details(self):
-        match_details = self.fetch_match_details()
-        away_team_details = match_details.get('away_team', {})
-        return away_team_details
-    
-    def first_goal_scorer(self):
-        match_details = self.fetch_match_details()
-
-        data = match_details[0]
-        # Retrieve the events from the match details
-        events = data.get('events', [])
-
-        first_goal_scorer = None
-        # Iterate over the events to find the first goal event
-        for event in events:
-            if event.get('type') == 'Goal':
-                first_goal_scorer = event.get('player', {}).get('name') 
-                if first_goal_scorer:
-                    return first_goal_scorer
-                else:
-                    continue
-
-        return first_goal_scorer
-
-    def is_correct_score(self):
-        match_details = self.fetch_match_details()[0]
-        home_team_score = match_details.get('score', {}).get('fulltime', {}).get('home')
-        away_team_score = match_details.get('score', {}).get('fulltime', {}).get('away')
-        return (
-            self.homeTeamScore == home_team_score and
-            self.awayTeamScore == away_team_score
-        )
-
-    # def is_correct_result(self):
-    #     match_details = self.fetch_match_details()[0]
-    #     home_team_score = match_details.get('score', {}).get('fulltime', {}).get('home')
-    #     away_team_score = match_details.get('score', {}).get('fulltime', {}).get('away')
-
-    #     print(f"home team score {home_team_score}")
-
-    #     if home_team_score > away_team_score:
-    #         return self.homeTeamScore > self.awayTeamScore
-    #     elif home_team_score < away_team_score:
-    #         return self.homeTeamScore < self.awayTeamScore
-    #     else:
-    #         return self.homeTeamScore == self.awayTeamScore
-    def is_correct_result(self):
-        try:
-            match_details = self.fetch_match_details()[0]
-            home_team_score = match_details.get('score', {}).get('fulltime', {}).get('home')
-            away_team_score = match_details.get('score', {}).get('fulltime', {}).get('away')
-
-            if home_team_score is not None and away_team_score is not None:
-                print(f"Home team score: {home_team_score}")
-                if home_team_score > away_team_score:
-                    return self.homeTeamScore > self.awayTeamScore
-                elif home_team_score < away_team_score:
-                    return self.homeTeamScore < self.awayTeamScore
-                else:
-                    return self.homeTeamScore == self.awayTeamScore
-            else:
-                print("Error: Unable to retrieve scores for both teams.")
-                return False
-
-        except Exception as e:
-            print(f"Error: {e}")
-            return False
-
-    def is_correct_first_goal_scorer(self):
-        match_details = self.fetch_match_details()
-
-        data = match_details[0]
-        # Retrieve the events from the match details
-        events = data.get('events', [])
-
-        # Iterate over the events to find the first goal event
-        for event in events:
-            if event.get('type') == 'Goal':
-                first_goal_scorer = event.get('player', {}).get('name')
-                if first_goal_scorer == self.goalScorerName:
-                    return True
-                else:
-                    return False
-
-        return False  # Return False if no goal event is found
-    
-    def does_first_goal_scorer_score_anytime(self):
-        match_details = self.fetch_match_details()
-        data = match_details[0]
-        # Retrieve the events from the match details
-        events = data.get('events', [])
-
-        # Find the first goal scorer
-        first_goal_scorer = None
-        for event in events:
-            if event.get('type') == 'Goal':
-                # print(f'anytie goalscorer goal event {event}')
-                first_goal_scorer = event.get('player', {}).get('name')
-                break
-
-        if first_goal_scorer == self.goalScorerName:
-            # Check if the first goal scorer scores anytime
-            return False
-        
-        if first_goal_scorer != self.goalScorerName:
-            for event in events:
-                if event.get('type') == 'Goal':
-                    scorer_name = event.get('player', {}).get('name')
-                    # print(f'event scorer_name {scorer_name} | first goal scorer {self.goalScorerName}')
-                    if scorer_name == self.goalScorerName:
-                        # print('1 point for anytime')
-                        return True
-                    else:
-                        # print('false anytime')
-                        continue
-
-        # return False  # Return False if the first goal scorer doesn't score anytime
+    def match_result(self):
+        return self.one_x_two(self.homeTeamScore, self.awayTeamScore)
     
     def calculate_points(self):
-        points = 0
-        # Check if the prediction has the correct score
-        if self.is_correct_score():
-            points += 3
-        # Check if the prediction has the correct result
-        if self.is_correct_result() and self.is_correct_score() == False:
-            points += 1
-        # Check if the prediction has the correct first goal scorer
-        if self.is_correct_first_goal_scorer():
-            points += 3
-        # Check if the first goal scorer in the prediction scores anytime
-        if self.does_first_goal_scorer_score_anytime() and self.is_correct_first_goal_scorer() == False:
-            print('first goal scorer scores anytime')
-            points += 1
-        return points
+        """calculate points"""
+        if not self.match.started:
+            return 0  # Match not started, points are 0
         
-    
-    def update_points(self):
-        points = self.calculate_points()
-        self.points = points
-        self.save()
-
-class MatchResult(models.Model):
-    code = (
-        ('1','Home Team Won'),
-        ('X','Draw'),
-        ('2','Away Team Won'),
-    )
-    match_id = models.IntegerField()
-    homeTeamResult = models.IntegerField()
-    awayTeamResult = models.IntegerField()
-    resultCode = models.CharField(max_length=1, choices=code)
-    firstGoalScorerId = models.IntegerField(null=True, blank=True)
-    firstGoalScorerName = models.CharField(max_length=100, null=True, blank=True)
-
-    def __str__(self):
-        return f'Match result | id{self.match_id} - code {self.resultCode}'
-    
-
-class MatchEvents(models.Model):
-    match_id = models.IntegerField()
-    team_id = models.IntegerField()
-    team_name = models.CharField(max_length=100)
-    time = models.IntegerField()
-    player_id = models.IntegerField()
-    player_name = models.CharField(max_length=100)
-    type = models.CharField(max_length=50)
-    detail = models.CharField(max_length=50)
-    comments = models.CharField(max_length=100, null=True, blank=True)
-
-    def __str__(self):
-        return f'Event | {self.type} - {self.detail} - {self.team_name} - {self.player_name} | comments {self.comments}'
-
-
+        m_points = 0
+        g_points = 0
+      
+        if self.match.started:
+            print('match started calculate points')
+            print(f'pred home team score {self.homeTeamScore} - match h team {self.match.hTeamScore}')
+            if self.homeTeamScore == self.match.hTeamScore and self.awayTeamScore == self.match.aTeamScore:
+                m_points =+ 3
+            elif self.onextwo == self.match.onextwo:
+                m_points =+1
+            if self.match.first_goal():
+                if self.goalScorerId == self.match.first_goal()['id']:
+                    g_points =+3
+                else:
+                #   for goal in self.match.goalScorers:
+                  for goal in self.match.get_goals():
+                    if self.goalScorerId == int(goal['id']):
+                        g_points += 1
+                        break
+            else:
+                pass
+            points = m_points + g_points
+            self.points = points
+            self.save()
+            return points
 
 class NumberOfGamesToPredict(models.Model):
     EPL = models.IntegerField()
@@ -318,74 +249,4 @@ class LiveLeague(models.Model):
 
     def __str__(self):
         return f'Live League | {self.league_name} - {self.season}'
-    
-    def api_url(self):
-        return f'https://v3.football.api-sports.io/fixtures?league={self.league_id}&season={self.season}&timezone=Europe/London'
-                # https://v3.football.api-sports.io/fixtures?league={league_id}&season=2023&timezone=Europe/London&from={last_monday}&to={next_sunday}
-
-class SingletonWeekDateManager(models.Manager):
-    """class is responsible for managing the singleton instance. It overrides the get_instance() method, which gets or creates an instance with a primary key of 1. If the instance is created, it calculates the dates and saves them to the database. This ensures that only one instance of the Week model exists in the database."""
-    def get_instance(self):
-        instance, created = self.get_or_create(pk=1)
-        if created:
-            instance.calculate_dates()
-            instance.save()
-        return instance
-
-class Week(models.Model):
-    week_number = models.IntegerField()
-    monday = models.DateField()
-    sunday = models.DateField()
-    year = models.IntegerField()
-
-    objects = SingletonWeekDateManager()
-
-    def save(self, *args, **kwargs):
-        self.calculate_dates()
-        super().save(*args, **kwargs)
-
-    def calculate_dates(self):
-        first_day = datetime(self.year, 1, 1)
-        first_monday = first_day + timedelta(days=(7 - first_day.weekday()))
-
-        self.monday = first_monday + timedelta(weeks=(self.week_number - 1))
-        self.sunday = self.monday + timedelta(days=6)
-
-    def next_week(self):
-        if self.week_number < 52:
-            self.week_number = self.week_number +1
-        else:
-            self.week_number = 0
-            self.year = self.year +1
-
-    def __str__(self):
-        return f'Week {self.week_number} | {self.monday} - {self.sunday}'
-    
-class Month(models.Model):
-    month = models.IntegerField(range(1,12))
-    year = models.PositiveIntegerField(range(2023,2050))
-    start = models.DateField()
-    end = models.DateField()
-    
-    def __str__(self):
-        return f'Month {self.month} / {self.year} | {self.start} - {self.end}'
-    
-    def get_league_user_points(self):
-        # Retrieve the start and end dates from the Month object
-        start_date = self.start
-        end_date = self.end
-        result = WeeklyPoint.objects.filter(
-            created_at__gte=start_date,
-            created_at__lte=end_date
-        ).values(
-            'league_id',
-            'user_id',
-            'league__name',
-            'user__username'
-        ).annotate(
-            total_points=Sum('points')
-        ).order_by(
-            '-total_points'
-        )
-        return result
     

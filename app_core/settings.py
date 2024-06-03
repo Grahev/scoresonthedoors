@@ -93,36 +93,26 @@ WSGI_APPLICATION = 'app_core.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
-# if DEBUG:
-#     DATABASES = {
-#         'default': {
-#             'ENGINE': 'django.db.backends.sqlite3',
-#             'NAME': BASE_DIR / 'api_db.sqlite3',
-#         }
-#     }
-# else:
-#     DATABASES = {
-#         'default': {
-#             'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#             'NAME': 'railway',
-#             'USER': 'postgres',
-#             'PASSWORD': os.environ.get('Password','dev default value'),
-#             # 'HOST': 'containers-us-west-108.railway.app', # old
-#             'HOST': 'containers-us-west-77.railway.app',
-#             # 'PORT': '7164', # old
-#             'PORT': '7609',
-#         }
-#     }
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.environ.get('POSTGRES_DB','dev default value'),
-        'USER': os.environ.get('POSTGRES_USER','dev default value'),
-        'PASSWORD': os.environ.get('POSTGRES_PASSWORD','dev default value'),
-        'HOST':'192.168.1.213',# os.environ.get('POSTGRES_HOST','dev default value'), #'192.168.1.213'
-        'PORT': '5432',
+if DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'api_db.sqlite3',
+        }
     }
-}
+else:
+
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': os.environ.get('POSTGRES_DB','dev default value'),
+            'USER': os.environ.get('POSTGRES_USER','dev default value'),
+            'PASSWORD': os.environ.get('POSTGRES_PASSWORD','dev default value'),
+            # 'HOST':'192.168.1.213',# os.environ.get('POSTGRES_HOST','dev default value'), #'192.168.1.213'
+            'HOST':'app_core-db-1',# os.environ.get('POSTGRES_HOST','dev default value'), #'192.168.1.213'
+            'PORT': '5432',
+        }
+    }
 
 #Cash setup
 #https://www.tutorialspoint.com/django/django_caching.htm

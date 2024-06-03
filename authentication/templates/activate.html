@@ -2,7 +2,9 @@
 Hi {{ user.username }},
 PLEASE CLICK LINK BELOW TO CONFIRM YOR EMAIL
 ---
-https://{{ domain }}{% url 'authentication:activate' uidb64=uid token=token %}
+{% comment %} https://{{ domain }}{% url 'authentication:activate' uidb64=uid token=token %} {% endcomment %}
+
+<a href="http://{{ domain }}{% url 'authentication:activate' uidb64=uid token=token %}">Confirm your email</a>
 
 
 

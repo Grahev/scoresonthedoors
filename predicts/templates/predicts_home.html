@@ -5,116 +5,52 @@
 {% endblock title %}
 {% block content %}
 
-{% comment %} {% regroup fixtures by date|date as days_list %} {% endcomment %}
-{{ fixtures|json_script:"fixtures" }}
-<script>
-    const fixtures = JSON.parse(document.getElementById('fixtures').textContent);
-    console.log(fixtures)
-  </script>
+ <div class="conatiner">
 
-
-
-<div class="container">
-  
-    {% comment %} <p class="text-center"> {{user.username}} you made {{non_ucl_predictions}} of {{numbers_of_games_to_predict.EPL}} predictions and {{ucl_predictions}} of {{numbers_of_games_to_predict.UCL}} for UEFA Champions League.</p>
-    <p class="text-center"> {{user.username}} you have {{available_non_ucl_predictions}} predictions to make and {{ucl_predictions}} of {{numbers_of_games_to_predict.UCL}} for UEFA Champions League.</p> {% endcomment %}
-    <div class="d-flex justify-content-between">
-      <div class="">
-        <p>UEFA Champions League <span>{{ucl_predictions}}/{{numbers_of_games_to_predict.UCL}} </span></p>
-      </div>
-      <div class="">
-        <p>Other Leagues <span>{{non_ucl_predictions}}/{{numbers_of_games_to_predict.EPL}} </span></p>
-      </div>
-    </div>
-
-
-    <div class="accordion" id="accordionExample">
-        <!-- FIRST ACCORDION START-->
-        {% for league_name, league_fixtures in fixtures.items %}
-        
-        
-        <div class="accordion-item">
-          <h2 class="accordion-header" id="accordionHeading">
-            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#accordionContent{{ forloop.counter }}" aria-expanded="false" aria-controls="accordionContent">
-              <h1 class="fs-3 text-center mt-4 mx-3  p-1 rounded-pill">
-                <img src="{{league_fixtures.0.league.logo}}" alt="ucl logo" style="height: 40px;"> {{league_name}}
-              </h1>
-            </button>
-          </h2>
-          <div id="accordionContent{{ forloop.counter }}" class="accordion-collapse collapse" aria-labelledby="accordionHeading" data-bs-parent="#accordionExample">
-            <div class="accordion-body">
-              <!-- Content for the accordion item goes here -->
-              {% for match in league_fixtures %}
-              {{match.item}}
-
-              {% comment %} {% if match.fixture.status.long == 'Match Finished' %} {% endcomment %}
-              {% if match.fixture.date|is_past_due %}
-             
-                      
-                  <div class="fixture row p-2 my-3 mx-1 border rounded-pill shadow">
-                      
-                      <p class="text-center card-subtitle mb-2 text-muted">{{match.fixture.date|to_datetime|date}}</p>
-                      
-                  
-                      <div class="home col-6 text-end p-0">
-                      
-                          <span class="fw-bold">{{match.teams.home.name}}</span>
-                          <span class="fw-bold py-1 px-2 m-1 border shadow-sm">{{match.goals.home}}</span>
-                      </div>
-      
-                      <div class="away col-6 text-left p-0">
-                          <span class="fw-bold py-1 px-2 m-1 border shadow-sm">{{match.goals.away}}</span>
-                          <span class="fw-bold">{{ match.teams.away.name}}</span>
-                      </div>
-                      <p class="text-center card-subtitle mt-2 text-muted">{{match.fixture.date|to_datetime|time:'H:i'}}</p>
-                    
-                  </div>
-                      
-                      
-              {% else %}
-              
-                  <a href="{% url 'predicts:match_prediction' match.fixture.id %}" class="text-decoration-none text-dark">
-                  {% comment %} <a href="#" class="text-decoration-none text-dark"> {% endcomment %}
-                      
-                      <div class="fixture row p-2 my-3 mx-1 border rounded-pill shadow">
-                          <p class="text-center card-subtitle mb-2 text-muted">{{match.fixture.date|to_datetime|date}}</p>
-                          
-                      
-                          <div class="home col-6 text-end p-0">
-                          
-                              <span class="fw-bold">{{match.teams.home.name}}</span>
-                              <span class=""><img src="{{match.teams.home.logo}}" class='rounded-circle m-1 border shadow-sm' alt="logo" height=35 width=35px></span>
-                          </div>
-          
-                          <div class="away col-6 text-left p-0">
-                              <span class=" text-left"><img src="{{match.teams.away.logo}}" class='rounded-circle m-1 border shadow-sm' alt="logo" height=35 width=35px></span>
-                              <span class="fw-bold">{{ match.teams.away.name}}</span>
-                          </div>
-                          <p class="text-center card-subtitle mt-2 text-muted">{{match.fixture.date|to_datetime|time:'H:i'}}</p>
+ 
+  {% for match in fixtures%}
+  {% if match.status.started%}
+    <div class="fixture row p-2 my-3 mx-1 border rounded-pill shadow">
                         
-                      </div>
-                      
-                      
-                  </a>
-              {% endif %}
-              
+      <p class="text-center card-subtitle mb-2 text-muted">{{match.status.utcTime|to_datetime:"%Y-%m-%d"}}</p>
       
-          {% endfor %}
-            </div>
-          </div>
-          {% endfor %}
-          <!-- FIRST ACCORDION END-->
 
-        </div>
+      <div class="home col-6 text-end p-0">
+      
+          <span class="fw-bold">{{match.home.name}}</span>
+          <span class="fw-bold py-1 px-2 m-1 border shadow-sm">{{match.home.score}}</span>
       </div>
-      
 
-
-
+      <div class="away col-6 text-left p-0">
+          <span class="fw-bold py-1 px-2 m-1 border shadow-sm">{{match.away.score}}</span>
+          <span class="fw-bold">{{ match.away.name}}</span>
+      </div>
+      <p class="text-center card-subtitle mt-2 text-muted">{{match.status.utcTime|time_only}}</p>
+      <a href="{% url 'predicts:match_prediction' match.id %}" class="text-decoration-none text-dark">cick</a>
     
-<!--end of container-->
+    </div>
+  {% else %}
+
+    <a href="{% url 'predicts:match_prediction' match.id %}" class="text-decoration-none text-dark">
+          <div class="fixture row p-2 my-3 mx-1 border rounded-pill shadow">
+              <p class="text-center card-subtitle mb-2 text-muted">{{match.status.utcTime|to_datetime:"%Y-%m-%d"}}</p>
+              <div class="home col-6 text-end p-0">
+                  <span class="fw-bold">{{match.home.name}}</span>
+                  <span class=""><img src="https://images.fotmob.com/image_resources/logo/teamlogo/{{match.home.id}}_xsmall.png" class='rounded-circle m-1 border shadow-sm' alt="logo" height=35 width=35px></span>
+              </div>
+              <div class="away col-6 text-left p-0">
+                  <span class=" text-left"><img src="https://images.fotmob.com/image_resources/logo/teamlogo/{{match.away.id}}_xsmall.png" class='rounded-circle m-1 border shadow-sm' alt="logo" height=35 width=35px></span>
+                  <span class="fw-bold">{{match.away.name}}</span>
+              </div>
+              <p class="text-center card-subtitle mt-2 text-muted">{{match.status.utcTime|time_only}}</p>
+          </div>
+      </a>
+  {% endif %}
+
+  
+ 
+  {%endfor%}
+
 </div>
-
-
     
 {% endblock content %}

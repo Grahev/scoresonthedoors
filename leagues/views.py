@@ -1,7 +1,7 @@
 from re import L
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, CreateView, DetailView
-from leagues.models import League, WeeklyPoint, MonthlyPoint
+from leagues.models import League
 from predicts.models import MatchPrediction
 from leagues.forms import LeagueCreateModelForm, LeagueJoinPinForm
 from django.contrib.auth.models import User
@@ -85,11 +85,6 @@ def league_view(request):
 
 def league_details(request,pk):
     league = League.objects.get(id=pk)
-    # Retrieve weekly points for each user in the league
-    weekly_points = WeeklyPoint.objects.filter(user__leagues=league)
-
-    # Retrieve monthly points for each user in the league
-    monthly_points = MonthlyPoint.objects.filter(user__leagues=league) 
     
     context = {
         'league': league 
@@ -210,8 +205,8 @@ def user_statistics(request,pk):
     # Filter predictions for the specified user
     user_predictions = MatchPrediction.objects.filter(user=user)
 
-    common_home_teams = user_predictions.values('homeTeamName').annotate(total=Count('homeTeamName')).order_by('-total')[:5]
-    common_away_teams = user_predictions.values('awayTeamName').annotate(total=Count('awayTeamName')).order_by('-total')[:5]
+    common_home_teams = user_predictions.values('match__hTeam_name').annotate(total=Count('match__hTeam_name')).order_by('-total')[:5]
+    common_away_teams = user_predictions.values('match__aTeam_name').annotate(total=Count('match__aTeam_name')).order_by('-total')[:5]
     common_goal_scorers = user_predictions.values('goalScorerName').annotate(total=Count('goalScorerName')).order_by('-total')[:5]
 
     queryset = (

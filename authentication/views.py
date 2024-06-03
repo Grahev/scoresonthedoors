@@ -14,7 +14,7 @@ from django.contrib.auth.models import User
 from django.views.generic import View
 from django.contrib.auth.views import LoginView    
 from leagues.models import League
-from predicts.models import Match, MatchPrediction, NumberOfGamesToPredict, Player, MatchEvents, Team, LiveLeague
+from predicts.models import Match, MatchPrediction, NumberOfGamesToPredict, LiveLeague
 from django.core.cache import cache
 
 # Create your views here.

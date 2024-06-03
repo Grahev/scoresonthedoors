@@ -46,7 +46,7 @@
         <ul class="list-group">
             {% for team in common_home_teams %}
                 <li class="list-group-item d-flex justify-content-between align-items-center">
-                    {{ team.homeTeamName }}
+                    {{ team.match__hTeam_name }}
                     <span class="badge bg-primary rounded-pill">{{ team.total }}</span>
                 </li>
             {% endfor %}
@@ -59,7 +59,7 @@
         <ul class="list-group">
             {% for team in common_away_teams %}
                 <li class="list-group-item d-flex justify-content-between align-items-center">
-                    {{ team.awayTeamName }}
+                    {{ team.match__aTeam_name }}
                     <span class="badge bg-primary rounded-pill">{{ team.total }}</span>
                 </li>
             {% endfor %}

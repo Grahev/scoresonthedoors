@@ -64,6 +64,57 @@
             {% endfor %}
             {% endif %}
         </div>
+
+        <!-- line up section-->
+        <div class="row">
+            <!-- Home Team -->
+            <div class="col-md-6">
+                <div class="team">
+                    <h2 class="text-center">
+                        {% if data.data.content.lineup2 %}
+                            <p>{{data.data.content.lineup2.homeTeam.formation}}</p>
+                        {% endif %}
+                        </h2>
+                    <div class="first-eleven">
+                        {% for lineup in data.data.content.lineup.lineup.0.players %}
+                            {% for player in lineup %}
+                                <p>{{player.shirt}} {{player.positionStringShort}} | {{player.name.fullName}} | {{player.rating.num}} </p>
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
+                    <div class="substitutes">
+                       
+                    </div>
+                </div>
+            </div>
+    
+            <!-- Away Team -->
+            <div class="col-md-6">
+                <div class="team">
+                    <h2 class="text-center">
+                        {% if data.data.content.lineup2 %}
+                            <p>{{data.data.content.lineup2.awayTeam.formation}}</p>
+                        {% endif %}
+                    </h2>
+                    <div class="first-eleven">
+                        {% for lineup in data.data.content.lineup.lineup.1.players %}
+                            {% for player in lineup %}
+                                <p>{{player.shirt}} {{player.positionStringShort}} | {{player.name.fullName}} | {{player.rating.num}} </p>
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
+                    </div>
+                    <div class="substitutes">
+                        {% if away_team.bench %}
+                            {% for player in away_team.bench %}
+                                <div class="player">{{ player.name }}</div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% comment %} {{data.data.content.lineup.lineup.0.players}} {% endcomment %}
 </div> 
 
 <script>

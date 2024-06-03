@@ -5,7 +5,7 @@ from hashlib import sha256
 import requests
 import os
 from .forms import ApiMatchPredictionForm, ApiMatchPredictionFormUpdat
-from .models import Match, MatchPrediction, NumberOfGamesToPredict, Player, MatchEvents, Team, LiveLeague, Week
+from .models import Match, MatchPrediction, NumberOfGamesToPredict, LiveLeague
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.utils import timezone
@@ -22,102 +22,32 @@ from django.urls import reverse_lazy
 from django.views.generic.edit import DeleteView
 
 #my functions import
-from .my_functions import single_match_points, get_all_games, get_match_details, get_players
+from .my_functions import single_match_points, get_match_details, get_players, get_euro_games, get_team_squad, get_games_by_date
 
 from datetime import timedelta, datetime
 
-  # epl id = 39
-    # champions league id = 2
-    #serie a id = 135
-    #la liga id = 140
-    # UEFA Natons League id: 5
-    #world cup id: 1
-    #MLS id 253
-    #club frendlies id: 667
-
 def predicts_home(request):
-    current_week = Week.objects.get(pk=1)
-    print(f'current week: {current_week.week_number}')
-    # cache.delete('ucl_fixtures_cache')
-    live_league = LiveLeague.objects.filter(active = True)
-    # print(live_league)
-    numbers_of_games_to_predict = NumberOfGamesToPredict.objects.first()
+    fixtures = get_euro_games()    
+    # fixtures = get_games_by_date()    
+    # print(fixtures[0])
 
-    end_date_inclusive = datetime.combine(current_week.sunday, datetime.max.time())
+    for f in fixtures:
+        match_id = f['id']
+        match, created = Match.objects.get_or_create(
+            match_id = match_id
+        )
 
-    
-    ucl_predictions = MatchPrediction.objects.filter(
-        user=request.user,
-        league__icontains='UEFA Champions League',
-        match_date__range=(current_week.monday, current_week.sunday)
-        ).count()
-    
-    non_ucl_predictions = MatchPrediction.objects.filter(
-        user=request.user,
-        match_date__range=(current_week.monday, end_date_inclusive)
-        ).exclude(league__icontains='UEFA Champions League').count()
-    
-    test_non_ucl_predictions = MatchPrediction.objects.filter(
-        user=request.user,
-        match_date__range=(current_week.monday, end_date_inclusive)
-        ).exclude(league__icontains='UEFA Champions League')
-    
-    print(test_non_ucl_predictions)
-    available_non_ucl_predictions = numbers_of_games_to_predict.EPL - non_ucl_predictions
-    fixtures = {}
-    
-    for league in live_league:
-        # cache.delete(f'{league.league_name}_cache')
-        print(league.league_id)
+        if created:
+            match.match_id = match_id
+            match.update_match_data()
+            match.save()
+            print(f'created - {match}')
 
-        league_fixtures = cache.get(f'{league.league_name}_cache') #current week only
-        if not league_fixtures:
-            print(f'REQUEST TO API! {league} ')
-            cache.set(f'{league.league_name}_cache', get_all_games(league.league_id, league.season, current_week.monday, current_week.sunday),86400/2) #86400 = 24h
-            fixtures_league = cache.get(f'{league.league_name}_cache')
-            
-        else:
-            fixtures_league = cache.get(f'{league.league_name}_cache')
-            
-
-        fixtures[league.league_name] = fixtures_league
-        
-        
-    
-
-    # if not fixtures:
-    #     print('REQUEST TO API!!!!!!!!!!!!!!!!!!!!!')
-    #     cache.set('fixtures_cache', get_all_games(253),86400) #86400 = 24h
-    #     fixtures = cache.get('fixtures_cache')
-    #     print(fixtures)
-
-    # if not ucl_fixtures:
-    #     print(' UCL REQUEST TO API!!!!!!!!!!!!!!!!!!!!!')
-    #     ucl_fixtures = ['ucl_fixtures']
-    #     print(ucl_fixtures)
-    #     if ucl_fixtures is None:
-    #         print('ucl_fixtures is None')
-    #         cache.set('ucl_fixtures_cache', ucl_fixtures,86400)
-    #     else:
-    #         cache.set('ucl_fixtures_cache', get_all_games(2),86400)
-    #         ucl_fixtures = cache.get('ucl_fixtures_cache')
         
     context={
-        'fixtures':fixtures,
-        # 'ucl_fixtures':ucl_fixtures,
-        'numbers_of_games_to_predict':numbers_of_games_to_predict,
-        'ucl_predictions':ucl_predictions,
-        'non_ucl_predictions':non_ucl_predictions,
-        'available_non_ucl_predictions':available_non_ucl_predictions,
+        'fixtures':fixtures
     }
     return render(request, 'predicts_home.html', context)
-
-
-
-
-# def match_prediction(request):
-
-#     return render(request, 'prediction_create.html')
 
 
 def user_predictions(request):
@@ -125,7 +55,16 @@ def user_predictions(request):
     # user = User.objects.get(pk=pk)
     user = request.user
 
-    user_predictions = MatchPrediction.objects.filter(user=user).order_by('-match_date')
+    user_predictions = MatchPrediction.objects.filter(user=user).order_by('-match__date')
+
+    for prediction in user_predictions:
+        if not prediction.checked:
+            prediction.onextwo = prediction.one_x_two(prediction.homeTeamScore, prediction.awayTeamScore)
+            prediction.save()
+        elif prediction.match.finished:
+            prediction.calculate_points()
+            prediction.checked = True
+            prediction.save()
 
     context = {
         'user':user,
@@ -137,28 +76,28 @@ def user_predictions(request):
 
 
 def match_prediction(request,pk):
-    current_week = Week.objects.get(pk=1)
-    print(f'current week: {current_week}')
-    
+
+    m = Match.objects.get(match_id=pk)
+    m.update_match_data()
     match = cache.get(f'match_cache_{pk}') 
     if not match:
         print('REQUEST TO API!!!!!!!!!!!!!!!!!!!!!')
-        cache.set(f'match_cache_{pk}', get_match_details(pk),86400)
+        cache.set(f'match_cache_{pk}', get_match_details(pk),350) #86400 = 24h
         match = cache.get(f'match_cache_{pk}')
+        # print(match)
 
-    hteam = match[0]['teams']['home']['name']
-    ateam = match[0]['teams']['away']['name']
-    match_league = match[0]['league']['name']
-    print(f'Match league: {match_league}')
+    hteam = match['general']['homeTeam']['name']    
+    ateam = match['general']['awayTeam']['name']
+    
 
-    match_date = match[0]['fixture']['date']
+    match_date = match['general']['matchTimeUTCDate']
    # Define the input string and its format
     input_string = match_date
-    input_format = '%Y-%m-%dT%H:%M:%S%z'
+    input_format = '%Y-%m-%dT%H:%M:%S.%fZ'
 
     # Use the strptime method to convert the string to a datetime object
     match_datetime_object = datetime.strptime(input_string, input_format) 
-    print(type(match_datetime_object))
+    # print(type(match_datetime_object))
     
     
     # cache.delete(f'{ateam}_squad')
@@ -170,7 +109,7 @@ def match_prediction(request,pk):
             #name value in cache table
             f'{hteam}_squad', 
             #data 
-            get_players(match[0]['teams']['home']['id']), 
+            get_team_squad(match['general']['homeTeam']['id']), 
             #time out for cache data
             86400)
         hteam_squad = cache.get(f'{hteam}_squad')
@@ -178,82 +117,54 @@ def match_prediction(request,pk):
     ateam_squad = cache.get(f'{ateam}_squad')
     if not ateam_squad:
         print('REQUEST TO API!!!!!!!!!!!!!!!!!!!!!')
-        cache.set(f'{ateam}_squad', get_players(match[0]['teams']['away']['id']), 86400)
+        cache.set(f'{ateam}_squad', get_team_squad(match['general']['awayTeam']['id']), 86400)
         ateam_squad = cache.get(f'{ateam}_squad')
 
-    squads = ateam_squad + hteam_squad
+    squads = ateam_squad + hteam_squad 
     
- 
-    # Create a list of choices from the dictionary
-    choices = [(player['name'],player['name'] ) for player in squads]
+    # Filter out entries with fallback 'Coach'
+    filtered_data = [item for item in squads if item['fallback'] != 'Coach']
+
+    # Generate form choices with only player names
+    form_choices = [(item['name'], f"{item['name']} - {item['fallback']}") for item in filtered_data]
    
 
     # Update the choices for the form field
-    ApiMatchPredictionForm.base_fields['goalScorerName'].choices = choices
+    ApiMatchPredictionForm.base_fields['goalScorerName'].choices = form_choices
 
     # Create the form instance
-
     form = ApiMatchPredictionForm()
     form.fields['homeTeamScore'].label = ''
     form.fields['awayTeamScore'].label = ''
     form.fields['goalScorerName'].label = ''
 
-   
-    key = os.environ.get('key')
-    #no of games to predict - this store UCL and NON UCL games
-    number_of_games_to_predict = NumberOfGamesToPredict.objects.get(pk=1)
-    #number of existing user predictions for current week NON UCL
-    # non_UCL_predictions = MatchPrediction.objects.filter(user = request.user).exclude(league__icontains= 'UEFA Champions League').filter(match_date__week=current_week.week_number).count()
-    
-    end_date_inclusive = datetime.combine(current_week.sunday, datetime.max.time())
-    
-    non_UCL_predictions = MatchPrediction.objects.filter(
-        user=request.user,
-        match_date__range=(current_week.monday, end_date_inclusive)
-        ).exclude(league__icontains='UEFA Champions League')
-    
-
-    #number of existing user predictions for current week UCL
-    # UCL_predictions = MatchPrediction.objects.filter(user = request.user).filter(league__icontains= 'UEFA Champions League').filter(match_date__week=current_week.week_number).count()
-    UCL_predictions = MatchPrediction.objects.filter(
-        user=request.user,
-        league__icontains='UEFA Champions League',
-        match_date__range=(current_week.monday, end_date_inclusive)
-        ).count()
- 
-   
-
-
     if request.method == 'POST':
-        pred = MatchPrediction.objects.filter(user=request.user).filter(matchApiId=pk).exists()
+        pred = MatchPrediction.objects.filter(user=request.user).filter(match__match_id=pk).exists()
         print(pred)
         form = ApiMatchPredictionForm(request.POST)
         if form.is_valid():
             homeTeamScore = form.cleaned_data['homeTeamScore']
             awayTeamScore = form.cleaned_data['awayTeamScore']
             goalScorerName = form.cleaned_data['goalScorerName']
+            # Get player ID from the filtered data
+            #goalScorerId = next((item['id'] for item in filtered_data if item['name'] == goalScorerName), None)
+            print(goalScorerName)
+            
             #get player id from squad json object
             for player in squads:
                 if player["name"] == goalScorerName:
                 # If the name is found, print the associated id
                     goalScorerId = player["id"] 
+                    # print(f"id founded {goalScorerId}")
+                else:
+                    continue
 
             if pred == True:
                 messages.error(request,'Prediction for this match alerady exists, please make prediction for other match.')
                 return HttpResponseRedirect(request.path_info)
-            if match_datetime_object < timezone.now():
+            if match['general']['started']:
                 messages.error(request,'Prediction match alredy started and can NOT be added on or edited. Please do prediction for other match.')
                 return HttpResponseRedirect(request.path_info)
-            
-            if match_league == 'UEFA Champions League':
-                if UCL_predictions >= number_of_games_to_predict.UCL:
-                    messages.error(request,f'You reach limit of {UCL_predictions} games to predict for UEFA Champions League already, delete your prediction to make new.')
-                    return HttpResponseRedirect(request.path_info)
-            
-            if match_league != 'UEFA Champions League':
-                if non_UCL_predictions.count() >= number_of_games_to_predict.EPL:
-                    messages.error(request,f'You reach limit of {non_UCL_predictions.count()} games to predict already, delete your prediction to make new.')
-                    return HttpResponseRedirect(request.path_info)
             
 
             print(form.cleaned_data)
@@ -261,16 +172,12 @@ def match_prediction(request,pk):
             user = request.user.username
             u = User.objects.get(username=user)
             MatchPrediction.objects.create(
-                matchApiId = pk,
                 homeTeamScore=homeTeamScore,
-                homeTeamName = hteam,
                 awayTeamScore=awayTeamScore,
-                awayTeamName = ateam,
                 user = u,
                 goalScorerName = goalScorerName,
                 goalScorerId = goalScorerId,
-                league = match_league,
-                match_date = match_date
+                match = Match.objects.get(match_id=pk)
             )
             print('new prediction created')
             return redirect("predicts:predicts-home")
@@ -282,23 +189,53 @@ def match_prediction(request,pk):
         'hTeamSquad':hteam_squad,
         'hteam': hteam,
         'ateam': ateam,
+        'data': m
         # 'key':key,
     }
     return render(request, 'match_prediction.html', context)
 
 def match_prediction_update(request, pk):
     """Update view for match prediction"""
-    pred = get_object_or_404(MatchPrediction, matchApiId=pk, user=request.user)
+    pred = get_object_or_404(MatchPrediction, match__match_id=pk, user=request.user)
 
-    hteam_squad = cache.get(f'{pred.homeTeamName}_squad')
-    ateam_squad = cache.get(f'{pred.homeTeamName}_squad')
+    hteam_squad = cache.get(f'{pred.match.hTeam_name}_squad')
+    if not hteam_squad:
+        print('REQUEST TO API!!!!!!!!!!!!!!!!!!!!!')
+        #set cache
+        cache.set(
+            #name value in cache table
+            f'{pred.match.hTeam_name}_squad', 
+            #data 
+            get_team_squad(pred.match.data['general']['homeTeam']['id']), 
+            #time out for cache data
+            86400)
+        hteam_squad = cache.get(f'{pred.match.hTeam_name}_squad')
+    
+    ateam_squad = cache.get(f'{pred.match.aTeam_name}_squad')
+    if not ateam_squad:
+        print('REQUEST TO API!!!!!!!!!!!!!!!!!!!!!')
+        #set cache
+        cache.set(
+            #name value in cache table
+            f'{pred.match.aTeam_name}_squad', 
+            #data 
+            get_team_squad(pred.match.data['general']['awayTeam']['id']), 
+            #time out for cache data
+            86400)
+        hteam_squad = cache.get(f'{pred.match.aTeam_name}_squad')
     squads = ateam_squad + hteam_squad
     # Create a list of choices from the dictionary
-    choices = [(player['name'],player['name'] ) for player in squads]
+    # choices = [(player['name'],player['name'] ) for player in squads]
+
+    # Filter out entries with fallback 'Coach'
+    filtered_data = [item for item in squads if item['fallback'] != 'Coach']
+
+    # Generate form choices with only player names
+    form_choices = [(item['name'], f"{item['name']} - {item['fallback']}") for item in filtered_data]
    
 
     # Update the choices for the form field
-    ApiMatchPredictionFormUpdat.base_fields['goalScorerName'].choices = choices
+    ApiMatchPredictionFormUpdat.base_fields['goalScorerName'].choices = form_choices
 
 
 
@@ -310,10 +247,8 @@ def match_prediction_update(request, pk):
     else:
         form = ApiMatchPredictionFormUpdat(instance=pred)
 
-    context = {'form': form, 'hTeam':pred.homeTeamName, 'aTeam':pred.awayTeamName, 'match':pred.matchApiId, 'pred':pred}
+    context = {'form': form, 'hTeam':pred.match.hTeam_name, 'aTeam':pred.match.aTeam_name, 'match':pred.match.match_id, 'pred':pred}
     return render(request, 'match_prediction_update.html', context)
-
-
 
 
 def delete_view(request, pk):
@@ -322,7 +257,7 @@ def delete_view(request, pk):
     context ={}
  
     # fetch the object related to passed id
-    obj = get_object_or_404(MatchPrediction, matchApiId = pk, user=request.user)
+    obj = get_object_or_404(MatchPrediction, match__match_id = pk, user=request.user)
  
  
     if request.method =="POST":
@@ -337,7 +272,7 @@ def delete_view(request, pk):
     return render(request, "prediction_delete.html", context)
 
 def user_predictions_list(request, user):
-    predictions = MatchPrediction.objects.filter(user__username = user).order_by('match_date')
+    predictions = MatchPrediction.objects.filter(user__username = user).order_by('match__date')
     context = {
         'predictions': predictions
     }
