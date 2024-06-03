@@ -108,8 +108,8 @@ else:
             'NAME': os.environ.get('POSTGRES_DB','dev default value'),
             'USER': os.environ.get('POSTGRES_USER','dev default value'),
             'PASSWORD': os.environ.get('POSTGRES_PASSWORD','dev default value'),
-            # 'HOST':'192.168.1.213',# os.environ.get('POSTGRES_HOST','dev default value'), #'192.168.1.213'
-            'HOST':'app_core-db-1',# os.environ.get('POSTGRES_HOST','dev default value'), #'192.168.1.213'
+            'HOST':'192.168.1.213',# os.environ.get('POSTGRES_HOST','dev default value'), #'192.168.1.213'
+            # 'HOST':'app_core-db-1',# os.environ.get('POSTGRES_HOST','dev default value'), #'192.168.1.213'
             'PORT': '5432',
         }
     }
