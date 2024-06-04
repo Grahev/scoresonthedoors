@@ -28,7 +28,6 @@
           <span class="fw-bold">{{ match.aTeam_name}}</span>
       </div>
       <p class="text-center card-subtitle mt-2 text-muted">{{match.status.utcTime|time_only}}</p>
-      <a href="{% url 'predicts:match_prediction' match.match_id %}" class="text-decoration-none text-dark">cick</a>
     
     </div>
   {% else %}

@@ -16,6 +16,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 
 #import for current week
 from datetime import date
+import time
 
 # delete view import
 from django.urls import reverse_lazy
@@ -27,9 +28,15 @@ from .my_functions import single_match_points, get_match_details, get_players, g
 from datetime import timedelta, datetime
 
 def predicts_home(request):
-    # fixtures = get_euro_games()    
-    # fixtures = get_games_by_date()    
+    # Get today's date
+    # fixtures = get_euro_games()     
     # print(fixtures[0])
+    # Get the current date with timezone awareness
+    # current_datetime = timezone.now()
+    
+    # Extract the date part
+    # today_date = current_datetime.date()
+    today_date = date.today()
     fixtures = Match.objects.all()
 
     for f in fixtures:
@@ -44,8 +51,8 @@ def predicts_home(request):
             match.update_match_data()
             match.save()
             print(f'created - {match}')
-        else:
-            f.fetch_data()
+        # else:
+            # f.fetch_data()
             # f.update_match_data()
 
         

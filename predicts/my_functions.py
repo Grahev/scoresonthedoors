@@ -5,6 +5,7 @@ import os
 from datetime import date, timedelta, datetime
 import datetime
 import json
+import time
 
 #date section
 # Get the current date
@@ -88,7 +89,8 @@ def get_games_by_date(date=None):
         # 'cookie': '_hjSessionUser_2585474=eyJpZCI6IjQ5MzQ4M2E3LTljN2ItNTY0Mi04ZTlkLTllNDBhNGU5Njc3NSIsImNyZWF0ZWQiOjE2NDk4NzM4MTQyODEsImV4aXN0aW5nIjp0cnVlfQ==; NEXT_LOCALE=en-GB; _ga=GA1.2.1094432626.1649006611; _ga_SQ24F7Q7YW=GS1.1.1708259313.13.0.1708259314.0.0.0; _ga_K2ECMCJBFQ=GS1.1.1708259313.12.0.1708259314.0.0.0; _ga_G0V1WDW9B2=GS1.1.1708299288.79.1.1708299757.52.0.0; g_state={"i_p":1712784070517,"i_l":4}; u:location=%7B%22countryCode%22%3A%22GB%22%2C%22ccode3%22%3A%22GBR%22%2C%22timezone%22%3A%22Europe%2FLondon%22%2C%22ip%22%3A%2286.150.110.98%22%2C%22regionId%22%3A%22NIR%22%2C%22regionName%22%3A%22Northern%20Ireland%22%7D; spotim_visitId={%22creationDate%22:%22Tue%20May%2021%202024%2020:11:35%20GMT+0100%20(British%20Summer%20Time)%22%2C%22duration%22:1}',
         'pragma': 'no-cache',
         'priority': 'u=1, i',
-        'referer': 'https://www.fotmob.com/en-GB/leagues/50/matches/euro?page=1',
+        # 'referer': 'https://www.fotmob.com/en-GB/leagues/50/matches/euro?page=1',
+        'referer': 'https://www.fotmob.com/en-GB?date=20240604&show=all&filter=&q=Friendlies',
         'sec-ch-ua': '"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"',
         'sec-ch-ua-mobile': '?0',
         'sec-ch-ua-platform': '"Windows"',
@@ -100,7 +102,7 @@ def get_games_by_date(date=None):
     }
 
     params = {
-        'date': '20240527',
+        'date': '20240605',
         'ccode3': 'GBR',
     }
     response = requests.get('https://www.fotmob.com/api/matches', params=params, cookies=cookies, headers=headers)
@@ -237,6 +239,13 @@ def get_euro_games():
 
     return data
 
-# data = get_match_details(49682)
+# data = get_games_by_date()
+# print(data[0])
+# print('\n\n\n')
+# for m in data:
+#     print(m)
+#     time.sleep(4)
 
+
+# data = get_match_details(4488822)
 # print(data)

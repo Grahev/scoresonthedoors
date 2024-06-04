@@ -1,5 +1,7 @@
 from django.utils import timezone
-from predicts.models import  MatchPrediction
+from predicts.models import  MatchPrediction, Match
+import time
+from datetime import date
 
 def test_crone_job():
     now = timezone.now()
@@ -15,19 +17,26 @@ def test_crone_job():
     # )
     print(now)
     
-def auto_points():
+def auto_points_pending():
     print('\n AUTO POINTS START \n')
-    predictions = MatchPrediction.objects.filter(checked = False)
-    for prediction in predictions:
-        if prediction.checked == False and prediction.is_past_due:
-            prediction.points = prediction.calculate_points()
-            prediction.checked = True
-            #update prediction points
-            prediction.save()
-           
-            print(f'prediction: {prediction} - points: {prediction.points}')
-        else:
-            print(f'prediction: {prediction} is correct')
+    today = date.today()
+    matches = Match.objects.filter(finished=False).filter(date_date=today)
+    for m in matches:
+        m.update_match_data()
+        m.save()
+        time.sleep(2)
+
+    print('\n AUTO POINTS END \n')
+
+def auto_points_finish_today():
+    print('\n AUTO POINTS START \n')
+    today = date.today()
+    matches = Match.objects.filter(finished=True).filter(date_date=today)
+    for m in matches:
+        m.update_match_data()
+        m.save()
+        print('match updated')
+        time.sleep(2)
 
     print('\n AUTO POINTS END \n')
 
