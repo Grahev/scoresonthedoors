@@ -8,17 +8,17 @@ class MatchAdmin(admin.ModelAdmin):
     # Fields to display in the list view
     list_display = (
         'match_id', 'hTeam_name', 'aTeam_name', 'date', 'started', 'finished', 
-        'hTeamScore', 'aTeamScore', 'league', 'league_sezon'
+        'hTeamScore', 'aTeamScore', 'league', 'league_sezon', 'league_id'
     )
     
     # Fields to search
     search_fields = (
-        'hTeam_name', 'aTeam_name', 'league', 'league_sezon'
+        'hTeam_name', 'aTeam_name', 'league', 'league_sezon', 'league_id'
     )
     
     # Fields to filter
     list_filter = (
-        'started', 'finished', 'league', 'league_sezon', 'date'
+        'started', 'finished', 'league', 'league_sezon', 'date', 'league_id'
     )
     
     # Optionally, you can add ordering

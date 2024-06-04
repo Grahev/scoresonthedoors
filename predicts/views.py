@@ -27,12 +27,14 @@ from .my_functions import single_match_points, get_match_details, get_players, g
 from datetime import timedelta, datetime
 
 def predicts_home(request):
-    fixtures = get_euro_games()    
+    # fixtures = get_euro_games()    
     # fixtures = get_games_by_date()    
     # print(fixtures[0])
+    fixtures = Match.objects.all()
 
     for f in fixtures:
-        match_id = f['id']
+        # match_id = f['id']
+        match_id = f.match_id
         match, created = Match.objects.get_or_create(
             match_id = match_id
         )
@@ -42,6 +44,9 @@ def predicts_home(request):
             match.update_match_data()
             match.save()
             print(f'created - {match}')
+        else:
+            f.fetch_data()
+            # f.update_match_data()
 
         
     context={
