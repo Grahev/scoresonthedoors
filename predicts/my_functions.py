@@ -6,8 +6,8 @@ from datetime import date, timedelta, datetime
 import datetime
 import json
 import time
+from django.http import JsonResponse
 
-#date section
 # Get the current date
 current_date = datetime.date.today()
 
@@ -15,12 +15,10 @@ year, week, day = current_date.isocalendar()
 
 # first_day_of_week = current_date - datetime.timedelta(days=day-1)
 first_day_of_week = current_date - datetime.timedelta(days=day+45)
-# first_day_of_week = '2022-12-01'
 
-# last_day_of_week = current_date + datetime.timedelta(days=7-day)
+
 last_day_of_week = current_date + datetime.timedelta(days=8-day)
-print(f'first day{first_day_of_week}')
-print(f'last day{last_day_of_week}')
+
 
 def get_last_monday_and_next_sunday(current_date):
     # Get the current day of the week (0 = Monday, 1 = Tuesday, ..., 6 = Sunday)
@@ -66,7 +64,7 @@ def single_match_points(match):
     match.calculate_points()
 
  
-#function to get games
+
 def get_games_by_date(date=None):
     """pass date in format YYYMMDD"""
     # Get the current date and time
@@ -115,6 +113,10 @@ def get_games_by_date(date=None):
 
     return data
 
+def is_list_of_dicts(data):
+    """Ceck if input data is a list of dictionaries"""
+    return isinstance(data, list) and all(isinstance(item, dict) for item in data)
+
 
 def get_match_details(match_id):
     url = f'https://www.fotmob.com/api/matchDetails'
@@ -128,54 +130,70 @@ def get_match_details(match_id):
     response = r.json()
     return response
 
-def convert_to_player_list(original_json):
-    player_list = []
-    
-    for group in original_json:
-        title = group['title']
-        members = group['members']
-        
-        for member in members:
-            player = {
-                'id': member['id'],
-                'fallback': member['role']['fallback'],
-                'name': member['name'],
-                #'rating': member.get('rating', None),
-                #'goals': member.get('goals', 0),
-                #'assists': member.get('assists', 0),
-                #'ycards': member.get('ycards', 0)
-            }
-            player_list.append(player)
-    
-    return player_list
 
 def get_team_squad(id,ccode3="GBR"):
     url = f'https://www.fotmob.com/api/teams'
     headers = {
         'accept': '*/*',
-        'accept-language': 'en-GB,en;q=0.9,en-US;q=0.8,pl;q=0.7',
-        'cache-control': 'no-cache',
-        # 'cookie': '_hjSessionUser_2585474=eyJpZCI6IjQ5MzQ4M2E3LTljN2ItNTY0Mi04ZTlkLTllNDBhNGU5Njc3NSIsImNyZWF0ZWQiOjE2NDk4NzM4MTQyODEsImV4aXN0aW5nIjp0cnVlfQ==; NEXT_LOCALE=en-GB; _ga=GA1.2.1094432626.1649006611; _ga_SQ24F7Q7YW=GS1.1.1708259313.13.0.1708259314.0.0.0; _ga_K2ECMCJBFQ=GS1.1.1708259313.12.0.1708259314.0.0.0; _ga_G0V1WDW9B2=GS1.1.1708299288.79.1.1708299757.52.0.0; g_state={"i_p":1712784070517,"i_l":4}; u:location=%7B%22countryCode%22%3A%22GB%22%2C%22ccode3%22%3A%22GBR%22%2C%22timezone%22%3A%22Europe%2FLondon%22%2C%22ip%22%3A%2286.150.110.98%22%2C%22regionId%22%3A%22NIR%22%2C%22regionName%22%3A%22Northern%20Ireland%22%7D; spotim_visitId={%22creationDate%22:%22Tue%20May%2021%202024%2020:11:35%20GMT+0100%20(British%20Summer%20Time)%22%2C%22duration%22:1}',
-        'pragma': 'no-cache',
-        'priority': 'u=1, i',
-        'referer': 'https://www.fotmob.com/en-GB/leagues/50/matches/euro?page=1',
-        'sec-ch-ua': '"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"',
-        'sec-ch-ua-mobile': '?0',
-        'sec-ch-ua-platform': '"Windows"',
-        'sec-fetch-dest': 'empty',
-        'sec-fetch-mode': 'cors',
-        'sec-fetch-site': 'same-origin',
-        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-        'x-fm-req': 'eyJib2R5Ijp7ImNvZGUiOjE3MTYzMTkwOTc5MTZ9LCJzaWduYXR1cmUiOiIwQTI1QTY3MEMyOEREQzc4NzY5NTAyNjAzMTRDNThEMyJ9',
+    'accept-language': 'en-GB,en;q=0.9,en-US;q=0.8,pl;q=0.7',
+    'cache-control': 'no-cache',
+    # 'cookie': '_hjSessionUser_2585474=eyJpZCI6IjQ5MzQ4M2E3LTljN2ItNTY0Mi04ZTlkLTllNDBhNGU5Njc3NSIsImNyZWF0ZWQiOjE2NDk4NzM4MTQyODEsImV4aXN0aW5nIjp0cnVlfQ==; NEXT_LOCALE=en-GB; _ga=GA1.2.1094432626.1649006611; _ga_SQ24F7Q7YW=GS1.1.1708259313.13.0.1708259314.0.0.0; _ga_K2ECMCJBFQ=GS1.1.1708259313.12.0.1708259314.0.0.0; _ga_G0V1WDW9B2=GS1.1.1708299288.79.1.1708299757.52.0.0; g_state={"i_p":1712784070517,"i_l":4}; u:location=%7B%22countryCode%22%3A%22GB%22%2C%22ccode3%22%3A%22GBR%22%2C%22timezone%22%3A%22Europe%2FLondon%22%2C%22ip%22%3A%2286.150.110.98%22%2C%22regionId%22%3A%22NIR%22%2C%22regionName%22%3A%22Northern%20Ireland%22%7D; spotim_visitId={%22creationDate%22:%22Wed%20Jun%2005%202024%2017:37:00%20GMT+0100%20(British%20Summer%20Time)%22%2C%22duration%22:1}',
+    'pragma': 'no-cache',
+    'priority': 'u=1, i',
+    'referer': 'https://www.fotmob.com/en-GB/teams/8497/squad/slovakia',
+    'sec-ch-ua': '"Google Chrome";v="125", "Chromium";v="125", "Not.A/Brand";v="24"',
+    'sec-ch-ua-mobile': '?0',
+    'sec-ch-ua-platform': '"Windows"',
+    'sec-fetch-dest': 'empty',
+    'sec-fetch-mode': 'cors',
+    'sec-fetch-site': 'same-origin',
+    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+    'x-fm-req': 'eyJib2R5Ijp7ImNvZGUiOjE3MTc2MDU0NjIzNzN9LCJzaWduYXR1cmUiOiI3NTkwOEFEQjBEODY1NDdFNjFDRjZDN0FDM0NGRjEzMiJ9',
     }
     params = {
     'id': id,
     'ccode3': ccode3,
 }
     r = requests.get(url, params=params, headers=headers)
-    response = r.json()['squad']
-    team = convert_to_player_list(response)
-    return team
+    
+    if r.status_code ==200:
+        response = r.json()['squad']
+        team = convert_to_player_list(response)
+        
+        return team
+    else:
+        return None
+
+
+def convert_to_player_list(squad_json):
+    player_list = []
+  
+    if not squad_json:
+        return player_list
+    
+    for group in squad_json:
+        title = group.get('title', '')
+        members = group.get('members', [])
+        
+        for member in members:
+            player = {
+                'id': member['id'],
+                'fallback': member['role']['fallback'],
+                'name': member['name'],
+                # Uncomment the following lines if the fields are present in the JSON
+                # 'rating': member.get('rating', None),
+                # 'goals': member.get('goals', 0),
+                # 'assists': member.get('assists', 0),
+                # 'ycards': member.get('ycards', 0)
+            }
+            player_list.append(player)
+
+    if is_list_of_dicts(player_list):
+        print('is list of dict')
+        return player_list
+    else:
+        print('is not a list of dict!!!')
+        return None
 
 
 def get_players(team_id):
@@ -239,13 +257,3 @@ def get_euro_games():
 
     return data
 
-# data = get_games_by_date()
-# print(data[0])
-# print('\n\n\n')
-# for m in data:
-#     print(m)
-#     time.sleep(4)
-
-
-# data = get_match_details(4488822)
-# print(data)

@@ -23,7 +23,7 @@ from django.urls import reverse_lazy
 from django.views.generic.edit import DeleteView
 
 #my functions import
-from .my_functions import single_match_points, get_match_details, get_players, get_euro_games, get_team_squad, get_games_by_date
+from .my_functions import single_match_points, get_match_details, get_players, get_euro_games, get_team_squad, get_games_by_date, is_list_of_dicts
 
 from datetime import timedelta, datetime
 
@@ -98,8 +98,8 @@ def match_prediction(request,pk):
         match = cache.get(f'match_cache_{pk}')
         # print(match)
 
-    hteam = match['general']['homeTeam']['name']    
-    ateam = match['general']['awayTeam']['name']
+    hteam = m.hTeam_name   
+    ateam = m.aTeam_name
     
 
     match_date = match['general']['matchTimeUTCDate']
@@ -112,20 +112,17 @@ def match_prediction(request,pk):
     # print(type(match_datetime_object))
     
     
-    # cache.delete(f'{ateam}_squad')
+    # cache.delete(f'{hteam}_squad')
     hteam_squad = cache.get(f'{hteam}_squad')
     if not hteam_squad:
+        time.sleep(1)
         print('REQUEST TO API!!!!!!!!!!!!!!!!!!!!!')
         #set cache
-        cache.set(
-            #name value in cache table
-            f'{hteam}_squad', 
-            #data 
-            get_team_squad(m.hTeam_id), 
-            #time out for cache data
-            86400)
+        cache.set(f'{hteam}_squad', get_team_squad(m.hTeam_id), 86400)
         hteam_squad = cache.get(f'{hteam}_squad')
+        # print(f'home team {hteam_squad}\n\n')
 
+    # cache.delete(f'{ateam}_squad')
     ateam_squad = cache.get(f'{ateam}_squad')
     if not ateam_squad:
         print('REQUEST TO API!!!!!!!!!!!!!!!!!!!!!')
@@ -136,7 +133,7 @@ def match_prediction(request,pk):
     
     # Filter out entries with fallback 'Coach'
     filtered_data = [item for item in squads if item['fallback'] != 'Coach']
-
+   
     # Generate form choices with only player names
     form_choices = [(item['name'], f"{item['name']} - {item['fallback']}") for item in filtered_data]
    
