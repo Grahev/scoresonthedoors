@@ -121,7 +121,7 @@ def match_prediction(request,pk):
             #name value in cache table
             f'{hteam}_squad', 
             #data 
-            get_team_squad(match['general']['homeTeam']['id']), 
+            get_team_squad(m.hTeam_id), 
             #time out for cache data
             86400)
         hteam_squad = cache.get(f'{hteam}_squad')
@@ -129,7 +129,7 @@ def match_prediction(request,pk):
     ateam_squad = cache.get(f'{ateam}_squad')
     if not ateam_squad:
         print('REQUEST TO API!!!!!!!!!!!!!!!!!!!!!')
-        cache.set(f'{ateam}_squad', get_team_squad(match['general']['awayTeam']['id']), 86400)
+        cache.set(f'{ateam}_squad', get_team_squad(m.aTeam_id), 86400)
         ateam_squad = cache.get(f'{ateam}_squad')
 
     squads = ateam_squad + hteam_squad 
