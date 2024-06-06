@@ -23,7 +23,7 @@ from django.urls import reverse_lazy
 from django.views.generic.edit import DeleteView
 
 #my functions import
-from .my_functions import single_match_points, get_match_details, get_players, get_euro_games, get_team_squad, get_games_by_date, is_list_of_dicts
+from .my_functions import single_match_points, get_match_details, get_players, get_euro_games, get_team_squad, get_games_by_date, is_list_of_dicts, get_todays_date,filter_matches_by_leagues
 
 from datetime import timedelta, datetime
 
@@ -36,12 +36,16 @@ def predicts_home(request):
     
     # Extract the date part
     # today_date = current_datetime.date()
-    today_date = date.today()
-    fixtures = Match.objects.all()
+    all_day = get_games_by_date(get_todays_date())
+    fixtures = filter_matches_by_leagues(all_day,[888512])
+    
+    #frendlies id = 888512
+    
+    # fixtures = Match.objects.all()
 
     for f in fixtures:
-        # match_id = f['id']
-        match_id = f.match_id
+        match_id = f['id']
+        # match_id = f.match_id
         match, created = Match.objects.get_or_create(
             match_id = match_id
         )

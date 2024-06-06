@@ -4,20 +4,21 @@ import requests
 import os
 from datetime import date, timedelta, datetime
 import datetime
+from datetime import datetime
 import json
 import time
 from django.http import JsonResponse
 
 # Get the current date
-current_date = datetime.date.today()
+# current_date = datetime.date.today()
 
-year, week, day = current_date.isocalendar()
+# year, week, day = current_date.isocalendar()
 
-# first_day_of_week = current_date - datetime.timedelta(days=day-1)
-first_day_of_week = current_date - datetime.timedelta(days=day+45)
+# # first_day_of_week = current_date - datetime.timedelta(days=day-1)
+# first_day_of_week = current_date - datetime.timedelta(days=day+45)
 
 
-last_day_of_week = current_date + datetime.timedelta(days=8-day)
+# last_day_of_week = current_date + datetime.timedelta(days=8-day)
 
 
 def get_last_monday_and_next_sunday(current_date):
@@ -38,7 +39,7 @@ def get_last_monday_and_next_sunday(current_date):
 
     return last_monday, next_sunday
 
-last_monday, next_sunday = get_last_monday_and_next_sunday(current_date)
+# last_monday, next_sunday = get_last_monday_and_next_sunday(current_date)
 
 def match_one_x_two(prediction):
     """return 1 X 2 for match"""
@@ -100,7 +101,7 @@ def get_games_by_date(date=None):
     }
 
     params = {
-        'date': '20240605',
+        'date': date,
         'ccode3': 'GBR',
     }
     response = requests.get('https://www.fotmob.com/api/matches', params=params, cookies=cookies, headers=headers)
@@ -108,8 +109,6 @@ def get_games_by_date(date=None):
     pretty_json = json.dumps(data, indent=4)
     # print(pretty_json)
 
-    for league in data:
-        print(league['matches'])
 
     return data
 
@@ -257,3 +256,26 @@ def get_euro_games():
 
     return data
 
+def filter_matches_by_leagues(leagues, league_ids):
+    """
+    Filters matches from the list of leagues based on the provided league IDs.
+
+    Args:
+        leagues (list): The list of league dictionaries containing match information.
+        league_ids (list): A list of league IDs to filter the matches by.
+
+    Returns:
+        list: A list of matches that belong to the specified league IDs.
+    """
+    filtered_matches = []
+    
+    for league in leagues:
+        if league['id'] in league_ids:
+            matches = league.get('matches', [])
+            for match in matches:
+                filtered_matches.append(match)
+                
+    return filtered_matches
+
+def get_todays_date():
+    return datetime.now().strftime('%Y%m%d')

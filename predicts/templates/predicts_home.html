@@ -11,6 +11,66 @@
  
   {% for match in fixtures%}
 
+  {% if match.status.started%}
+    <div class="fixture row p-2 my-3 mx-1 border rounded-pill shadow">
+                        
+      <p class="text-center card-subtitle mb-2 text-muted">{{match.status.utcTime|to_datetime:"%Y-%m-%d"}}</p>
+      
+
+      <div class="home col-6 text-end p-0">
+      
+          <span class="fw-bold">{{match.home.name}}</span>
+          <span class="fw-bold py-1 px-2 m-1 border shadow-sm">{{match.home.score}}</span>
+      </div>
+
+      <div class="away col-6 text-left p-0">
+          <span class="fw-bold py-1 px-2 m-1 border shadow-sm">{{match.away.score}}</span>
+          <span class="fw-bold">{{ match.away.name}}</span>
+      </div>
+      <p class="text-center card-subtitle mt-2 text-muted">{{match.status.utcTime|time_only}}</p>
+      {% comment %} <a href="{% url 'predicts:match_prediction' match.id %}" class="text-decoration-none text-dark">cick</a>
+     {% endcomment %}
+    </div>
+  {% else %}
+
+    <a href="{% url 'predicts:match_prediction' match.id %}" class="text-decoration-none text-dark">
+          <div class="fixture row p-2 my-3 mx-1 border rounded-pill shadow">
+              <p class="text-center card-subtitle mb-2 text-muted">{{match.status.utcTime|to_datetime:"%Y-%m-%d"}}</p>
+              <div class="home col-6 text-end p-0">
+                  <span class="fw-bold">{{match.home.name}}</span>
+                  <span class=""><img src="https://images.fotmob.com/image_resources/logo/teamlogo/{{match.home.id}}_xsmall.png" class='rounded-circle m-1 border shadow-sm' alt="logo" height=35 width=35px></span>
+              </div>
+              <div class="away col-6 text-left p-0">
+                  <span class=" text-left"><img src="https://images.fotmob.com/image_resources/logo/teamlogo/{{match.away.id}}_xsmall.png" class='rounded-circle m-1 border shadow-sm' alt="logo" height=35 width=35px></span>
+                  <span class="fw-bold">{{match.away.name}}</span>
+              </div>
+              <p class="text-center card-subtitle mt-2 text-muted">{{match.status.utcTime|time_only}}</p>
+          </div>
+      </a>
+  {% endif %}
+
+  
+ 
+  {%endfor%}
+
+</div>
+    
+{% endblock content %} 
+
+
+
+{% comment %} {% extends "base.html" %}
+{% load predicts_extras %}
+{% block title %}
+    Predction Home
+{% endblock title %}
+{% block content %}
+
+ <div class="conatiner">
+
+ 
+  {% for match in fixtures%}
+
   {% if match.started%}
     <div class="fixture row p-2 my-3 mx-1 border rounded-pill shadow">
                         
@@ -54,71 +114,4 @@
 
 </div>
     
-{% endblock content %}
-
-
-
-
-
-
-
-
-
-{% comment %} {% extends "base.html" %}
-{% load predicts_extras %}
-{% block title %}
-    Predction Home
-{% endblock title %}
-{% block content %}
-
- <div class="conatiner">
-
- 
-  {% for match in fixtures%}
-
-  {% if match.status.started%}
-    <div class="fixture row p-2 my-3 mx-1 border rounded-pill shadow">
-                        
-      <p class="text-center card-subtitle mb-2 text-muted">{{match.status.utcTime|to_datetime:"%Y-%m-%d"}}</p>
-      
-
-      <div class="home col-6 text-end p-0">
-      
-          <span class="fw-bold">{{match.home.name}}</span>
-          <span class="fw-bold py-1 px-2 m-1 border shadow-sm">{{match.home.score}}</span>
-      </div>
-
-      <div class="away col-6 text-left p-0">
-          <span class="fw-bold py-1 px-2 m-1 border shadow-sm">{{match.away.score}}</span>
-          <span class="fw-bold">{{ match.away.name}}</span>
-      </div>
-      <p class="text-center card-subtitle mt-2 text-muted">{{match.status.utcTime|time_only}}</p>
-      <a href="{% url 'predicts:match_prediction' match.id %}" class="text-decoration-none text-dark">cick</a>
-    
-    </div>
-  {% else %}
-
-    <a href="{% url 'predicts:match_prediction' match.id %}" class="text-decoration-none text-dark">
-          <div class="fixture row p-2 my-3 mx-1 border rounded-pill shadow">
-              <p class="text-center card-subtitle mb-2 text-muted">{{match.status.utcTime|to_datetime:"%Y-%m-%d"}}</p>
-              <div class="home col-6 text-end p-0">
-                  <span class="fw-bold">{{match.home.name}}</span>
-                  <span class=""><img src="https://images.fotmob.com/image_resources/logo/teamlogo/{{match.home.id}}_xsmall.png" class='rounded-circle m-1 border shadow-sm' alt="logo" height=35 width=35px></span>
-              </div>
-              <div class="away col-6 text-left p-0">
-                  <span class=" text-left"><img src="https://images.fotmob.com/image_resources/logo/teamlogo/{{match.away.id}}_xsmall.png" class='rounded-circle m-1 border shadow-sm' alt="logo" height=35 width=35px></span>
-                  <span class="fw-bold">{{match.away.name}}</span>
-              </div>
-              <p class="text-center card-subtitle mt-2 text-muted">{{match.status.utcTime|time_only}}</p>
-          </div>
-      </a>
-  {% endif %}
-
-  
- 
-  {%endfor%}
-
-</div>
-    
 {% endblock content %} {% endcomment %}
-
