@@ -28,14 +28,7 @@ from .my_functions import single_match_points, get_match_details, get_players, g
 from datetime import timedelta, datetime
 
 def predicts_home(request):
-    # Get today's date
-    # fixtures = get_euro_games()     
-    # print(fixtures[0])
-    # Get the current date with timezone awareness
-    # current_datetime = timezone.now()
-    
-    # Extract the date part
-    # today_date = current_datetime.date()
+   
     all_day = get_games_by_date(get_todays_date())
     fixtures = filter_matches_by_leagues(all_day,[888512])
     
