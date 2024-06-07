@@ -212,7 +212,7 @@ def match_prediction_update(request, pk):
             #name value in cache table
             f'{pred.match.hTeam_name}_squad', 
             #data 
-            get_team_squad(pred.match.data['general']['homeTeam']['id']), 
+            get_team_squad(pred.match.match_id), 
             #time out for cache data
             86400)
         hteam_squad = cache.get(f'{pred.match.hTeam_name}_squad')
@@ -225,7 +225,7 @@ def match_prediction_update(request, pk):
             #name value in cache table
             f'{pred.match.aTeam_name}_squad', 
             #data 
-            get_team_squad(pred.match.data['general']['awayTeam']['id']), 
+            get_team_squad(pred.match.match_id), 
             #time out for cache data
             86400)
         hteam_squad = cache.get(f'{pred.match.aTeam_name}_squad')

@@ -18,7 +18,7 @@
 
             <!--Points-->
             <div class="fs-6 fw-light text-center mb-1 mt-1 text-secondary">Points: 
-                {{prediction.calculate_points}}
+                {{prediction.points}}
             </div>
 
             <!-- Button trigger modal -->
@@ -34,7 +34,7 @@
               <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLabel">Points: 
-                        {{prediction.calculate_points}}
+                        {{prediction.points}}
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
@@ -47,25 +47,13 @@
                         <div class="home col-6 text-end p-0">
                             <span class="fw-bold">{{prediction.match.hTeam_name}}</span>
                             <span class="border px-3 py-2 bg-light">
-                                {% if prediction.match.finish  %}   
-                                    {{prediction.match.hTeamScore}}
-                                {% elif prediction.match.started %}
-                                    {{prediction.match.get_result.0}}
-                                {% else %}
-                                    <p>-</p>
-                                {% endif %}  
+                                {{prediction.match.hTeamScore}} 
                             </span>
                         </div>
                     
                         <div class="away col-6 text-left p-0">
                             <span class="border px-3 py-2 bg-light text-left">
-                                {% if prediction.match.finish  %}   
-                                {{prediction.match.aTeamScore}}
-                            {% elif prediction.match.started %}
-                                {{prediction.match.get_result.0}}
-                            {% else %}
-                                <p>-</p>
-                            {% endif %}  
+                                {{prediction.match.aTeamScore}} 
                             </span>
                             <span class="fw-bold">{{ prediction.match.aTeam_name}}</span>
                         </div>

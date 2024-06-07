@@ -58,7 +58,7 @@ class Match(models.Model):
             r = requests.get(self.api_url, params=params, headers=headers)
             if r.status_code == 200:
                 data = r.json()
-                cache.set(cache_key, data, timeout=3600) #3600 1 hour timeout,  86400 s (24 h * 3600 seconds/hour)
+                cache.set(cache_key, data, timeout=60) #3600 1 hour timeout,  86400 s (24 h * 3600 seconds/hour)
             else:
                 data = None
         
@@ -169,6 +169,8 @@ class Match(models.Model):
     @property
     def is_past_due(self):
         return timezone.now() > self.date
+    
+    
 
     @property
     def is_active(self):
@@ -196,40 +198,58 @@ class MatchPrediction(models.Model):
             return 0
         else:
             return 2
+    
+    def save(self, *args, **kwargs):
+        self.onextwo = self.one_x_two(self.homeTeamScore, self.awayTeamScore)
+        super(MatchPrediction,self).save(*args, **kwargs)
 
     def match_result(self):
         return self.one_x_two(self.homeTeamScore, self.awayTeamScore)
     
     def calculate_points(self):
         """calculate points"""
-        if not self.match.started:
-            return 0  # Match not started, points are 0
+        # if not self.match.started:
+        #     return 0  # Match not started, points are 0
         
         m_points = 0
         g_points = 0
       
-        if self.match.started:
+        if  self.match.started and not self.checked:
             print('match started calculate points')
             print(f'pred home team score {self.homeTeamScore} - match h team {self.match.hTeamScore}')
             if self.homeTeamScore == self.match.hTeamScore and self.awayTeamScore == self.match.aTeamScore:
                 m_points =+ 3
+                print('3 points for correct score')
             elif self.onextwo == self.match.onextwo:
                 m_points =+1
+                print('one point for correct winner')
             if self.match.first_goal():
                 if self.goalScorerId == self.match.first_goal()['id']:
                     g_points =+3
+                    print('3 points for correct goalscorere')
                 else:
                 #   for goal in self.match.goalScorers:
                   for goal in self.match.get_goals():
                     if self.goalScorerId == int(goal['id']):
                         g_points += 1
+                        print('one pont for anytime goalscorer')
                         break
             else:
                 pass
             points = m_points + g_points
             self.points = points
+            if self.match.started and self.match.finished:
+                self.checked = True
+            else:
+                self.checked = False
             self.save()
+            print(f'points: {points} \n\n')
             return points
+    
+    def __init__(self, *args, **kwargs):
+        super(MatchPrediction, self).__init__(*args, **kwargs)
+        if not self.checked:
+            self.calculate_points()
 
 class NumberOfGamesToPredict(models.Model):
     EPL = models.IntegerField()
