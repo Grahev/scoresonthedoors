@@ -213,38 +213,41 @@ class MatchPrediction(models.Model):
         
         m_points = 0
         g_points = 0
+        try :
       
-        if  self.match.started and not self.checked:
-            print('match started calculate points')
-            print(f'pred home team score {self.homeTeamScore} - match h team {self.match.hTeamScore}')
-            if self.homeTeamScore == self.match.hTeamScore and self.awayTeamScore == self.match.aTeamScore:
-                m_points =+ 3
-                print('3 points for correct score')
-            elif self.onextwo == self.match.onextwo:
-                m_points =+1
-                print('one point for correct winner')
-            if self.match.first_goal():
-                if self.goalScorerId == self.match.first_goal()['id']:
-                    g_points =+3
-                    print('3 points for correct goalscorere')
+            if  self.match.started and not self.checked:
+                print('match started calculate points')
+                print(f'pred home team score {self.homeTeamScore} - match h team {self.match.hTeamScore}')
+                if self.homeTeamScore == self.match.hTeamScore and self.awayTeamScore == self.match.aTeamScore:
+                    m_points =+ 3
+                    print('3 points for correct score')
+                elif self.onextwo == self.match.onextwo:
+                    m_points =+1
+                    print('one point for correct winner')
+                if self.match.first_goal():
+                    if self.goalScorerId == self.match.first_goal()['id']:
+                        g_points =+3
+                        print('3 points for correct goalscorere')
+                    else:
+                    #   for goal in self.match.goalScorers:
+                      for goal in self.match.get_goals():
+                        if self.goalScorerId == int(goal['id']):
+                            g_points += 1
+                            print('one pont for anytime goalscorer')
+                            break
                 else:
-                #   for goal in self.match.goalScorers:
-                  for goal in self.match.get_goals():
-                    if self.goalScorerId == int(goal['id']):
-                        g_points += 1
-                        print('one pont for anytime goalscorer')
-                        break
-            else:
-                pass
-            points = m_points + g_points
-            self.points = points
-            if self.match.started and self.match.finished:
-                self.checked = True
-            else:
-                self.checked = False
-            self.save()
-            print(f'points: {points} \n\n')
-            return points
+                    pass
+                points = m_points + g_points
+                self.points = points
+                if self.match.started and self.match.finished:
+                    self.checked = True
+                else:
+                    self.checked = False
+                self.save()
+                print(f'points: {points} \n\n')
+                return points
+        except:
+            pass
     
     def __init__(self, *args, **kwargs):
         super(MatchPrediction, self).__init__(*args, **kwargs)
