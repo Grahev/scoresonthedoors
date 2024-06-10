@@ -66,14 +66,14 @@ def user_predictions(request):
 
     user_predictions = MatchPrediction.objects.filter(user=user).order_by('-match__date')
 
-    for prediction in user_predictions:
-        if not prediction.checked:
-            prediction.onextwo = prediction.one_x_two(prediction.homeTeamScore, prediction.awayTeamScore)
-            prediction.save()
-        elif prediction.match.finished:
-            prediction.calculate_points()
-            prediction.checked = True
-            prediction.save()
+    # for prediction in user_predictions:
+    #     if not prediction.checked:
+    #         prediction.onextwo = prediction.one_x_two(prediction.homeTeamScore, prediction.awayTeamScore)
+    #         prediction.save()
+    #     elif prediction.match.finished:
+    #         prediction.calculate_points()
+    #         prediction.checked = True
+    #         prediction.save()
 
     context = {
         'user':user,
