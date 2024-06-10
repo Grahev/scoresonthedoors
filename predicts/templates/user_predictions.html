@@ -12,7 +12,7 @@
     <h1 class="fs-3 text-center mt-4 mx-3 bg-primary text-light p-1 rounded-pill">{{user}}'s predictions</h1>
 
     {% for prediction in user_predictions %}
-        {% if not prediction.match.started %}
+        {% if prediction.match.is_active %}
         <!-- ACTIVE PREDICTIONS-->
         {% include 'partials/user_prediction_active.html' %}
         <!--END OF ACTIVE PREDICTIONS-->        

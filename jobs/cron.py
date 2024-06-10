@@ -40,3 +40,13 @@ def auto_points_finish_today():
 
     print('\n AUTO POINTS END \n')
 
+def points():
+    today = timezone.now().date()
+    print(today)
+    unchecked_predictions = MatchPrediction.objects.filter(match__date__date=today)
+    # unchecked_predictions = MatchPrediction.objects.filter(match__date_date=today)
+    print(unchecked_predictions)
+    print(f'Start calculate points for unchecked {len(unchecked_predictions)} predictions')
+    for prediction in unchecked_predictions:
+        # prediction.calculate_points()
+        print(f'points calculated{prediction}')
