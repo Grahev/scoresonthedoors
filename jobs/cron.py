@@ -18,27 +18,30 @@ def test_crone_job():
     print(now)
     
 def auto_points_pending():
-    print('\n AUTO POINTS START \n')
+    print('\n AUTO POINTS PENDING START \n')
     today = date.today()
     matches = Match.objects.filter(finished=False).filter(date_date=today)
+    print(f'autopoints pending games in query set: {len(matches)}')
     for m in matches:
-        m.update_match_data()
-        m.save()
-        time.sleep(2)
+        print(m)
+        # m.update_match_data()
+        # m.save()
+        # time.sleep(2)
 
-    print('\n AUTO POINTS END \n')
+    print('\n AUTO POINTS PENDING END \n')
 
 def auto_points_finish_today():
-    print('\n AUTO POINTS START \n')
+    print('\n AUTO POINTS FINSHED START \n')
     today = date.today()
     matches = Match.objects.filter(finished=True).filter(date_date=today)
+    print(f'autopoints finished games in query set: {len(matches)}')
     for m in matches:
         m.update_match_data()
-        m.save()
+        # m.save()
         print('match updated')
         time.sleep(2)
 
-    print('\n AUTO POINTS END \n')
+    print('\n AUTO POINTS FINISHED END \n')
 
 def points():
     today = timezone.now().date()
@@ -50,3 +53,4 @@ def points():
     for prediction in unchecked_predictions:
         prediction.calculate_points()
         print(f'points calculated{prediction}')
+
