@@ -29,8 +29,9 @@ from datetime import timedelta, datetime
 
 def predicts_home(request):
    
-    all_day = get_games_by_date(get_todays_date())
-    fixtures = filter_matches_by_leagues(all_day,[888512])
+    # all_day = get_games_by_date(get_todays_date())
+    # fixtures = filter_matches_by_leagues(all_day,[888512])
+    fixtures = get_euro_games()
     
     #frendlies id = 888512
     
