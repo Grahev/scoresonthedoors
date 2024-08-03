@@ -13,8 +13,12 @@ from django.db.models import Count, Sum, Avg, Case, When, IntegerField, F, Value
 from django.db.models.functions import Round
 from django.db.models.aggregates import Count
 import json
+from django.utils import timezone
+from datetime import datetime
 
 from django.urls import reverse_lazy
+
+FILTER_DATE = timezone.make_aware(datetime(2024, 8, 1))
 
 # Create your views here.
 
@@ -176,7 +180,9 @@ def league_delete(request, pk):
 
 def league_old_points(request):
     queryset = (
-        MatchPrediction.objects.values(
+        MatchPrediction.objects.filter(
+            match__date__gt = FILTER_DATE
+        ).values(
             'user_id',
             'user__username'
         )
@@ -203,14 +209,18 @@ def user_statistics(request,pk):
     user = get_object_or_404(User, pk=pk)
 
     # Filter predictions for the specified user
-    user_predictions = MatchPrediction.objects.filter(user=user)
+    user_predictions = MatchPrediction.objects.filter(
+        user=user,
+        match__date__gt = FILTER_DATE)
 
-    common_home_teams = user_predictions.values('match__hTeam_name').annotate(total=Count('match__hTeam_name')).order_by('-total')[:5]
-    common_away_teams = user_predictions.values('match__aTeam_name').annotate(total=Count('match__aTeam_name')).order_by('-total')[:5]
-    common_goal_scorers = user_predictions.values('goalScorerName').annotate(total=Count('goalScorerName')).order_by('-total')[:5]
+    common_home_teams = user_predictions.filter(match__date__gt = FILTER_DATE).values('match__hTeam_name').annotate(total=Count('match__hTeam_name')).order_by('-total')[:5]
+    common_away_teams = user_predictions.filter(match__date__gt = FILTER_DATE).values('match__aTeam_name').annotate(total=Count('match__aTeam_name')).order_by('-total')[:5]
+    common_goal_scorers = user_predictions.filter(match__date__gt = FILTER_DATE).values('goalScorerName').annotate(total=Count('goalScorerName')).order_by('-total')[:5]
 
     queryset = (
-        MatchPrediction.objects.values(
+        MatchPrediction.objects.filter(
+            match__date__gt = FILTER_DATE
+        ).values(
             'user_id',
             'user__username'
         )

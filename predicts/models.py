@@ -249,10 +249,10 @@ class MatchPrediction(models.Model):
         except:
             pass
     
-    def __init__(self, *args, **kwargs):
-        super(MatchPrediction, self).__init__(*args, **kwargs)
-        if not self.checked:
-            self.calculate_points()
+    # def __init__(self, *args, **kwargs):
+    #     super(MatchPrediction, self).__init__(*args, **kwargs)
+    #     if not self.checked:
+    #         self.calculate_points()
 
 class NumberOfGamesToPredict(models.Model):
     EPL = models.IntegerField()

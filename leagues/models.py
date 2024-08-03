@@ -14,6 +14,8 @@ from django.utils import timezone
 
 import logging
 
+from django.conf import settings
+
 logging.basicConfig(
     level=logging.DEBUG,
     filename='montly points log.log',
@@ -51,7 +53,7 @@ class League(models.Model):
     
     def old_points(self):
         queryset = (
-            MatchPrediction.objects.filter(user__in=self.users.all())  # Filter predictions for users in this league
+            MatchPrediction.objects.filter(user__in=self.users.all(), match__date__gt = settings.FILTER_DATE)  # Filter predictions for users in this league
             .values(
                 'user_id',
                 'user__username'

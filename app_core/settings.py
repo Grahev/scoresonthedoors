@@ -14,6 +14,8 @@ from pathlib import Path
 import os
 import django_heroku
 import dj_database_url
+from datetime import timedelta, datetime
+from django.utils import timezone
 
 django_heroku.settings(locals(),staticfiles=False)
 
@@ -199,3 +201,5 @@ EMAIL_PORT = 587
 # CRONJOBS = [
 #     ('* * * * *', 'predicts.cron.test_crone_job', '>> /cron/django_cron.log 2>&1')
 # ]
+
+FILTER_DATE = timezone.make_aware(datetime(2024, 8, 1))

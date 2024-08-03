@@ -27,11 +27,26 @@ from .my_functions import single_match_points, get_match_details, get_players, g
 
 from datetime import timedelta, datetime
 
+today = datetime.now()
+
+#893033 - comunity shield
+#889181 - club frendlies
+#74 - uefa supercup
+#47 - premier league
+#87 - la liga
+#55 - serie a
+#53 = ligue 1
+
+LEAGUES_IDS = [888512,893240, 889181,893033,47,87,55]
+FILTER_DATE = timezone.make_aware(datetime(2024, 8, 1))
+
+
 def predicts_home(request):
    
-    # all_day = get_games_by_date(get_todays_date())
-    # fixtures = filter_matches_by_leagues(all_day,[888512])
-    fixtures = get_euro_games()
+    all_day = get_games_by_date(get_todays_date())
+    fixtures = filter_matches_by_leagues(all_day,LEAGUES_IDS)
+    # fixtures = get_euro_games()
+    # fixtures = get_games_by_date("20240803")
     
     #frendlies id = 888512
     
@@ -53,9 +68,56 @@ def predicts_home(request):
             # f.fetch_data()
             # f.update_match_data()
 
+    # Calculate next and previous dates
+    d = datetime.now() #todays date data_object
+    next_date = d + timedelta(days=1) #add 1 day
+    previous_date = d - timedelta(days=1) #subtract 1 day
         
     context={
-        'fixtures':fixtures
+        'fixtures':fixtures,
+        'todays_date':d,
+        'next_date':next_date.strftime('%Y%m%d'),
+        'previous_date':previous_date.strftime('%Y%m%d')
+    }
+    return render(request, 'predicts_home.html', context)
+
+def predicts_home_date(request, date):
+   
+    all_day = get_games_by_date(date)
+    fixtures = filter_matches_by_leagues(all_day,LEAGUES_IDS)
+    # fixtures = get_euro_games()
+    # fixtures = get_games_by_date("20240803")
+    
+    #frendlies id = 888512
+    
+    # fixtures = Match.objects.all()
+
+    for f in fixtures:
+        match_id = f['id']
+        # match_id = f.match_id
+        match, created = Match.objects.get_or_create(
+            match_id = match_id
+        )
+
+        if created:
+            match.match_id = match_id
+            match.update_match_data()
+            match.save()
+            print(f'created - {match}')
+        # else:
+            # f.fetch_data()
+            # f.update_match_data()
+
+    # Calculate next and previous dates
+    d = datetime.strptime(date, '%Y%m%d') #convert string to date_object
+    next_date = d + timedelta(days=1) #add 1 day
+    previous_date = d - timedelta(days=1) #subtract 1 day
+        
+    context={
+        'fixtures':fixtures,
+        'todays_date':d,
+        'next_date':next_date.strftime('%Y%m%d'),
+        'previous_date':previous_date.strftime('%Y%m%d')
     }
     return render(request, 'predicts_home.html', context)
 
@@ -65,7 +127,10 @@ def user_predictions(request):
     # user = User.objects.get(pk=pk)
     user = request.user
 
-    user_predictions = MatchPrediction.objects.filter(user=user).order_by('-match__date')
+    user_predictions = MatchPrediction.objects.filter(
+        user=user,
+        match__date__gt = FILTER_DATE
+        ).order_by('-match__date')
 
     # for prediction in user_predictions:
     #     if not prediction.checked:
@@ -279,7 +344,10 @@ def delete_view(request, pk):
     return render(request, "prediction_delete.html", context)
 
 def user_predictions_list(request, user):
-    predictions = MatchPrediction.objects.filter(user__username = user).order_by('match__date')
+    predictions = MatchPrediction.objects.filter(
+        user__username = user,
+        match__date__gt = FILTER_DATE
+        ).order_by('match__date')
     context = {
         'predictions': predictions
     }

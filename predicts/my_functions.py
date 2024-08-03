@@ -279,3 +279,8 @@ def filter_matches_by_leagues(leagues, league_ids):
 
 def get_todays_date():
     return datetime.now().strftime('%Y%m%d')
+
+# f =get_games_by_date("20240817")
+# for league in f:
+#     print(league.get('id'))
+#     print(league.get('name'))

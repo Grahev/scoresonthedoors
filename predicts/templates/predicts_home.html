@@ -7,6 +7,11 @@
 {% block content %}
 
  <div class="conatiner">
+    <div class="pagination container-sm d-flex justify-content-evenly align-items-center display-5">
+        <a class="btn btn-primary" href="{% url 'predicts:predicts-home-date' previous_date %}"> BACK</a>
+        <p class="mb-0">{{todays_date|date:"Y-m-d"}}</p>
+        <a class="btn btn-primary" href="{% url 'predicts:predicts-home-date' next_date %}"> NEXT</a>
+    </div>
 
  
   {% for match in fixtures%}
