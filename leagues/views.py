@@ -197,7 +197,7 @@ def league_old_points(request):
             points_1=Count(Case(When(points=1, then=Value(1)), output_field=IntegerField())),
             points_0=Count(Case(When(points=0, then=Value(1)), output_field=IntegerField()))
             )
-            .order_by('-total_points')
+            .order_by('-avg_points_per_user')
             
     )
     context = {'queryset': queryset}
@@ -235,7 +235,7 @@ def user_statistics(request,pk):
             points_1=Count(Case(When(points=1, then=Value(1)), output_field=IntegerField())),
             points_0=Count(Case(When(points=0, then=Value(1)), output_field=IntegerField()))
             )
-            .filter(user_id=pk).order_by('-total_points')
+            .filter(user_id=pk).order_by('-avg_points_per_user')
     )
   
     context = {
