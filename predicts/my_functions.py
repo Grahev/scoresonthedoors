@@ -256,31 +256,61 @@ def get_euro_games():
 
     return data
 
+# def filter_matches_by_leagues(leagues, league_ids):
+#     """
+#     Filters matches from the list of leagues based on the provided league IDs.
+
+#     Args:
+#         leagues (list): The list of league dictionaries containing match information.
+#         league_ids (list): A list of league IDs to filter the matches by.
+
+#     Returns:
+#         list: A list of matches that belong to the specified league IDs.
+#     """
+#     filtered_matches = []
+    
+#     for league in leagues:
+#         print(league)
+#         print(f'{league["ccode"]} - {league["id"]} {league["name"]}')
+#         if league['id'] in league_ids:
+#             matches = league.get('matches', [])
+#             for match in matches:
+#                 filtered_matches.append(match)
+                
+#     return filtered_matches
+
 def filter_matches_by_leagues(leagues, league_ids):
     """
-    Filters matches from the list of leagues based on the provided league IDs.
+    Filters matches from the list of leagues based on the provided league IDs
+    and groups the matches by their respective league names.
 
     Args:
         leagues (list): The list of league dictionaries containing match information.
         league_ids (list): A list of league IDs to filter the matches by.
 
     Returns:
-        list: A list of matches that belong to the specified league IDs.
+        dict: A dictionary where keys are league names and values are lists of matches belonging to those leagues.
     """
-    filtered_matches = []
+    filtered_matches_by_league_name = {}
     
     for league in leagues:
+        l={}
         if league['id'] in league_ids:
+            league_name = league['name']
             matches = league.get('matches', [])
-            for match in matches:
-                filtered_matches.append(match)
-                
-    return filtered_matches
+            
+            #add filtered matches to dictionary with league name as key
+            l['name']=league_name
+            l['matches']=matches
+            filtered_matches_by_league_name[league_name] = l
+        
+    
+    return filtered_matches_by_league_name
 
 def get_todays_date():
     return datetime.now().strftime('%Y%m%d')
 
-# f =get_games_by_date("20240817")
+# f =get_games_by_date("20240810")
 # for league in f:
 #     print(league.get('id'))
 #     print(league.get('name'))

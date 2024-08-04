@@ -29,7 +29,7 @@ from datetime import timedelta, datetime
 
 today = datetime.now()
 
-#893033 - comunity shield
+#247 - comunity shield
 #889181 - club frendlies
 #74 - uefa supercup
 #47 - premier league
@@ -37,7 +37,7 @@ today = datetime.now()
 #55 - serie a
 #53 = ligue 1
 
-LEAGUES_IDS = [888512,893240, 889181,893033,47,87,55]
+LEAGUES_IDS = [889181,47,87,55,247]
 FILTER_DATE = timezone.make_aware(datetime(2024, 8, 1))
 
 
@@ -45,28 +45,27 @@ def predicts_home(request):
    
     all_day = get_games_by_date(get_todays_date())
     fixtures = filter_matches_by_leagues(all_day,LEAGUES_IDS)
+  
     # fixtures = get_euro_games()
     # fixtures = get_games_by_date("20240803")
     
     #frendlies id = 888512
     
     # fixtures = Match.objects.all()
+    for league_name, league_info in fixtures.items():
+        for f in league_info['matches']:
+            match_id = f['id']
+            # match_id = f.match_id
+            match, created = Match.objects.get_or_create(
+                match_id = match_id
+            )
 
-    for f in fixtures:
-        match_id = f['id']
-        # match_id = f.match_id
-        match, created = Match.objects.get_or_create(
-            match_id = match_id
-        )
-
-        if created:
-            match.match_id = match_id
-            match.update_match_data()
-            match.save()
-            print(f'created - {match}')
-        # else:
-            # f.fetch_data()
-            # f.update_match_data()
+            if created:
+                match.match_id = match_id
+                match.update_match_data()
+                match.save()
+                print(f'created - {match}')
+        
 
     # Calculate next and previous dates
     d = datetime.now() #todays date data_object
@@ -92,21 +91,19 @@ def predicts_home_date(request, date):
     
     # fixtures = Match.objects.all()
 
-    for f in fixtures:
-        match_id = f['id']
-        # match_id = f.match_id
-        match, created = Match.objects.get_or_create(
-            match_id = match_id
-        )
+    for league_name, league_info in fixtures.items():
+        for f in league_info['matches']:
+            match_id = f['id']
+            # match_id = f.match_id
+            match, created = Match.objects.get_or_create(
+                match_id = match_id
+            )
 
-        if created:
-            match.match_id = match_id
-            match.update_match_data()
-            match.save()
-            print(f'created - {match}')
-        # else:
-            # f.fetch_data()
-            # f.update_match_data()
+            if created:
+                match.match_id = match_id
+                match.update_match_data()
+                match.save()
+                print(f'created - {match}')
 
     # Calculate next and previous dates
     d = datetime.strptime(date, '%Y%m%d') #convert string to date_object
