@@ -198,8 +198,15 @@ EMAIL_HOST_USER = 'assafootball2021@gmail.com'
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD','dev default value')
 EMAIL_PORT = 587
 
+NOTIFICATION_EMAIL = os.environ.get('NOTIFICATION_EMAIL','dev default value')
+
 # CRONJOBS = [
 #     ('* * * * *', 'predicts.cron.test_crone_job', '>> /cron/django_cron.log 2>&1')
 # ]
 
 FILTER_DATE = timezone.make_aware(datetime(2024, 8, 1))
+
+#telegram bot setup
+
+TELEGRAM_BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN','dev default value')
+TELEGRAM_CHANNEL_ID = os.environ.get('TELEGRAM_CHANNEL_ID','dev default value')
