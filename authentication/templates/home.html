@@ -6,15 +6,12 @@
 
 {% block content %}
 
-
-{% if user.is_authenticated  %}
-    <!--IF USER IS LOGEDIN-->
+{% if user.is_authenticated %}
+    <!--IF USER IS LOGGED IN-->
 
 	<!--HERO SECTION START-->
 	<div class="container px-4 py-5 my-5 text-center my_hero" style="background-image: url('{% static 'images/nets1.jpg' %});">
 		<div class="content overlay">
-			
-		
 			<div class="lc-block d-grid gap-2 d-sm-flex justify-content-sm-center"> 
 				<a class="btn btn-primary btn-lg px-4 gap-3" href="{% url 'predicts:predicts-home'%}" role="button">Current Games</a>
 				<a class="btn btn-primary btn-lg px-4" href="{% url 'predicts:user_predictions'%}" role="button">My Predictions</a>
@@ -22,88 +19,63 @@
 				<a class="btn btn-primary btn-lg px-4" href="{% url 'leagues:league-old-points' %}" role="button">Stats</a>
 			</div>
 		</div>
-		
 	</div>
 	<!--HERO SECTION END-->
 
 	<!--RULE SECTION START-->
-
-	<section id="reules">
+	<section id="rules">
 		<div class="container">
-			    <!-- Center the content using Bootstrap container -->
-				<div class="container">
-					<h1 class="text-center">Football Prediction Point System</h1>
-					<p class="text-center">Rules for predicting football match scores and goal scorers:</p>
-			
-					<div class="table-responsive">
-						<table class="table table-bordered table-striped mx-auto">
-							<thead>
-								<tr>
-									<th>Prediction Type</th>
-									<th>Points</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td>Correct Full-Time Score</td>
-									<td>3</td>
-								</tr>
-								<tr>
-									<td>Correct Winning Team or Draw</td>
-									<td>1</td>
-								</tr>
-								<tr>
-									<td>Correct First Goal Scorer</td>
-									<td>3</td>
-								</tr>
-								<tr>
-									<td>Correct Anytime Goal Scorer (except the first goal)</td>
-									<td>1</td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-					
+			<!-- Center the content using Bootstrap container -->
+			<div class="container">
+				<h1 class="text-center">Football Prediction Point System</h1>
+				<p class="text-center">Scoresonthedoors.uk is back with updated rules for this season. You can predict as many matches as you want. The standings will be determined by the highest average points. In case of a tie, the number of predicted results will be used as a tiebreaker (more predictions will result in a higher position in the standings).</p>
+				<p class="text-center">We are starting with a test phase as usual. The first match of the season is the Community Shield, which will also mark a points reset and the official start of the season.</p>
+				<p class="text-center">Currently, the scoring system remains unchanged, but we are open to suggestions for adjustments.</p>
+
+				<div class="table-responsive">
+					<table class="table table-bordered table-striped mx-auto">
+						<thead>
+							<tr>
+								<th>Prediction Type</th>
+								<th>Points</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>Correct Full-Time Score</td>
+								<td>3</td>
+							</tr>
+							<tr>
+								<td>Correct Winning Team or Draw</td>
+								<td>1</td>
+							</tr>
+							<tr>
+								<td>Correct First Goal Scorer</td>
+								<td>3</td>
+							</tr>
+							<tr>
+								<td>Correct Anytime Goal Scorer (except the first goal)</td>
+								<td>1</td>
+							</tr>
+						</tbody>
+					</table>
 				</div>
+			</div>
 		</div>
-
-		<div class="mt-5">
-			<br><br><br><br>
-			<p class="text-center">scores on the doors 2024</p>
-			<br><br>
-		  </div>
-		
 	</section>
-
 	<!--RULE SECTION END-->
 
-
-    {% comment %} <div class="container bg-light">
-        <h1 class="text-center mt-5 ">scoresonthedoor.uk</h1>
-        <h2 class="text-center mt-3">Welcome</h2>
-        <img src="{% static 'images/nets1.jpg' %}" alt="" class="img-fluid ">
-    </div> {% endcomment %}
 {% else %}
-    <!--IF USER IS NOT LOGEDIN-->
+    <!--IF USER IS NOT LOGGED IN-->
     <div class="container mt-3">
-		{% comment %} <h1 class="fs-3 text-center mt-4 mx-3 bg-primary text-light p-1 rounded-pill"> Scores On The Doors</h1> {% endcomment %}
-        
 		<div class="card mx-auto mt-3 shadow" style="width: 18rem;">
 			<img src="https://images.unsplash.com/photo-1579952363873-27f3bade9f55?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80" class="card-img-top" alt="...">
 			<div class="card-body d-grid">
-			  {% comment %} <h5 class="card-title text-center fs-2 mb-4">WELCOME</h5> {% endcomment %}
-			  {% comment %} <p class="card-text fw-bold text-center mb-4">Please go to your email and confirm your email address by click activation link from email to complete the registration</p> {% endcomment %}
 			  <a href="{% url 'authentication:login' %}" class="btn btn-primary">Login</a>
 			  <p class="mt-2 text-center">Don't have an account?<br> Register <a href="{% url 'authentication:signup' %}">here</a></p>
 			</div>
 		  </div>
-
-		 
-        
-		  
     </div>
 {% endif %}
-
-
 
 {% endblock content %}
