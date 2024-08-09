@@ -11,6 +11,7 @@
 <div class="predictions-container container mt-3">
     <h1 class="fs-3 text-center mt-4 mx-3 bg-primary text-light p-1 rounded-pill">{{user}}'s predictions</h1>
 
+    {% comment %} {% for prediction in user_predictions %} {% endcomment %}
     {% for prediction in user_predictions %}
         {% if prediction.match.is_active %}
         <!-- ACTIVE PREDICTIONS-->

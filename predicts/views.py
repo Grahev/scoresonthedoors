@@ -13,6 +13,8 @@ import datetime
 from datetime import datetime
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
+from django.core.paginator import Paginator
+from django.conf import settings
 
 #import for current week
 from datetime import date
@@ -341,6 +343,10 @@ def delete_view(request, pk):
     return render(request, "prediction_delete.html", context)
 
 def user_predictions_list(request, user):
+    '''
+    View for list of user predictions, view from league page
+    '''
+
     predictions = MatchPrediction.objects.filter(
         user__username = user,
         match__date__gt = FILTER_DATE
