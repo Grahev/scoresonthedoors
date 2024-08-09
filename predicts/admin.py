@@ -71,6 +71,16 @@ class MatchPredictionAdmin(admin.ModelAdmin):
     # Optionally, you can add ordering
     ordering = ('-match__date', 'user')
 
+    # Add a custom action to calculate points
+    actions = ['calculate_points_for_selected']
+
+    def calculate_points_for_selected(self, request, queryset):
+        # Perform the calculate_points operation for each selected MatchPrediction
+        for prediction in queryset:
+            prediction.calculate_points()
+        self.message_user(request, "Points calculated successfully for selected predictions.")
+    calculate_points_for_selected.short_description = "Calculate points for selected predictions"
+
 admin.site.register(Match, MatchAdmin)
 admin.site.register(MatchPrediction, MatchPredictionAdmin)
 admin.site.register(NumberOfGamesToPredict)
