@@ -66,7 +66,15 @@
         $('#userStatsTable').DataTable({
             "paging": false,  // Disable pagination
             "searching": false,  // Disable search bar
-            "order": [[3, 'desc']]  // Default sorting by Total Points (index 2) in descending order
+            "order": [
+              [3, 'desc'],
+              [1, 'desc'],
+              [4, 'desc'],
+              [5, 'desc'],
+              [6, 'desc'],
+              [7, 'desc'],
+              [8, 'desc'], // First column sorted in descending order
+              ]    // Default sorting by Total Points (index 2) in descending order
         });
     });
 </script>
