@@ -15,10 +15,11 @@ from django.db.models.aggregates import Count
 import json
 from django.utils import timezone
 from datetime import datetime
+from django.conf import settings
 
 from django.urls import reverse_lazy
 
-FILTER_DATE = timezone.make_aware(datetime(2024, 8, 1))
+FILTER_DATE = settings.FILTER_DATE
 
 # Create your views here.
 

@@ -31,27 +31,17 @@ from datetime import timedelta, datetime
 
 today = datetime.now()
 
-#247 - comunity shield
-#889181 - club frendlies
-#74 - uefa supercup
-#47 - premier league
-#87 - la liga
-#55 - serie a
-#53 = ligue 1
+live_leagues = LiveLeague.objects.filter(active = True)
 
-LEAGUES_IDS = [47,87,55,247]
-FILTER_DATE = timezone.make_aware(datetime(2024, 8, 1))
+LEAGUES_IDS = list(live_leagues.values_list('league_id', flat=True)) # turn league_ids into list
+# FILTER_DATE = timezone.make_aware(datetime(2024, 8, 10))
+FILTER_DATE = settings.FILTER_DATE
 
 
 def predicts_home(request):
    
     all_day = get_games_by_date(get_todays_date())
     fixtures = filter_matches_by_leagues(all_day,LEAGUES_IDS)
-  
-    # fixtures = get_euro_games()
-    # fixtures = get_games_by_date("20240803")
-    
-    #frendlies id = 888512
     
     # fixtures = Match.objects.all()
     for league_name, league_info in fixtures.items():
@@ -86,12 +76,7 @@ def predicts_home_date(request, date):
    
     all_day = get_games_by_date(date)
     fixtures = filter_matches_by_leagues(all_day,LEAGUES_IDS)
-    # fixtures = get_euro_games()
-    # fixtures = get_games_by_date("20240803")
-    
-    #frendlies id = 888512
-    
-    # fixtures = Match.objects.all()
+
 
     for league_name, league_info in fixtures.items():
         for f in league_info['matches']:
@@ -165,13 +150,17 @@ def match_prediction(request,pk):
     
 
     match_date = match['general']['matchTimeUTCDate']
+    print(match_date)
    # Define the input string and its format
     input_string = match_date
     input_format = '%Y-%m-%dT%H:%M:%S.%fZ'
 
     # Use the strptime method to convert the string to a datetime object
     match_datetime_object = datetime.strptime(input_string, input_format) 
-    # print(type(match_datetime_object))
+    # print(match_datetime_object)
+
+    next_date = match_datetime_object + timedelta(days=0) #add 0 day
+    print(next_date)
     
     
     # cache.delete(f'{hteam}_squad')
@@ -251,7 +240,7 @@ def match_prediction(request,pk):
                 match = Match.objects.get(match_id=pk)
             )
             print('new prediction created')
-            return redirect("predicts:predicts-home")
+            return redirect("predicts:predicts-home-date", date=next_date.strftime('%Y%m%d'))
 
 
     context = {
