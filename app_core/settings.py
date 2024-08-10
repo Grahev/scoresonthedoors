@@ -206,7 +206,7 @@ NOTIFICATION_EMAIL = os.environ.get('NOTIFICATION_EMAIL','dev default value')
 #     ('* * * * *', 'predicts.cron.test_crone_job', '>> /cron/django_cron.log 2>&1')
 # ]
 
-FILTER_DATE = timezone.make_aware(datetime(2024, 8, 1))
+FILTER_DATE = timezone.make_aware(datetime(2024, 8, 10))
 
 #telegram bot setup
 

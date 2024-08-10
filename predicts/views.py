@@ -39,7 +39,7 @@ today = datetime.now()
 #55 - serie a
 #53 = ligue 1
 
-LEAGUES_IDS = [889181,47,87,55,247]
+LEAGUES_IDS = [47,87,55,247]
 FILTER_DATE = timezone.make_aware(datetime(2024, 8, 1))
 
 
