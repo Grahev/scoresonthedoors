@@ -71,3 +71,34 @@ class League(models.Model):
             )
             .order_by('-total_points'))
         return queryset
+    
+    def average_predictions_per_user(self):
+        """
+        Returns the average number of predictions per user.
+        """
+
+         # Annotate users with the count of their predictions
+        users_with_predictions = (
+            self.users.annotate(prediction_count=Count('matchprediction'))
+            .filter(prediction_count__gt=1)  # Filter users with more than 1 prediction
+        )
+
+        # Get the list of user IDs in the league
+        user_ids = self.users.values_list('id', flat=True)
+
+        total_predictions = MatchPrediction.objects.filter(
+            user__in=user_ids,
+            match__date__gt = settings.FILTER_DATE
+        ).count()
+        
+        print(total_predictions)
+
+        total_users = users_with_predictions.count()
+        print(f'total users: {total_users}')
+
+        if total_users ==0:
+            return 0
+        
+        average_predictions = total_predictions / total_users
+
+        return round(int(average_predictions), 0)

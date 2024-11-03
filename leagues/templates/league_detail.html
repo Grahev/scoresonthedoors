@@ -4,9 +4,6 @@
 {% endblock title %}
 
 {% block content %}
-
-
-
     {% comment %} <h1 class="text-center mt-5 mb-3">{{league.name}}</h1> {% endcomment %}
     
 
@@ -32,22 +29,68 @@
                   </tr>
               </thead>
               <tbody>
-                  {% for user_stats in league.old_points %}
-                      <tr>
-                          <td class="d-grid"><a class="btn btn-primary btn-sm" href="{% url 'predicts:user_prediction_list' user_stats.user__username %}">{{ user_stats.user__username }}</a></td>
-                          {% comment %} <td>{{ user_stats.user__username }}</td> {% endcomment %}
-                          <td>{{ user_stats.total_predictions_by_user }}</td>
-                          <td>{{ user_stats.total_points }}</td>
-                          <td>{{ user_stats.avg_points_per_user }}</td>
-                          <td>{{ user_stats.points_6 }}</td>
-                          <td>{{ user_stats.points_4 }}</td>
-                          <td>{{ user_stats.points_3 }}</td>
-                          <td>{{ user_stats.points_2 }}</td>
-                          <td>{{ user_stats.points_1 }}</td>
-                          <td>{{ user_stats.points_0 }}</td>
-                      </tr>
-                  {% endfor %}
+                {% for user_stats in league.old_points %}
+                  {% if user_stats.total_predictions_by_user <= league.average_predictions_per_user %}
+                    <tr>
+                      <td class="d-grid">
+                        <a class="btn btn-primary btn-sm d-flex align-items-center" href="{% url 'predicts:user_prediction_list' user_stats.user__username %}" style="white-space: nowrap;">
+                          {{ user_stats.user__username }}
+                          
+                          <!-- Display the appropriate cards based on prediction count -->
+                          {% if user_stats.total_predictions_by_user <= below_25_percent %}
+                            <!-- Red card tooltip -->
+                            <span data-bs-toggle="tooltip" title="Below 25% of total predictions">
+                              <svg width="12" height="12" viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg" class="ms-2">
+                                <path d="M6.81836 0.605469H3.182C2.42888 0.605469 1.81836 1.21599 1.81836 1.96911V8.02956C1.81836 8.78268 2.42888 9.3932 3.182 9.3932H6.81836C7.57148 9.3932 8.182 8.78268 8.182 8.02956V1.96911C8.182 1.21599 7.57148 0.605469 6.81836 0.605469Z" fill="#DD3636"/>
+                              </svg>
+                            </span>
+                          {% elif user_stats.total_predictions_by_user <= below_40_percent %}
+                            <!-- Two yellow cards tooltip -->
+                            <span data-bs-toggle="tooltip" title="Below 40% of total predictions">
+                              <svg width="12" height="12" viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg" class="ms-2">
+                                <path d="M6.81836 0.605469H3.182C2.42888 0.605469 1.81836 1.21599 1.81836 1.96911V8.02956C1.81836 8.78268 2.42888 9.3932 3.182 9.3932H6.81836C7.57148 9.3932 8.182 8.78268 8.182 8.02956V1.96911C8.182 1.21599 7.57148 0.605469 6.81836 0.605469Z" fill="#FFC107"/>
+                              </svg>
+                              <svg width="12" height="12" viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg" class="">
+                                <path d="M6.81836 0.605469H3.182C2.42888 0.605469 1.81836 1.21599 1.81836 1.96911V8.02956C1.81836 8.78268 2.42888 9.3932 3.182 9.3932H6.81836C7.57148 9.3932 8.182 8.78268 8.182 8.02956V1.96911C8.182 1.21599 7.57148 0.605469 6.81836 0.605469Z" fill="#FFC107"/>
+                              </svg>
+                            </span>
+                          {% else %}
+                            <!-- One yellow card tooltip -->
+                            <span data-bs-toggle="tooltip" title="Below average predictions">
+                              <svg width="12" height="12" viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg" class="ms-2">
+                                <path d="M6.81836 0.605469H3.182C2.42888 0.605469 1.81836 1.21599 1.81836 1.96911V8.02956C1.81836 8.78268 2.42888 9.3932 3.182 9.3932H6.81836C7.57148 9.3932 8.182 8.78268 8.182 8.02956V1.96911C8.182 1.21599 7.57148 0.605469 6.81836 0.605469Z" fill="#FFC107"/>
+                              </svg>
+                            </span>
+                          {% endif %}
+                        </a>
+                      </td>
+                      <td>{{ user_stats.total_predictions_by_user }}</td>
+                      <td>{{ user_stats.total_points }}</td>
+                      <td>{{ user_stats.avg_points_per_user }}</td>
+                      <td>{{ user_stats.points_6 }}</td>
+                      <td>{{ user_stats.points_4 }}</td>
+                      <td>{{ user_stats.points_3 }}</td>
+                      <td>{{ user_stats.points_2 }}</td>
+                      <td>{{ user_stats.points_1 }}</td>
+                      <td>{{ user_stats.points_0 }}</td>
+                    </tr>
+                  {% else %}
+                    <tr>
+                      <td class="d-grid"><a class="btn btn-primary btn-sm" href="{% url 'predicts:user_prediction_list' user_stats.user__username %}">{{ user_stats.user__username }}</a></td>
+                      <td>{{ user_stats.total_predictions_by_user }}</td>
+                      <td>{{ user_stats.total_points }}</td>
+                      <td>{{ user_stats.avg_points_per_user }}</td>
+                      <td>{{ user_stats.points_6 }}</td>
+                      <td>{{ user_stats.points_4 }}</td>
+                      <td>{{ user_stats.points_3 }}</td>
+                      <td>{{ user_stats.points_2 }}</td>
+                      <td>{{ user_stats.points_1 }}</td>
+                      <td>{{ user_stats.points_0 }}</td>
+                    </tr>
+                  {% endif %}
+                {% endfor %}
               </tbody>
+              
           </table>
           </div>
         </div>
@@ -59,6 +102,34 @@
               <small>Created: {{league.create_date}}</small>
               <small>Admin: {{league.admin}}</small>
               <small>PIN: {{league.pin}}</small>
+          </div>
+          <div class="d-flex  mt-4">
+              <small>
+                <span>
+                  <svg width="12" height="12" viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg" class="ms-2">
+                    <path d="M6.81836 0.605469H3.182C2.42888 0.605469 1.81836 1.21599 1.81836 1.96911V8.02956C1.81836 8.78268 2.42888 9.3932 3.182 9.3932H6.81836C7.57148 9.3932 8.182 8.78268 8.182 8.02956V1.96911C8.182 1.21599 7.57148 0.605469 6.81836 0.605469Z" fill="#FFC107"/>
+                  </svg>
+                </span>for below of average of league predictions (currently: {{average_predictions}})
+              </small>
+
+              <small>
+                <span>
+                  <svg width="12" height="12" viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg" class="ms-2">
+                    <path d="M6.81836 0.605469H3.182C2.42888 0.605469 1.81836 1.21599 1.81836 1.96911V8.02956C1.81836 8.78268 2.42888 9.3932 3.182 9.3932H6.81836C7.57148 9.3932 8.182 8.78268 8.182 8.02956V1.96911C8.182 1.21599 7.57148 0.605469 6.81836 0.605469Z" fill="#FFC107"/>
+                  </svg>
+                  <svg width="12" height="12" viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg" class="">
+                    <path d="M6.81836 0.605469H3.182C2.42888 0.605469 1.81836 1.21599 1.81836 1.96911V8.02956C1.81836 8.78268 2.42888 9.3932 3.182 9.3932H6.81836C7.57148 9.3932 8.182 8.78268 8.182 8.02956V1.96911C8.182 1.21599 7.57148 0.605469 6.81836 0.605469Z" fill="#FFC107"/>
+                  </svg>
+                </span>for below 40% of total predictions (currently: {{below_40_percent}})
+              </small>
+
+              <small>
+                <span>
+                  <svg width="12" height="12" viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg" class="ms-2">
+                  <path d="M6.81836 0.605469H3.182C2.42888 0.605469 1.81836 1.21599 1.81836 1.96911V8.02956C1.81836 8.78268 2.42888 9.3932 3.182 9.3932H6.81836C7.57148 9.3932 8.182 8.78268 8.182 8.02956V1.96911C8.182 1.21599 7.57148 0.605469 6.81836 0.605469Z" fill="#DD3636"/>
+                  </svg>
+                </span> for below 25% of total predictions (currently: {{below_25_percent}})
+              </small>
           </div>
           <div class="info mt-3">
             <p class="">League info/rules:</p>
@@ -97,6 +168,15 @@
               ]  
         });
     });
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+  });
 </script>
 
 {% endblock content %}

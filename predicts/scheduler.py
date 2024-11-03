@@ -32,6 +32,8 @@ def update_matches():
 
     for match in matches:
         match.update_match_data()
+        if match.finished:
+            match.finished_match_data_save()
 
     print('END UPDATE')
 

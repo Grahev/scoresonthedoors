@@ -15,8 +15,21 @@ User._meta.get_field('email')._unique = True
 import json
 import re
 from django.core.cache import cache
+
+from app_core.request_config import HEADERS, COOKIES
 # Create your models here.
 
+
+#class to store json data for a finished match
+class MatchData(models.Model):
+    match_id = models.IntegerField(unique=True)
+    data = models.TextField(null=True,blank=True)
+
+    class Meta:
+        ordering = ['match_id']
+
+    def __str__(self):
+        return str(self.match_id)
 
 class Match(models.Model):
     api_url = 'https://www.fotmob.com/api/matchDetails'
@@ -42,20 +55,31 @@ class Match(models.Model):
 
     def __str__(self):
         return f'Match | {self.date} - {self.hTeam_name} : {self.aTeam_name} - {self.finished}'
+    
+    def finished_match_data_save(self):
+        data = self.fetch_data()
+        if data:
+            match_data = MatchData(match_id=self.match_id, data=json.dumps(data))
+            match_data.save()
+
 
     def fetch_data(self):
-
-        headers = {
-          'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-        }
         params = {
         'matchId': self.match_id,
         }
         cache_key = f'match_cache_{self.match_id}'
-        data = cache.get(cache_key)
+        try:
+            data = MatchData.objects.get(match_id=self.match_id)
+            print('data from db')
+        except MatchData.DoesNotExist:
+            print('data from cache')
+            data = cache.get(cache_key)
+      
 
         if not data:
-            r = requests.get(self.api_url, params=params, headers=headers)
+            r = requests.get(self.api_url, params=params, headers=HEADERS, cookies=COOKIES)
+            # print(r.status_code)
+           
             if r.status_code == 200:
                 data = r.json()
                 cache.set(cache_key, data, timeout=60) #3600 1 hour timeout,  86400 s (24 h * 3600 seconds/hour)
@@ -132,39 +156,44 @@ class Match(models.Model):
     def update_match_data(self):
         """fill all match data like home team etc."""
         data = self.fetch_data()
-        league_id = data['general']['leagueId']
-        league = data['general']['leagueName']
-        home_teama_name = data['general']['homeTeam']['name']
-        home_teama_id = data['general']['homeTeam']['id']
-        away_teama_name = data['general']['awayTeam']['name']
-        away_teama_id = data['general']['awayTeam']['id']
-        started = data['general']['started']
-        finished = data['general']['finished']
-        date = data['general']['matchTimeUTCDate']
+    
+        try:
+            league_id = data['general']['leagueId']
+            league = data['general']['leagueName']
+            home_teama_name = data['general']['homeTeam']['name']
+            home_teama_id = data['general']['homeTeam']['id']
+            away_teama_name = data['general']['awayTeam']['name']
+            away_teama_id = data['general']['awayTeam']['id']
+            started = data['general']['started']
+            finished = data['general']['finished']
+            date = data['general']['matchTimeUTCDate']
 
-        if data:
-            self.league_id = league_id
-            self.league = league
-            self.started = started
-            self.finished = finished
-            if self.first_goal():
-                self.match_goalscorer = self.first_goal()['name']
-            if self.first_goal():
-                self.match_goalscorer_id = self.first_goal()['id']
-            if self.get_result():
-                self.hTeamScore = int(self.get_result()[0].strip())
-                self.aTeamScore = int(self.get_result()[-1].strip())
-            self.hTeam_name = home_teama_name
-            self.aTeam_name = away_teama_name
-            self.hTeam_id = home_teama_id
-            self.aTeam_id = away_teama_id
-            self.data = data
-            if self.match_result():
-                self.onextwo = self.match_result()
-            self.goalScorers = self.get_goals()
-            self.date = date
+            if data:
+                self.league_id = league_id
+                self.league = league
+                self.started = started
+                self.finished = finished
+                if self.first_goal():
+                    self.match_goalscorer = self.first_goal()['name']
+                if self.first_goal():
+                    self.match_goalscorer_id = self.first_goal()['id']
+                if self.get_result():
+                    self.hTeamScore = int(self.get_result()[0].strip())
+                    self.aTeamScore = int(self.get_result()[-1].strip())
+                self.hTeam_name = home_teama_name
+                self.aTeam_name = away_teama_name
+                self.hTeam_id = home_teama_id
+                self.aTeam_id = away_teama_id
+                self.data = data
+                if self.match_result():
+                    self.onextwo = self.match_result()
+                self.goalScorers = self.get_goals()
+                self.date = date
 
-        self.save()
+            self.save()
+        except:
+            #rise error
+            pass
 
     @property
     def is_past_due(self):
@@ -192,6 +221,7 @@ class MatchPrediction(models.Model):
         return f'Match Prediction | {self.user} - {self.match.hTeam_name} {self.homeTeamScore} : {self.awayTeamScore} {self.match.aTeam_name}'
     
     def one_x_two(self,home:int,away:int):
+        print('run one_x_two')
         if home > away:
             return 1
         elif home == away:
@@ -210,7 +240,7 @@ class MatchPrediction(models.Model):
         """calculate points"""
         # if not self.match.started:
         #     return 0  # Match not started, points are 0
-        
+        print('calculate points')
         m_points = 0
         g_points = 0
         try :
@@ -249,10 +279,11 @@ class MatchPrediction(models.Model):
         except:
             pass
     
-    def __init__(self, *args, **kwargs):
-        super(MatchPrediction, self).__init__(*args, **kwargs)
-        if not self.checked:
-            self.calculate_points()
+    # def __init__(self, *args, **kwargs):
+    #     print('init')
+    #     super(MatchPrediction, self).__init__(*args, **kwargs)
+    #     if not self.checked:
+    #         self.calculate_points()
 
 class NumberOfGamesToPredict(models.Model):
     EPL = models.IntegerField()

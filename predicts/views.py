@@ -29,11 +29,14 @@ from .my_functions import single_match_points, get_match_details, get_players, g
 
 from datetime import timedelta, datetime
 
+from app_core.request_config import HEADERS, COOKIES
+
 today = datetime.now()
 
 live_leagues = LiveLeague.objects.filter(active = True)
 
 LEAGUES_IDS = list(live_leagues.values_list('league_id', flat=True)) # turn league_ids into list
+print(LEAGUES_IDS)
 # FILTER_DATE = timezone.make_aware(datetime(2024, 8, 10))
 FILTER_DATE = settings.FILTER_DATE
 
@@ -42,9 +45,11 @@ def predicts_home(request):
    
     all_day = get_games_by_date(get_todays_date())
     fixtures = filter_matches_by_leagues(all_day,LEAGUES_IDS)
+    # print(fixtures)
     
     # fixtures = Match.objects.all()
     for league_name, league_info in fixtures.items():
+       
         for f in league_info['matches']:
             match_id = f['id']
             # match_id = f.match_id
@@ -75,7 +80,9 @@ def predicts_home(request):
 def predicts_home_date(request, date):
    
     all_day = get_games_by_date(date)
+    # print(all_day)
     fixtures = filter_matches_by_leagues(all_day,LEAGUES_IDS)
+    # print(fixtures)
 
 
     for league_name, league_info in fixtures.items():
@@ -109,6 +116,7 @@ def predicts_home_date(request, date):
 def user_predictions(request):
     """this view list all existings user predictions"""
     # user = User.objects.get(pk=pk)
+    print('run user_predictions')
     user = request.user
 
     user_predictions = MatchPrediction.objects.filter(
@@ -150,7 +158,7 @@ def match_prediction(request,pk):
     
 
     match_date = match['general']['matchTimeUTCDate']
-    print(match_date)
+    # print(match_date)
    # Define the input string and its format
     input_string = match_date
     input_format = '%Y-%m-%dT%H:%M:%S.%fZ'
@@ -160,7 +168,7 @@ def match_prediction(request,pk):
     # print(match_datetime_object)
 
     next_date = match_datetime_object + timedelta(days=0) #add 0 day
-    print(next_date)
+    # print(next_date)
     
     
     # cache.delete(f'{hteam}_squad')
@@ -200,7 +208,7 @@ def match_prediction(request,pk):
 
     if request.method == 'POST':
         pred = MatchPrediction.objects.filter(user=request.user).filter(match__match_id=pk).exists()
-        print(pred)
+        # print(pred)
         form = ApiMatchPredictionForm(request.POST)
         if form.is_valid():
             homeTeamScore = form.cleaned_data['homeTeamScore']
@@ -208,7 +216,7 @@ def match_prediction(request,pk):
             goalScorerName = form.cleaned_data['goalScorerName']
             # Get player ID from the filtered data
             #goalScorerId = next((item['id'] for item in filtered_data if item['name'] == goalScorerName), None)
-            print(goalScorerName)
+            # print(goalScorerName)
             
             #get player id from squad json object
             for player in squads:
@@ -227,7 +235,7 @@ def match_prediction(request,pk):
                 return HttpResponseRedirect(request.path_info)
             
 
-            print(form.cleaned_data)
+            # print(form.cleaned_data)
             
             user = request.user.username
             u = User.objects.get(username=user)
@@ -346,124 +354,6 @@ def user_predictions_list(request, user):
        
     return render(request, 'user_predictions_list.html', context)
 
-@staff_member_required
-def single_match_update(request,pk):
-    match = Match.objects.get(pk=pk)
-
-    events_db = MatchEvents.objects.filter(match=pk)
-
-    url = f'https://v3.football.api-sports.io/fixtures?id={match.match_id}'
-
-    payload={}
-    headers = {
-      'x-rapidapi-key': os.environ.get('key','dev default value'),
-      'x-rapidapi-host': os.environ.get('host','dev default value'),
-    }
-    r = requests.request("GET", url, headers=headers, data=payload)
-    print(f'request status code:{r.status_code}')
-
-    data = r.json()
-
-    response = data['response']
-
-    
-    hTeamScore = response[0]['goals']['home']
-    if hTeamScore:
-        print('score not null')
-    else:
-        hTeamScore = 0
-    aTeamScore = response[0]['goals']['away']
-    if aTeamScore:
-        print('score not null')
-    else:
-        aTeamScore = 0
-    status = response[0]['fixture']['status']['short']
-    events = response[0]['events']
-
-    #update match score and status
-    if status == 'FT':
-        m = Match.objects.get(match_id=match.match_id)
-        m.hTeamScore = int(hTeamScore)
-        m.aTeamScore = int(aTeamScore)
-        m.status = status
-        m.save()
-        print(f'match scores updated {m}')
-    else:
-        m = Match.objects.get(match_id=match.match_id)
-        m.status = status
-        m.date = response[0]['fixture']['date']
-        #m.save()
-        print('match not finished - date updated.')
-    
-    if events_db:
-        print('events exist')
-    else:
-    
-        #create events for match
-        for event in events:
-            match_id = match.match_id
-            team_id = event['team']['id']
-            time = event['time']['elapsed']
-            player_id = event['player']['id']
-            e_type = event['type']
-            e_detail = event['detail']
-
-            #print(f'match id:{match_id}, team id: {team_id}, time:{time}, player id:{player_id}, type:{e_type}')
-
-            if player_id:
-                #print(m)
-                try:
-                    m.goalScorers.add(Player.objects.get(player_id=player_id)) #add goalscorers to match goalscorers (many to many field)
-                except:
-                    m.goalScorers.add(Player.objects.get(player_id=0))
-                #create event object with all goals 
-                try:
-                    p = Player.objects.get(player_id=player_id)
-                except:
-                    p = Player.objects.get(player_id=0)
-
-                if e_type == 'Card':
-                    match_event = MatchEvents.objects.create(
-                        match = Match.objects.get(match_id=match_id),
-                        team = Team.objects.get(id=team_id),
-                        time = time,
-                        player = p,
-                        type = e_type,
-                        detail = e_detail,
-                    )
-                    #match_event.save()
-                    print('Card event created')
-                elif e_type == 'Goal':
-                    match_event = MatchEvents.objects.create(
-                        match = Match.objects.get(match_id=match_id),
-                        team = Team.objects.get(id=team_id),
-                        time = time,
-                        player = p,
-                        type = e_type,
-                        detail = e_detail,
-                    )
-                    #match_event.save()
-                    print('Goal event created')
-                else:
-                    continue
-
-            else:
-                continue
-        
-
-
-
-
-    context={
-        'response':response,
-        'hTeamScore': hTeamScore,
-        'aTeamScore':aTeamScore,
-        'status':status,
-        'events': events,
-        'events_db':events_db,
-        'match': match
-    }
-    return render(request,"single_match_update.html", context)
 
 @staff_member_required
 def event_delete(request,pk):

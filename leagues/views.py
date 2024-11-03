@@ -91,8 +91,18 @@ def league_view(request):
 def league_details(request,pk):
     league = League.objects.get(id=pk)
     
+    # Get the average predictions per user using the model method
+    average_predictions = int(round(league.average_predictions_per_user(),0))
+    
+    # Calculate thresholds based on the average
+    below_40_percent = int(round(average_predictions * 0.4, 0))
+    below_25_percent = int(round(average_predictions * 0.25, 0))
+    
     context = {
-        'league': league 
+        'league': league ,
+        'average_predictions': average_predictions,
+        'below_40_percent': below_40_percent,
+        'below_25_percent': below_25_percent,
     }
 
     return render(request,'league_detail.html', context)

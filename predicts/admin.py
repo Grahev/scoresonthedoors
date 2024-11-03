@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.urls import path
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
-from .models import MatchPrediction, Match, NumberOfGamesToPredict, LiveLeague
+from .models import MatchPrediction, Match, NumberOfGamesToPredict, LiveLeague, MatchData
 
 class MatchAdmin(admin.ModelAdmin):
     # Fields to display in the list view
@@ -85,53 +85,4 @@ admin.site.register(Match, MatchAdmin)
 admin.site.register(MatchPrediction, MatchPredictionAdmin)
 admin.site.register(NumberOfGamesToPredict)
 admin.site.register(LiveLeague)
-
-# from django.contrib import admin
-# from .models import MatchPrediction, Match, NumberOfGamesToPredict, LiveLeague
-
-# # Register your models here.
-
-# class MatchAdmin(admin.ModelAdmin):
-#     # Fields to display in the list view
-#     list_display = (
-#         'match_id', 'hTeam_name', 'aTeam_name', 'date', 'started', 'finished', 
-#         'hTeamScore', 'aTeamScore', 'league', 'league_sezon'
-#     )
-    
-#     # Fields to search
-#     search_fields = (
-#         'hTeam_name', 'aTeam_name', 'league', 'league_sezon'
-#     )
-    
-#     # Fields to filter
-#     list_filter = (
-#         'started', 'finished', 'league', 'league_sezon', 'date'
-#     )
-    
-#     # Optionally, you can add ordering
-#     ordering = ('-date',)
-
-# class MatchPredictionAdmin(admin.ModelAdmin):
-#     # Fields to display in the list view
-#     list_display = (
-#         'user', 'match', 'homeTeamScore', 'awayTeamScore', 'goalScorerName', 
-#         'checked', 'points', 'onextwo'
-#     )
-    
-#     # Fields to search
-#     search_fields = (
-#         'user__username', 'goalScorerName', 'match__hTeam_name', 'match__aTeam_name', 'onextwo'
-#     )
-    
-#     # Fields to filter
-#     list_filter = (
-#         'checked', 'points', 'onextwo', 'match'
-#     )
-    
-#     # Optionally, you can add ordering
-#     ordering = ('-match__date', 'user')
-
-# admin.site.register(Match, MatchAdmin)
-# admin.site.register(MatchPrediction, MatchPredictionAdmin)
-# admin.site.register(NumberOfGamesToPredict),
-# admin.site.register(LiveLeague),
+admin.site.register(MatchData)

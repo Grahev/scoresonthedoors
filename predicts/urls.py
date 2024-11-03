@@ -14,6 +14,6 @@ urlpatterns = [
     path('<int:pk>/delete',views.delete_view, name='match_prediction_delete'),
     path('<int:pk>/event/delete',views.event_delete, name='match_event_delete'),
     path('<str:user>/',views.user_predictions_list, name='user_prediction_list'),
-    path('update/<int:pk>/',views.single_match_update, name='single_match_update'),
+    # path('update/<int:pk>/',views.single_match_update, name='single_match_update'),
     path('points/<int:pk>/',views.match_point_update, name='match_point_update'),
 ]

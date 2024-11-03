@@ -8,17 +8,7 @@ from datetime import datetime
 import json
 import time
 from django.http import JsonResponse
-
-# Get the current date
-# current_date = datetime.date.today()
-
-# year, week, day = current_date.isocalendar()
-
-# # first_day_of_week = current_date - datetime.timedelta(days=day-1)
-# first_day_of_week = current_date - datetime.timedelta(days=day+45)
-
-
-# last_day_of_week = current_date + datetime.timedelta(days=8-day)
+from app_core.request_config import HEADERS, COOKIES
 
 
 def get_last_monday_and_next_sunday(current_date):
@@ -69,44 +59,17 @@ def single_match_points(match):
 def get_games_by_date(date=None):
     """pass date in format YYYMMDD"""
     # Get the current date and time
-    
-    cookies = {
-        '_hjSessionUser_2585474': 'eyJpZCI6IjQ5MzQ4M2E3LTljN2ItNTY0Mi04ZTlkLTllNDBhNGU5Njc3NSIsImNyZWF0ZWQiOjE2NDk4NzM4MTQyODEsImV4aXN0aW5nIjp0cnVlfQ==',
-        'NEXT_LOCALE': 'en-GB',
-        '_ga': 'GA1.2.1094432626.1649006611',
-        '_ga_SQ24F7Q7YW': 'GS1.1.1708259313.13.0.1708259314.0.0.0',
-        '_ga_K2ECMCJBFQ': 'GS1.1.1708259313.12.0.1708259314.0.0.0',
-        '_ga_G0V1WDW9B2': 'GS1.1.1708299288.79.1.1708299757.52.0.0',
-        'g_state': '{"i_p":1712784070517,"i_l":4}',
-        'u:location': '%7B%22countryCode%22%3A%22GB%22%2C%22ccode3%22%3A%22GBR%22%2C%22timezone%22%3A%22Europe%2FLondon%22%2C%22ip%22%3A%2286.150.110.98%22%2C%22regionId%22%3A%22NIR%22%2C%22regionName%22%3A%22Northern%20Ireland%22%7D',
-        'spotim_visitId': '{%22creationDate%22:%22Tue%20May%2021%202024%2020:11:35%20GMT+0100%20(British%20Summer%20Time)%22%2C%22duration%22:1}',
-    }
-    headers = {
-        'accept': '*/*',
-        'accept-language': 'en-GB,en;q=0.9,en-US;q=0.8,pl;q=0.7',
-        'cache-control': 'no-cache',
-        # 'cookie': '_hjSessionUser_2585474=eyJpZCI6IjQ5MzQ4M2E3LTljN2ItNTY0Mi04ZTlkLTllNDBhNGU5Njc3NSIsImNyZWF0ZWQiOjE2NDk4NzM4MTQyODEsImV4aXN0aW5nIjp0cnVlfQ==; NEXT_LOCALE=en-GB; _ga=GA1.2.1094432626.1649006611; _ga_SQ24F7Q7YW=GS1.1.1708259313.13.0.1708259314.0.0.0; _ga_K2ECMCJBFQ=GS1.1.1708259313.12.0.1708259314.0.0.0; _ga_G0V1WDW9B2=GS1.1.1708299288.79.1.1708299757.52.0.0; g_state={"i_p":1712784070517,"i_l":4}; u:location=%7B%22countryCode%22%3A%22GB%22%2C%22ccode3%22%3A%22GBR%22%2C%22timezone%22%3A%22Europe%2FLondon%22%2C%22ip%22%3A%2286.150.110.98%22%2C%22regionId%22%3A%22NIR%22%2C%22regionName%22%3A%22Northern%20Ireland%22%7D; spotim_visitId={%22creationDate%22:%22Tue%20May%2021%202024%2020:11:35%20GMT+0100%20(British%20Summer%20Time)%22%2C%22duration%22:1}',
-        'pragma': 'no-cache',
-        'priority': 'u=1, i',
-        # 'referer': 'https://www.fotmob.com/en-GB/leagues/50/matches/euro?page=1',
-        'referer': 'https://www.fotmob.com/en-GB?date=20240604&show=all&filter=&q=Friendlies',
-        'sec-ch-ua': '"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"',
-        'sec-ch-ua-mobile': '?0',
-        'sec-ch-ua-platform': '"Windows"',
-        'sec-fetch-dest': 'empty',
-        'sec-fetch-mode': 'cors',
-        'sec-fetch-site': 'same-origin',
-        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-        'x-fm-req': 'eyJib2R5Ijp7ImNvZGUiOjE3MTYzMTkwOTc5MTZ9LCJzaWduYXR1cmUiOiIwQTI1QTY3MEMyOEREQzc4NzY5NTAyNjAzMTRDNThEMyJ9',
-    }
 
     params = {
         'date': date,
         'ccode3': 'GBR',
     }
-    response = requests.get('https://www.fotmob.com/api/matches', params=params, cookies=cookies, headers=headers)
+    response = requests.get('https://www.fotmob.com/api/matches', params=params, cookies=COOKIES, headers=HEADERS)
     data = response.json()['leagues']
     pretty_json = json.dumps(data, indent=4)
+    #dump to file
+    # with open('data.json', 'w') as f:
+    #     json.dump(data, f, indent=4)
     # print(pretty_json)
 
 
@@ -125,35 +88,19 @@ def get_match_details(match_id):
     params = {
     'matchId': match_id,
     }
-    r = requests.get(url, params=params, headers=headers)
+    r = requests.get(url, params=params, headers=HEADERS, cookies=COOKIES)
     response = r.json()
     return response
 
 
 def get_team_squad(id,ccode3="GBR"):
     url = f'https://www.fotmob.com/api/teams'
-    headers = {
-        'accept': '*/*',
-    'accept-language': 'en-GB,en;q=0.9,en-US;q=0.8,pl;q=0.7',
-    'cache-control': 'no-cache',
-    # 'cookie': '_hjSessionUser_2585474=eyJpZCI6IjQ5MzQ4M2E3LTljN2ItNTY0Mi04ZTlkLTllNDBhNGU5Njc3NSIsImNyZWF0ZWQiOjE2NDk4NzM4MTQyODEsImV4aXN0aW5nIjp0cnVlfQ==; NEXT_LOCALE=en-GB; _ga=GA1.2.1094432626.1649006611; _ga_SQ24F7Q7YW=GS1.1.1708259313.13.0.1708259314.0.0.0; _ga_K2ECMCJBFQ=GS1.1.1708259313.12.0.1708259314.0.0.0; _ga_G0V1WDW9B2=GS1.1.1708299288.79.1.1708299757.52.0.0; g_state={"i_p":1712784070517,"i_l":4}; u:location=%7B%22countryCode%22%3A%22GB%22%2C%22ccode3%22%3A%22GBR%22%2C%22timezone%22%3A%22Europe%2FLondon%22%2C%22ip%22%3A%2286.150.110.98%22%2C%22regionId%22%3A%22NIR%22%2C%22regionName%22%3A%22Northern%20Ireland%22%7D; spotim_visitId={%22creationDate%22:%22Wed%20Jun%2005%202024%2017:37:00%20GMT+0100%20(British%20Summer%20Time)%22%2C%22duration%22:1}',
-    'pragma': 'no-cache',
-    'priority': 'u=1, i',
-    'referer': 'https://www.fotmob.com/en-GB/teams/8497/squad/slovakia',
-    'sec-ch-ua': '"Google Chrome";v="125", "Chromium";v="125", "Not.A/Brand";v="24"',
-    'sec-ch-ua-mobile': '?0',
-    'sec-ch-ua-platform': '"Windows"',
-    'sec-fetch-dest': 'empty',
-    'sec-fetch-mode': 'cors',
-    'sec-fetch-site': 'same-origin',
-    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
-    'x-fm-req': 'eyJib2R5Ijp7ImNvZGUiOjE3MTc2MDU0NjIzNzN9LCJzaWduYXR1cmUiOiI3NTkwOEFEQjBEODY1NDdFNjFDRjZDN0FDM0NGRjEzMiJ9',
-    }
+    
     params = {
     'id': id,
     'ccode3': ccode3,
 }
-    r = requests.get(url, params=params, headers=headers)
+    r = requests.get(url, params=params, headers=HEADERS, cookies=COOKIES)
     
     if r.status_code ==200:
         response = r.json()['squad']
@@ -256,29 +203,6 @@ def get_euro_games():
 
     return data
 
-# def filter_matches_by_leagues(leagues, league_ids):
-#     """
-#     Filters matches from the list of leagues based on the provided league IDs.
-
-#     Args:
-#         leagues (list): The list of league dictionaries containing match information.
-#         league_ids (list): A list of league IDs to filter the matches by.
-
-#     Returns:
-#         list: A list of matches that belong to the specified league IDs.
-#     """
-#     filtered_matches = []
-    
-#     for league in leagues:
-#         print(league)
-#         print(f'{league["ccode"]} - {league["id"]} {league["name"]}')
-#         if league['id'] in league_ids:
-#             matches = league.get('matches', [])
-#             for match in matches:
-#                 filtered_matches.append(match)
-                
-#     return filtered_matches
-
 def filter_matches_by_leagues(leagues, league_ids):
     """
     Filters matches from the list of leagues based on the provided league IDs
@@ -292,8 +216,9 @@ def filter_matches_by_leagues(leagues, league_ids):
         dict: A dictionary where keys are league names and values are lists of matches belonging to those leagues.
     """
     filtered_matches_by_league_name = {}
-    
+    # print(league_ids)
     for league in leagues:
+        
         l={}
         if league['id'] in league_ids:
             league_name = league['name']
