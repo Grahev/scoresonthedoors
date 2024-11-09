@@ -1,4 +1,3 @@
-# config.py
 
 # Global request headers
 HEADERS = {
@@ -15,7 +14,7 @@ HEADERS = {
     "sec-fetch-mode": "cors",
     "sec-fetch-site": "same-origin",
     "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36",
-    "x-fm-req": "eyJib2R5Ijp7InVybCI6Ii9hcGkvbWF0Y2hlcz9kYXRlPTIwMjQxMTA0JnRpbWV6b25lPUV1cm9wZSUyRkxvbmRvbiZjY29kZTM9R0JSIiwiY29kZSI6MTczMDY1MzQzNDc0Mn0sInNpZ25hdHVyZSI6IjQzMDBBNTA1MUY2MDYyN0Y3REIxNUIwQ0Q1NzM1QTJBIn0="
+    "x-fm-req": "eyJib2R5Ijp7InVybCI6Ii9hcGkvbWF0Y2hlcz9kYXRlPTIwMjQxMTA5JnRpbWV6b25lPUV1cm9wZSUyRkxvbmRvbiZjY29kZTM9R0JSIiwiY29kZSI6MTczMTE2MDc1OTg4MSwiZm9vIjoiODE1NzU1ZjAyIn0sInNpZ25hdHVyZSI6IkNDMzA2RERDNUZEREM4NENCNDVBQ0UxRkExMjZBQjI2In0="
 }
 
 # Global cookies

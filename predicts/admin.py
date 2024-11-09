@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.urls import path
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
-from .models import MatchPrediction, Match, NumberOfGamesToPredict, LiveLeague, MatchData
+from .models import MatchPrediction, Match, NumberOfGamesToPredict, LiveLeague, MatchData, FotMobToken
 
 class MatchAdmin(admin.ModelAdmin):
     # Fields to display in the list view
@@ -86,3 +86,4 @@ admin.site.register(MatchPrediction, MatchPredictionAdmin)
 admin.site.register(NumberOfGamesToPredict)
 admin.site.register(LiveLeague)
 admin.site.register(MatchData)
+admin.site.register(FotMobToken)

@@ -29,7 +29,7 @@ from .my_functions import single_match_points, get_match_details, get_players, g
 
 from datetime import timedelta, datetime
 
-from app_core.request_config import HEADERS, COOKIES
+from predicts.request_config import HEADERS, COOKIES
 
 today = datetime.now()
 

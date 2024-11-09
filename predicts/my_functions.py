@@ -8,7 +8,7 @@ from datetime import datetime
 import json
 import time
 from django.http import JsonResponse
-from app_core.request_config import HEADERS, COOKIES
+from .request_config import HEADERS, COOKIES
 
 
 def get_last_monday_and_next_sunday(current_date):

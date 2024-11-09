@@ -15,8 +15,9 @@ User._meta.get_field('email')._unique = True
 import json
 import re
 from django.core.cache import cache
+from django.core.exceptions import ObjectDoesNotExist
 
-from app_core.request_config import HEADERS, COOKIES
+from predicts.request_config import HEADERS, COOKIES
 # Create your models here.
 
 
@@ -304,3 +305,30 @@ class LiveLeague(models.Model):
     def __str__(self):
         return f'Live League | {self.league_name} - {self.season}'
     
+
+class SingletonModel(models.Model):
+    """Abstract base class for Singleton Models"""
+    class Meta:
+        abstract = True
+
+    def save(self, *args, **kwargs):
+        self.pk = 1  # Always set the primary key to 1 to ensure only one instance
+        super().save(*args, **kwargs)
+
+    @classmethod
+    def load(cls):
+        """Load the singleton instance or create it if it doesn't exist."""
+        try:
+            return cls.objects.get(pk=1)
+        except ObjectDoesNotExist:
+            # No instance exists, so create it with pk=1
+            instance = cls(pk=1)
+            instance.save()
+            return instance
+
+
+class FotMobToken(SingletonModel):
+    x_fm_req = models.CharField(max_length=100)
+
+    def __str__(self):
+        return f"FotMobToken(x_fm_req={self.x_fm_req})"
